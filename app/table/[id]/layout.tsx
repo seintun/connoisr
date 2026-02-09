@@ -25,7 +25,7 @@ export default function DinerLayout({
   return (
     <TableSessionProvider>
       <TableInitializer id={id} />
-      <div className="min-h-screen bg-background text-foreground pb-24 relative overflow-x-hidden">
+      <div className="min-h-screen bg-background text-foreground pb-24 relative [overflow-x:clip]">
          {/* Ambient Background Glows */}
         <div className="fixed top-[-10%] right-[-10%] w-[50vh] h-[50vh] bg-primary/20 blur-[100px] rounded-full pointer-events-none z-0" />
         <div className="fixed bottom-[-10%] left-[-10%] w-[50vh] h-[50vh] bg-secondary/20 blur-[100px] rounded-full pointer-events-none z-0" />

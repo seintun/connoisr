@@ -64,8 +64,8 @@ export default function DinerPage() {
           onCategoryClick={(category) => {
             const element = document.getElementById(category);
             if (element) {
-              // Offset for sticky header (approx 140px or calculated dynamically)
-              const y = element.getBoundingClientRect().top + window.scrollY - 160;
+              // Offset for sticky header (approx 80px for just the category bar)
+              const y = element.getBoundingClientRect().top + window.scrollY - 80;
               window.scrollTo({ top: y, behavior: 'smooth' });
             }
           }}
@@ -73,7 +73,7 @@ export default function DinerPage() {
 
        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-12">
          {categories.map((category) => (
-           <section key={category} id={category} className="scroll-mt-40 transition-all duration-500">
+           <section key={category} id={category} className="scroll-mt-24 transition-all duration-500">
              <div className="flex items-center gap-4 mb-6">
                <h2 className="text-2xl font-serif font-bold text-foreground/90 tracking-tight">{category}</h2>
                <div className="h-px flex-1 bg-gradient-to-r from-border/60 to-transparent" />

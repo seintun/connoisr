@@ -95,9 +95,18 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                   <div className="flex items-center gap-3">
                     <button
                       onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
-                      className="w-8 h-8 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors"
+                      className={cn(
+                        "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
+                        item.quantity === 1
+                          ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
+                          : "bg-muted hover:bg-muted/80"
+                      )}
                     >
-                      <Minus className="w-4 h-4" />
+                      {item.quantity === 1 ? (
+                        <Trash2 className="w-4 h-4" />
+                      ) : (
+                        <Minus className="w-4 h-4" />
+                      )}
                     </button>
                     <span className="font-mono font-bold text-lg w-6 text-center">
                       {item.quantity}

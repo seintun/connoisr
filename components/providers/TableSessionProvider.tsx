@@ -1,6 +1,6 @@
 "use client";
 
-import { CartItem, TableSession } from "@/types";
+import { CartItem, Order, TableSession } from "@/types";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 interface TableSessionContextType {
@@ -9,6 +9,7 @@ interface TableSessionContextType {
   removeItem: (itemId: string) => void;
   updateItemQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
+  sendOrder: () => void;
   initializeSession: (tableId: string) => void;
 }
 
@@ -42,12 +43,37 @@ export function TableSessionProvider({
     }
   }, [session]);
 
+  // Sync with other tabs/windows
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === "tempo-dine-session" && e.newValue) {
+        try {
+          const newSession = JSON.parse(e.newValue);
+          setSession(prev => {
+            // Only update if content changed to avoid loops, though basic equality check is hard.
+            // We mainly trust the event.
+            if (JSON.stringify(prev) !== e.newValue) {
+               return newSession;
+            }
+            return prev;
+          });
+        } catch (error) {
+          console.error("Failed to sync session", error);
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
   const initializeSession = useCallback((tableId: string) => {
     setSession((prev) => {
       if (!prev || prev.tableId !== tableId) {
         return {
           tableId,
           cart: [],
+          orders: [],
           status: "browsing",
         };
       }
@@ -127,6 +153,28 @@ export function TableSessionProvider({
     });
   }, []);
 
+  const sendOrder = useCallback(() => {
+    setSession((prev) => {
+      if (!prev || prev.cart.length === 0) return prev;
+
+      const newOrder: Order = {
+        id: crypto.randomUUID(),
+        tableId: prev.tableId,
+        items: [...prev.cart],
+        status: 'ordered',
+        createdAt: Date.now(),
+        total: prev.cart.reduce((acc, item) => acc + item.price * item.quantity, 0),
+      };
+
+      return {
+        ...prev,
+        orders: [...(prev.orders || []), newOrder], // Handle existing sessions without orders
+        cart: [],
+        status: 'ordering',
+      };
+    });
+  }, []);
+
   return (
     <TableSessionContext.Provider
       value={{
@@ -135,6 +183,7 @@ export function TableSessionProvider({
         removeItem,
         updateItemQuantity,
         clearCart,
+        sendOrder,
         initializeSession,
       }}
     >

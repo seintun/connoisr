@@ -12,6 +12,7 @@ export interface CartItem {
 export interface TableSession {
   tableId: string;
   cart: CartItem[];
+  orders: Order[];
   status: 'browsing' | 'ordering' | 'payment' | 'completed';
 }
 
@@ -19,8 +20,7 @@ export interface Order {
   id: string;
   tableId: string;
   items: CartItem[];
-  status: 'pending' | 'cooking' | 'ready' | 'served' | 'paid';
-  createdAt: Date;
-  updatedAt: Date;
+  status: 'ordered' | 'cooking' | 'ready' | 'served' | 'paid';
+  createdAt: number; // Changed from Date to number for easier serialization
   total: number;
 }

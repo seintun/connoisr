@@ -14,58 +14,21 @@ export function Checkout() {
     setIsProcessing(true);
     setError(null);
 
-    // Basic Web Payment API Implementation
-    if (window.PaymentRequest) {
-      try {
-        const supportedInstruments = [
-          {
-            supportedMethods: "basic-card",
-            data: {
-              supportedNetworks: ["visa", "mastercard"],
-            },
-          },
-        ];
-
-        const details = {
-          total: {
-            label: "Total",
-            amount: {
-              currency: "USD",
-              value: total.toFixed(2),
-            },
-          },
-          displayItems: session?.cart.map((item) => ({
-            label: `${item.quantity}x ${item.name}`,
-            amount: {
-              currency: "USD",
-              value: (item.price * item.quantity).toFixed(2),
-            },
-          })),
-        };
-
-        const request = new PaymentRequest(supportedInstruments, details);
-        const response = await request.show();
+    // Simulate a premium "Payment Sheet" experience since basic-card is deprecated
+    // In a real app, this would use Stripe Elements or a similar SDK
+    try {
+        // Arbitrary delay to simulate network request
+        await new Promise((resolve) => setTimeout(resolve, 1500));
         
-        // Simulate payment processing
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        
-        await response.complete("success");
+        // Success logic
         clearCart();
-        alert("Payment successful!");
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Payment failed");
+        alert("Payment successful! (Simulated)");
+    } catch (err) {
+        setError("Payment failed. Please try again.");
         console.error("Payment Error:", err);
-      }
-    } else {
-      // Fallback for browsers without Web Payment API
-      alert("Web Payment API not supported in this browser. Fallback checkout...");
-      // Simulate successful checkout for demo
-      setTimeout(() => {
-        clearCart();
-        alert("Order placed (simulated)!");
-      }, 1000);
+    } finally {
+        setIsProcessing(false);
     }
-    setIsProcessing(false);
   };
 
   if (!session || session.cart.length === 0) {

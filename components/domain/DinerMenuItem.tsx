@@ -21,74 +21,31 @@ export function DinerMenuItem({
   name,
   price,
   description,
-  imageUrl = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800", // Default foodie image
+  imageUrl = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800",
   onAdd,
   quantity = 0,
   onUpdateQuantity,
 }: DinerMenuItemProps) {
-  const [isImageOpen, setIsImageOpen] = useState(false);
-
-  /* 
-    Added keyboard support for accessibility and desktop users.
-    Listens for 'Escape' key to close the modal.
-  */
-  // ... rest of imports are updated below in full replace if needed, but here just injecting the hook logic inside component
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setIsImageOpen(false);
-      }
-    };
-
-    if (isImageOpen) {
-      window.addEventListener("keydown", handleKeyDown);
-    }
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isImageOpen]);
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileTap={isImageOpen ? {} : { scale: 0.98 }}
       className={cn(
         "group relative overflow-hidden rounded-[2rem] bg-white transition-all duration-300 h-full",
-        "flex flex-row md:flex-col", 
-        // Subtle Border for differentiation + Soft Shadow
+        "flex flex-row md:flex-col",
         "border border-neutral-200/60",
-        quantity > 0 
-          ? "ring-2 ring-primary/20 shadow-md" 
-          : "shadow-sm hover:shadow-md hover:-translate-y-0.5",
-        // Force height context for the image
-        isImageOpen ? "z-[100]" : ""
+        quantity > 0
+          ? "ring-2 ring-primary/20 shadow-md"
+          : "shadow-sm hover:shadow-md hover:-translate-y-0.5"
       )}
     >
-      {/* Image Container */}
-      <div 
-        className="w-1/3 min-w-[120px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 cursor-zoom-in"
-        onClick={() => setIsImageOpen(true)}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 z-10" />
-        <img
-          src={imageUrl}
-          alt={name}
-          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 absolute inset-0 md:static"
-        />
-        
-        {/* Quantity Badge on Image - Left Aligned */}
-        {quantity > 0 && (
-          <motion.div 
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="absolute top-2 left-2 md:top-3 md:left-3 bg-white/95 backdrop-blur-sm text-foreground font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm z-20 flex items-center gap-1.5 shadow-sm border border-black/5"
-          >
-            <span className="text-primary">{quantity}x</span>
-          </motion.div>
-        )}
-      </div>
-      
-      {/* Content Container */}
+      <MenuItemImage 
+        name={name} 
+        imageUrl={imageUrl} 
+        quantity={quantity} 
+        description={description} 
+      />
+
       <div className="flex-1 p-3 md:p-6 flex flex-col justify-between bg-gradient-to-b from-white to-neutral-50/50">
         <div>
           <div className="flex justify-between items-start mb-1.5 md:mb-3 gap-2">
@@ -99,64 +56,62 @@ export function DinerMenuItem({
               ${price}
             </span>
           </div>
-          
+
           <p className="text-muted-foreground text-[10px] md:text-base leading-relaxed mb-3 line-clamp-2 md:line-clamp-3 font-medium">
             {description}
           </p>
         </div>
 
-        {quantity > 0 && onUpdateQuantity ? (
-          <div className="flex items-center gap-2 md:gap-3 p-1 md:p-2 rounded-xl md:rounded-2xl bg-white shadow-sm border border-neutral-100 mt-auto w-full">
-            <motion.button
-              onClick={(e) => {
-                e.stopPropagation();
-                onUpdateQuantity(quantity - 1);
-              }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-destructive hover:bg-red-500 hover:text-white cursor-pointer"
-            >
-              {quantity === 1 ? <Trash2 className="w-4 h-4 md:w-5 md:h-5" /> : <Minus className="w-4 h-4 md:w-5 md:h-5" />}
-            </motion.button>
+        <MenuItemControls 
+          quantity={quantity} 
+          onAdd={onAdd} 
+          onUpdateQuantity={onUpdateQuantity} 
+        />
+      </div>
+    </motion.div>
+  );
+}
 
-            <div className="flex-1 flex items-center justify-center overflow-hidden px-2 md:px-0">
-               <motion.span
-                key={quantity}
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -20, opacity: 0 }}
-                className="font-bold text-lg md:text-2xl text-foreground"
-              >
-                {quantity}
-              </motion.span>
-            </div>
+// Sub-components
 
-            <motion.button
-              onClick={(e) => {
-                e.stopPropagation();
-                onUpdateQuantity(quantity + 1);
-              }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-emerald-600 hover:bg-emerald-600 hover:text-white cursor-pointer"
-            >
-              <Plus className="w-4 h-4 md:w-5 md:h-5" />
-            </motion.button>
-          </div>
-        ) : (
-          <motion.button
-            onClick={onAdd}
-            whileHover={{ scale: 1.02, y: -2 }}
-            whileTap={{ scale: 0.98 }}
-            className="w-full py-2.5 md:py-4 bg-foreground text-background font-bold rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 hover:text-white transition-all duration-300 text-sm md:text-base mt-auto group/btn md:shadow-lg md:shadow-neutral-200 cursor-pointer border border-transparent hover:border-emerald-700/20"
+function MenuItemImage({ name, imageUrl, quantity, description }: { name: string, imageUrl: string, quantity: number, description: string }) {
+  const [isImageOpen, setIsImageOpen] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsImageOpen(false);
+    };
+    if (isImageOpen) window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isImageOpen]);
+
+  return (
+    <>
+      <div
+        className={cn(
+          "w-1/3 min-w-[120px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 cursor-zoom-in",
+          isImageOpen && "z-[100]" // Keep context if needed, though modal is fixed.
+        )}
+        onClick={() => setIsImageOpen(true)}
+      >
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 z-10" />
+        <img
+          src={imageUrl}
+          alt={name}
+          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 absolute inset-0 md:static"
+        />
+        
+        {quantity > 0 && (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="absolute top-2 left-2 md:top-3 md:left-3 bg-white/95 backdrop-blur-sm text-foreground font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm z-20 flex items-center gap-1.5 shadow-sm border border-black/5"
           >
-            <Plus className="w-4 h-4 transition-transform group-hover/btn:rotate-90" />
-            Add <span className="md:inline">to Order</span>
-          </motion.button>
+            <span className="text-primary">{quantity}x</span>
+          </motion.div>
         )}
       </div>
 
-      {/* Full Screen Image Modal */}
       <AnimatePresence>
         {isImageOpen && (
           <motion.div
@@ -172,10 +127,9 @@ export function DinerMenuItem({
           >
             <div
               className="relative w-full h-full flex items-center justify-center"
-              onClick={(e) => e.stopPropagation()} // Prevent clicking image from closing if desired, but general standard is background closes
+              onClick={(e) => e.stopPropagation()}
             >
-               {/* Close Button */}
-               <motion.button
+              <motion.button
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.5 }}
@@ -190,10 +144,8 @@ export function DinerMenuItem({
                 alt={name}
                 className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
               />
-              
-              <div
-                className="absolute bottom-4 left-0 right-0 text-center text-white/90 p-4"
-              >
+
+              <div className="absolute bottom-4 left-0 right-0 text-center text-white/90 p-4">
                 <h3 className="text-xl md:text-3xl font-serif font-bold mb-1">{name}</h3>
                 <p className="text-white/70 text-sm md:text-lg max-w-2xl mx-auto line-clamp-2 md:line-clamp-none">
                   {description}
@@ -203,6 +155,62 @@ export function DinerMenuItem({
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.div>
+    </>
+  );
+}
+
+function MenuItemControls({ quantity, onAdd, onUpdateQuantity }: { quantity: number, onAdd: () => void, onUpdateQuantity?: (q: number) => void }) {
+  if (quantity > 0 && onUpdateQuantity) {
+    return (
+      <div className="flex items-center gap-2 md:gap-3 p-1 md:p-2 rounded-xl md:rounded-2xl bg-white shadow-sm border border-neutral-100 mt-auto w-full">
+        <motion.button
+          onClick={(e) => {
+            e.stopPropagation();
+            onUpdateQuantity(quantity - 1);
+          }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-destructive hover:bg-red-500 hover:text-white cursor-pointer"
+        >
+          {quantity === 1 ? <Trash2 className="w-4 h-4 md:w-5 md:h-5" /> : <Minus className="w-4 h-4 md:w-5 md:h-5" />}
+        </motion.button>
+
+        <div className="flex-1 flex items-center justify-center overflow-hidden px-2 md:px-0">
+          <motion.span
+            key={quantity}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            className="font-bold text-lg md:text-2xl text-foreground"
+          >
+            {quantity}
+          </motion.span>
+        </div>
+
+        <motion.button
+          onClick={(e) => {
+            e.stopPropagation();
+            onUpdateQuantity(quantity + 1);
+          }}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
+          className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-emerald-600 hover:bg-emerald-600 hover:text-white cursor-pointer"
+        >
+          <Plus className="w-4 h-4 md:w-5 md:h-5" />
+        </motion.button>
+      </div>
+    );
+  }
+
+  return (
+    <motion.button
+      onClick={onAdd}
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      className="w-full py-2.5 md:py-4 bg-foreground text-background font-bold rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 hover:text-white transition-all duration-300 text-sm md:text-base mt-auto group/btn md:shadow-lg md:shadow-neutral-200 cursor-pointer border border-transparent hover:border-emerald-700/20"
+    >
+      <Plus className="w-4 h-4 transition-transform group-hover/btn:rotate-90" />
+      Add <span className="md:inline">to Order</span>
+    </motion.button>
   );
 }

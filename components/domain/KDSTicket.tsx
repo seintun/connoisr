@@ -70,7 +70,7 @@ export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
       </div>
 
       <div className="grid grid-cols-2 gap-3 mt-auto">
-        {order.status === "pending" && (
+        {order.status === "ordered" && (
           <button
             onClick={() => onStatusUpdate(order.id, "cooking")}
             className="col-span-2 py-3 bg-primary text-primary-foreground font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/25"

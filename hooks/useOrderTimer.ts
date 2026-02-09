@@ -11,12 +11,12 @@ interface OrderTimerState {
   formattedTime: string;
 }
 
-export function useOrderTimer(createdAt: Date, status: Order["status"]): OrderTimerState {
+export function useOrderTimer(createdAt: number, status: Order["status"]): { elapsed: number; urgency: UrgencyLevel; formattedTime: string } {
   const [elapsed, setElapsed] = useState(0);
 
   useEffect(() => {
     // Initial calculation
-    const start = new Date(createdAt).getTime();
+    const start = createdAt;
     setElapsed(Math.floor((Date.now() - start) / 1000));
 
     const timer = setInterval(() => {
@@ -29,9 +29,10 @@ export function useOrderTimer(createdAt: Date, status: Order["status"]): OrderTi
   const getUrgency = (status: Order["status"], seconds: number): UrgencyLevel => {
     if (status === "ready") return "ready";
     if (status === "served") return "served";
+    if (status === "paid") return "served"; // Treat paid as served/done
     
     // Logic for active orders
-    if (status === "pending") return "new"; // Coral
+    if (status === "ordered") return "new"; // Coral
     
     // In "cooking" state
     if (seconds > 60 * 15) return "delayed"; // > 15 mins (Amber)

@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TempoDine 🍽️
+
+> **Vibrant Modernist Dining.** A high-performance, real-time Progressive Web App (PWA) designed for modern, high-volume dining environments.
+
+![TempoDine Banner](/Users/seintun/.gemini/antigravity/brain/781b0f27-bc3c-46eb-ba12-5e14bde9e159/landing_page_1770629440830.png)
+
+## Overview
+
+TempoDine is built with **Next.js 14+**, **TypeScript**, and **Tailwind CSS v4**. It features a "Product-Led" design philosophy, balancing a beautiful, vibrant user experience for guests with high-utility tools for staff.
+
+### Core Interfaces
+
+*   **Diner PWA (The "Fresh Bistro" Experience)**: A guest-facing, zero-auth flow. Focus on "Time-to-Table" with a <3-tap path from scan to order.
+    *   *Route:* `/table/[id]`
+*   **Kitchen Display System (KDS)**: A real-time dashboard where **Color = Priority**. Functional color theory helps staff manage orders without reading fine print.
+    *   *Route:* `/admin/kds`
+
+## Aesthetics: Vibrant Modernism ✨
+
+We've pivoted from dark mode to a "Fresh Bistro" aesthetic:
+*   **Palette**: Pure Frost (`#F8FAFC`), Zesty Coral (`#FF6B4A`), and Electric Indigo (`#6366F1`).
+*   **Typography**: `Outfit` (Headers) and `Plus Jakarta Sans` (Body).
+*   **UI Polish**: Glassmorphism, `rounded-2xl` components, and ambient glows.
+
+## Features
+
+*   **Real-Time State**: Orders sync instantly between Diner and Kitchen interfaces.
+*   **Smart KDS**: Orders change color based on wait time (Coral -> Indigo -> Amber -> Emerald).
+*   **Offline-First**: Built with PWA capabilities in mind.
+*   **Frictionless Checkout**: Integrated Web Payment API support (simulated).
+
+## Tech Stack
+
+*   **Framework**: Next.js 14 (App Router)
+*   **Styling**: Tailwind CSS v4 + shadcn/ui
+*   **State**: React Query + Context API (LocalStorage persistence)
+*   **Animation**: Framer Motion
 
 ## Getting Started
 
-First, run the development server:
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed development setup and guidelines.
 
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## License
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

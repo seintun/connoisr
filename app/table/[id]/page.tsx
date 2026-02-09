@@ -52,7 +52,7 @@ export default function DinerPage() {
             onClick={() => setIsCartOpen(true)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="relative flex items-center gap-2 px-3 py-2 bg-primary/10 text-primary rounded-full font-bold text-sm hover:bg-primary hover:text-white transition-colors"
+            className="relative flex items-center gap-2 px-3 py-2 bg-primary/10 text-primary rounded-full font-bold text-sm hover:bg-primary/20 transition-colors"
           >
             <ShoppingBag className="w-4 h-4" />
             {itemCount > 0 && (

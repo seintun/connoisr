@@ -93,5 +93,83 @@ export const MENU_ITEMS = [
     description: "Ceremonial grade matcha, oat milk, honey",
     imageUrl: "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&q=80&w=800",
     category: "Drinks"
+  },
+  {
+    id: "item-13",
+    name: "Espresso Martini",
+    price: 16,
+    description: "Vodka, fresh espresso, coffee liqueur, vanilla",
+    imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800",
+    category: "Drinks"
+  },
+
+  // Salads
+  {
+    id: "item-14",
+    name: "Grilled Caesar Salad",
+    price: 18,
+    description: "Charred romaine, anchovy crumbs, parmesan tuile",
+    imageUrl: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?auto=format&fit=crop&q=80&w=800",
+    category: "Salads"
+  },
+  {
+    id: "item-15",
+    name: "Peach & Burrata Salad",
+    price: 20,
+    description: "Arugula, candied walnut, white balsamic, basil oil",
+    imageUrl: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800",
+    category: "Salads"
+  },
+
+  // Sides
+  {
+    id: "item-16",
+    name: "Truffle Parmesan Fries",
+    price: 12,
+    description: "Hand-cut fries, truffle oil, grated parmesan, herbs",
+    imageUrl: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&q=80&w=800",
+    category: "Sides"
+  },
+  {
+    id: "item-17",
+    name: "Charred Broccolini",
+    price: 10,
+    description: "Lemon zest, chili flake, toasted almonds",
+    imageUrl: "https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?auto=format&fit=crop&q=80&w=800",
+    category: "Sides"
+  },
+  {
+    id: "item-18",
+    name: "Roasted Garlic Mash",
+    price: 9,
+    description: "Yukon gold potato, cultured butter, chive",
+    imageUrl: "https://images.unsplash.com/photo-1585672840563-f2af2ced55c9?auto=format&fit=crop&q=80&w=800",
+    category: "Sides"
+  },
+
+  // Brunch
+  {
+    id: "item-19",
+    name: "Avocado Toast",
+    price: 16,
+    description: "Sourdough, smashed avocado, poached egg, chili crisp",
+    imageUrl: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?auto=format&fit=crop&q=80&w=800",
+    category: "Brunch"
+  },
+  {
+    id: "item-20",
+    name: "Ricotta Pancakes",
+    price: 18,
+    description: "Blueberry compote, maple butter, toasted pecans",
+    imageUrl: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&q=80&w=800",
+    category: "Brunch"
+  },
+  {
+    id: "item-21",
+    name: "Lobster Benedict",
+    price: 28,
+    description: "Butter-poached lobster, brioche, hollandaise, caviar",
+    imageUrl: "https://images.unsplash.com/photo-1608039790184-c33f8568d241?auto=format&fit=crop&q=80&w=800",
+    category: "Brunch"
   }
 ];

@@ -62,24 +62,24 @@ export function DinerMenuItem({
       </div>
       
       {/* Content Container */}
-      <div className="flex-1 p-4 md:p-6 flex flex-col justify-between bg-gradient-to-b from-white to-neutral-50/50">
+      <div className="flex-1 p-3 md:p-6 flex flex-col justify-between bg-gradient-to-b from-white to-neutral-50/50">
         <div>
-          <div className="flex justify-between items-start mb-2 md:mb-3 gap-3">
-            <h3 className="font-serif text-lg md:text-2xl font-bold text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-300">
+          <div className="flex justify-between items-start mb-1.5 md:mb-3 gap-2">
+            <h3 className="font-serif text-base md:text-2xl font-bold text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-300">
               {name}
             </h3>
-            <span className="font-sans font-bold text-lg md:text-xl text-foreground/90 bg-neutral-100 px-2 py-1 rounded-lg tabular-nums">
+            <span className="font-sans font-bold text-base md:text-xl text-foreground/90 bg-neutral-100 px-1.5 py-0.5 md:px-2 md:py-1 rounded-lg tabular-nums">
               ${price}
             </span>
           </div>
           
-          <p className="text-muted-foreground text-xs md:text-base leading-relaxed mb-4 line-clamp-2 md:line-clamp-3 font-medium">
+          <p className="text-muted-foreground text-[10px] md:text-base leading-relaxed mb-3 line-clamp-2 md:line-clamp-3 font-medium">
             {description}
           </p>
         </div>
 
         {quantity > 0 && onUpdateQuantity ? (
-          <div className="flex items-center gap-2 md:gap-3 p-1.5 md:p-2 rounded-xl md:rounded-2xl bg-white shadow-sm border border-neutral-100 mt-auto">
+          <div className="flex items-center gap-2 md:gap-3 p-1 md:p-2 rounded-xl md:rounded-2xl bg-white shadow-sm border border-neutral-100 mt-auto w-full">
             <motion.button
               onClick={(e) => {
                 e.stopPropagation();
@@ -87,12 +87,12 @@ export function DinerMenuItem({
               }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="w-8 h-8 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-destructive hover:bg-red-500 hover:text-white cursor-pointer"
+              className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-destructive hover:bg-red-500 hover:text-white cursor-pointer"
             >
-              {quantity === 1 ? <Trash2 className="w-3.5 h-3.5 md:w-5 md:h-5" /> : <Minus className="w-3.5 h-3.5 md:w-5 md:h-5" />}
+              {quantity === 1 ? <Trash2 className="w-4 h-4 md:w-5 md:h-5" /> : <Minus className="w-4 h-4 md:w-5 md:h-5" />}
             </motion.button>
 
-            <div className="flex-1 flex items-center justify-center overflow-hidden">
+            <div className="flex-1 flex items-center justify-center overflow-hidden px-2 md:px-0">
                <motion.span
                 key={quantity}
                 initial={{ y: 20, opacity: 0 }}
@@ -111,9 +111,9 @@ export function DinerMenuItem({
               }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="w-8 h-8 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-emerald-600 hover:bg-emerald-600 hover:text-white cursor-pointer"
+              className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-emerald-600 hover:bg-emerald-600 hover:text-white cursor-pointer"
             >
-              <Plus className="w-3.5 h-3.5 md:w-5 md:h-5" />
+              <Plus className="w-4 h-4 md:w-5 md:h-5" />
             </motion.button>
           </div>
         ) : (
@@ -121,10 +121,10 @@ export function DinerMenuItem({
             onClick={onAdd}
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-2.5 md:py-4 bg-foreground text-background font-bold rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 hover:text-white transition-all duration-300 text-sm md:text-base mt-auto group/btn md:shadow-lg md:shadow-neutral-200 cursor-pointer"
+            className="w-full py-2.5 md:py-4 bg-foreground text-background font-bold rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 hover:text-white transition-all duration-300 text-sm md:text-base mt-auto group/btn md:shadow-lg md:shadow-neutral-200 cursor-pointer border border-transparent hover:border-emerald-700/20"
           >
             <Plus className="w-4 h-4 transition-transform group-hover/btn:rotate-90" />
-            Add <span className="hidden md:inline">to Order</span>
+            Add <span className="md:inline">to Order</span>
           </motion.button>
         )}
       </div>

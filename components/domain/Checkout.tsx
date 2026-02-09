@@ -3,7 +3,7 @@
 import { useTableSession } from "@/components/providers/TableSessionProvider";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { CreditCard, Minus, Plus, X } from "lucide-react";
+import { CreditCard, Minus, Plus, Trash2, X } from "lucide-react";
 import { useState } from "react";
 
 interface CheckoutProps {

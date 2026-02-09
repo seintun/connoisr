@@ -64,25 +64,24 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-xl rounded-t-3xl shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.2)] max-h-[85vh] flex flex-col"
+            transition={{ type: "spring", damping: 30, stiffness: 350 }}
+            className="fixed bottom-4 left-4 right-4 z-50 bg-white/90 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_-10px_60px_-15px_rgba(0,0,0,0.3)] max-h-[85vh] flex flex-col border border-white/50 overflow-hidden ring-1 ring-black/5"
           >
             {/* Header */}
-            <div className="flex justify-between items-center p-5 border-b border-border/50">
-              <h2 className="text-xl font-serif font-bold text-foreground">Your Order</h2>
+            <div className="flex justify-between items-center p-6 border-b border-gray-100/50 bg-white/50">
+              <h2 className="text-2xl font-serif font-bold text-foreground">Your Order</h2>
               <button 
                 onClick={onClose}
-                className="p-2 hover:bg-muted rounded-full transition-colors"
+                className="w-10 h-10 flex items-center justify-center hover:bg-neutral-100 rounded-full transition-all active:scale-95"
               >
                 <X className="w-5 h-5 text-muted-foreground" />
               </button>
             </div>
 
             {/* Cart Items - Scrollable & Grouped */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-6">
+            <div className="flex-1 overflow-y-auto p-6 space-y-8">
               {Object.entries(
                 session.cart.reduce((groups, item) => {
-                  // Fallback to looking up category from MENU_ITEMS if missing in cart item
                   const category = item.category || 
                     MENU_ITEMS.find(m => m.id === item.menuItemId)?.category || 
                     "Other";
@@ -92,52 +91,52 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                   return groups;
                 }, {} as Record<string, typeof session.cart>)
               ).map(([category, items]) => (
-                <div key={category} className="space-y-3">
-                  <h3 className="font-serif font-bold text-lg text-primary/80 border-b border-border/50 pb-1">
+                <div key={category} className="space-y-4">
+                  <h3 className="font-serif font-bold text-lg text-muted-foreground/80 uppercase tracking-widest text-xs pl-1">
                     {category}
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {items.map((item) => (
                       <div 
                         key={item.id} 
-                        className="flex justify-between items-center py-2 group"
+                        className="flex justify-between items-center py-3 px-4 rounded-2xl bg-white/50 border border-transparent hover:border-border/50 transition-colors group"
                       >
                         <div className="flex-1 pr-4">
-                          <p className="font-medium text-foreground text-sm">{item.name}</p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="font-bold text-foreground text-base leading-tight">{item.name}</p>
+                          <p className="text-sm font-medium text-muted-foreground mt-0.5">
                             ${item.price.toFixed(2)} each
                           </p>
                         </div>
                         
                         {/* Quantity Controls */}
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3 bg-neutral-100 p-1 rounded-xl">
                           <button
                             onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
                             className={cn(
-                              "w-7 h-7 rounded-full flex items-center justify-center transition-colors",
+                              "w-8 h-8 rounded-lg flex items-center justify-center transition-all shadow-sm",
                               item.quantity === 1
-                                ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
-                                : "bg-muted hover:bg-muted/80"
+                                ? "bg-white text-destructive hover:bg-destructive/10"
+                                : "bg-white text-foreground hover:bg-white/80"
                             )}
                           >
                             {item.quantity === 1 ? (
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="w-4 h-4" />
                             ) : (
-                              <Minus className="w-3.5 h-3.5" />
+                              <Minus className="w-4 h-4" />
                             )}
                           </button>
-                          <span className="font-mono font-bold text-base w-5 text-center">
+                          <span className="font-mono font-bold text-base w-6 text-center text-foreground">
                             {item.quantity}
                           </span>
                           <button
                             onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
-                            className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors"
+                            className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center hover:opacity-90 transition-all shadow-sm"
                           >
-                            <Plus className="w-3.5 h-3.5" />
+                            <Plus className="w-4 h-4" />
                           </button>
                         </div>
                         
-                        <span className="font-bold text-foreground ml-3 w-16 text-right tabular-nums">
+                        <span className="font-bold text-lg text-foreground ml-4 w-20 text-right tabular-nums">
                           ${(item.price * item.quantity).toFixed(2)}
                         </span>
                       </div>
@@ -148,18 +147,18 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
             </div>
 
             {/* Footer - Total & Pay */}
-            <div className="p-5 border-t border-border/50 bg-white/50">
+            <div className="p-6 border-t border-border/50 bg-neutral-50/80 backdrop-blur-md">
               {/* Breakdown */}
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+              <div className="space-y-3 mb-6">
+                <div className="flex justify-between text-base px-2">
+                  <span className="text-muted-foreground font-medium">Subtotal</span>
+                  <span className="font-bold tabular-nums">${subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Tax (8%)</span>
-                  <span>${tax.toFixed(2)}</span>
+                <div className="flex justify-between text-base px-2">
+                  <span className="text-muted-foreground font-medium">Tax (8%)</span>
+                  <span className="font-bold tabular-nums">${tax.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-lg font-bold text-foreground pt-2 border-t border-border/50">
+                <div className="flex justify-between text-2xl font-bold text-foreground pt-4 border-t border-dashed border-gray-200 px-2 mt-2">
                   <span>Total</span>
                   <span>${total.toFixed(2)}</span>
                 </div>
@@ -170,22 +169,22 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                 onClick={handlePayment}
                 disabled={isProcessing}
                 className={cn(
-                  "w-full py-4 bg-primary text-primary-foreground font-bold rounded-xl text-lg",
-                  "shadow-lg shadow-primary/25 hover:opacity-90 active:scale-[0.98] transition-all",
-                  "flex items-center justify-center gap-2",
+                  "w-full py-4 bg-foreground text-background font-bold rounded-2xl text-xl tracking-tight",
+                  "shadow-xl shadow-black/5 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300",
+                  "flex items-center justify-center gap-3",
                   isProcessing && "opacity-70 cursor-not-allowed"
                 )}
               >
                 {isProcessing ? (
-                  "Processing..."
+                  "Processing Payment..."
                 ) : (
                   <>
-                    <CreditCard className="w-5 h-5" />
+                    <CreditCard className="w-6 h-6" />
                     Pay ${total.toFixed(2)}
                   </>
                 )}
               </button>
-              {error && <p className="text-destructive text-sm text-center mt-2">{error}</p>}
+              {error && <p className="text-destructive font-medium text-sm text-center mt-3 animate-in fade-in slide-in-from-bottom-2">{error}</p>}
             </div>
           </motion.div>
         </>

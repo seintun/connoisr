@@ -56,74 +56,92 @@ export default function DinerPage() {
   const categories = Array.from(new Set(MENU_ITEMS.map(item => item.category)));
 
   return (
-    <div className="p-6 space-y-8 pb-24">
-      {/* Header */}
-      <header className="flex justify-between items-center glass-card p-4 rounded-2xl sticky top-4 z-30">
-        <h1 className="text-2xl font-serif font-bold text-primary tracking-tight">TempoDine</h1>
-        <div className="flex items-center gap-3">
-          <div className="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-xs font-bold uppercase tracking-wider">
-            Table {session?.tableId}
-          </div>
-          
-          {/* Cart Button - Clickable */}
-          <motion.button
-            onClick={() => setIsCartOpen(true)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="relative flex items-center gap-2 px-3 py-2 bg-primary/10 text-primary rounded-full font-bold text-sm hover:bg-primary/20 transition-colors"
-          >
-            <ShoppingBag className="w-4 h-4" />
-            {itemCount > 0 && (
-              <motion.span
-                key={itemCount}
-                initial={{ scale: 0.5, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold shadow-glow"
-              >
-                {itemCount}
-              </motion.span>
-            )}
-          </motion.button>
-        </div>
-      </header>
+     <div className="min-h-screen bg-background pb-32">
+       {/* Modern Header */}
+       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40 transition-all duration-300">
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+           <div className="flex justify-between items-center h-16">
+             <div className="flex items-center gap-3">
+               <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-serif font-bold text-lg shadow-lg shadow-primary/30">
+                 T
+               </div>
+               <h1 className="text-xl font-serif font-bold text-foreground tracking-tight">TempoDine</h1>
+             </div>
+             
+             <div className="flex items-center gap-3">
+               <div className="hidden sm:block px-4 py-1.5 bg-secondary/10 text-secondary rounded-full text-xs font-bold uppercase tracking-wider border border-secondary/20">
+                 Table {session?.tableId}
+               </div>
+               
+               {/* Cart Button */}
+               <motion.button
+                 onClick={() => setIsCartOpen(true)}
+                 whileHover={{ scale: 1.05 }}
+                 whileTap={{ scale: 0.95 }}
+                 className="relative flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-full font-bold text-sm shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all"
+               >
+                 <ShoppingBag className="w-4 h-4" />
+                 <span className="hidden sm:inline">Order</span>
+                 {itemCount > 0 && (
+                   <span className="bg-white text-primary rounded-full px-2 py-0.5 text-xs font-bold min-w-[20px]">
+                     {itemCount}
+                   </span>
+                 )}
+               </motion.button>
+             </div>
+           </div>
 
-      {/* Menu Sections */}
-      <div className="space-y-8">
-        {categories.map((category) => (
-          <section key={category}>
-            <motion.h2 
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="text-xl font-serif font-bold mb-3 text-foreground/90 sticky top-20 z-20 bg-background/95 backdrop-blur-md py-3 border-b border-border/50 uppercase tracking-wide"
-            >
-              {category}
-            </motion.h2>
-            <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6 items-stretch">
-              {MENU_ITEMS.filter(item => item.category === category).map((item) => (
-                <DinerMenuItem
-                  key={item.id}
-                  {...item}
-                  quantity={getItemQuantity(item.id)}
-                  onUpdateQuantity={(qty) => handleUpdateQuantity(item.id, qty)}
-                  onAdd={() =>
-                    addItem({
-                      menuItemId: item.id,
-                      name: item.name,
-                      category: item.category,
-                      price: item.price,
-                      quantity: 1,
-                    })
-                  }
-                />
-              ))}
-            </div>
-          </section>
-        ))}
-      </div>
+           {/* Sticky Category Navigation */}
+           <div className="flex overflow-x-auto pb-0 -mx-4 px-4 sm:mx-0 sm:px-0 py-3 gap-2 hide-scrollbar mask-gradient-x">
+             {categories.map((category) => (
+               <a
+                 key={category}
+                 href={`#${category}`}
+                 onClick={(e) => {
+                   e.preventDefault();
+                   document.getElementById(category)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                 }}
+                 className="whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold transition-all bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground border border-transparent hover:border-border/50 snap-start"
+               >
+                 {category}
+               </a>
+             ))}
+           </div>
+         </div>
+       </header>
 
-      {/* Checkout Sheet - Opens on cart click */}
-      <Checkout isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
-    </div>
+       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-16">
+         {categories.map((category) => (
+           <section key={category} id={category} className="scroll-mt-32">
+             <div className="flex items-center gap-4 mb-8">
+               <h2 className="text-3xl font-serif font-bold text-foreground">{category}</h2>
+               <div className="h-px flex-1 bg-border/60" />
+             </div>
+             
+             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch">
+               {MENU_ITEMS.filter(item => item.category === category).map((item) => (
+                 <DinerMenuItem
+                   key={item.id}
+                   {...item}
+                   quantity={getItemQuantity(item.id)}
+                   onUpdateQuantity={(qty) => handleUpdateQuantity(item.id, qty)}
+                   onAdd={() =>
+                     addItem({
+                       menuItemId: item.id,
+                       name: item.name,
+                       category: item.category,
+                       price: item.price,
+                       quantity: 1,
+                     })
+                   }
+                 />
+               ))}
+             </div>
+           </section>
+         ))}
+       </main>
+
+       <Checkout isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+     </div>
   );
 }

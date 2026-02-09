@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground">
@@ -9,12 +11,12 @@ export default function Home() {
           Experience the future of dining. Seamless, elegant, and efficient.
         </p>
         <div className="flex gap-4 justify-center mt-8">
-          <button className="px-6 py-2 bg-primary text-primary-foreground rounded-sm font-medium hover:opacity-90 transition-opacity">
+          <Link href="/table/1" className="px-6 py-2 bg-primary text-primary-foreground rounded-sm font-medium hover:opacity-90 transition-opacity">
             Diner App
-          </button>
-          <button className="px-6 py-2 border border-border rounded-sm font-medium hover:bg-muted transition-colors">
+          </Link>
+          <Link href="/admin/kds" className="px-6 py-2 border border-border rounded-sm font-medium hover:bg-muted transition-colors">
             Kitchen Display
-          </button>
+          </Link>
         </div>
       </div>
     </main>

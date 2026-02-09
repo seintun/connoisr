@@ -31,12 +31,13 @@ export function DinerMenuItem({
       animate={{ opacity: 1, y: 0 }}
       whileTap={{ scale: 0.98 }}
       className={cn(
-        "group relative overflow-hidden rounded-[2rem] bg-white transition-all duration-500 h-full",
+        "group relative overflow-hidden rounded-[2rem] bg-white transition-all duration-300 h-full",
         "flex flex-row md:flex-col", 
-        // Soft Modern Shadow - No Hard Borders
+        // Subtle Border for differentiation + Soft Shadow
+        "border border-neutral-200/60",
         quantity > 0 
-          ? "ring-2 ring-primary/20 shadow-[0_8px_30px_rgb(0,0,0,0.12)]" 
-          : "shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:-translate-y-1"
+          ? "ring-2 ring-primary/20 shadow-md" 
+          : "shadow-sm hover:shadow-md hover:-translate-y-0.5"
       )}
     >
       {/* Image Container */}
@@ -48,15 +49,14 @@ export function DinerMenuItem({
           className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 absolute inset-0 md:static"
         />
         
-        {/* Quantity Badge on Image */}
+        {/* Quantity Badge on Image - Left Aligned */}
         {quantity > 0 && (
           <motion.div 
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="absolute top-2 left-2 md:top-4 md:right-4 md:left-auto bg-white/90 backdrop-blur-md text-foreground font-bold px-3 py-1 rounded-full shadow-lg text-xs md:text-sm z-20 flex items-center gap-1.5 border border-white/50"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="absolute top-2 left-2 md:top-3 md:left-3 bg-white/95 backdrop-blur-sm text-foreground font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm z-20 flex items-center gap-1.5 shadow-sm border border-black/5"
           >
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            {quantity} in cart
+            <span className="text-primary">{quantity}x</span>
           </motion.div>
         )}
       </div>
@@ -87,7 +87,7 @@ export function DinerMenuItem({
               }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="w-8 h-8 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-destructive hover:bg-destructive hover:text-white"
+              className="w-8 h-8 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-destructive hover:bg-red-500 hover:text-white cursor-pointer"
             >
               {quantity === 1 ? <Trash2 className="w-3.5 h-3.5 md:w-5 md:h-5" /> : <Minus className="w-3.5 h-3.5 md:w-5 md:h-5" />}
             </motion.button>
@@ -111,9 +111,16 @@ export function DinerMenuItem({
               }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-              className="w-8 h-8 md:w-12 md:h-12 bg-primary text-primary-foreground font-bold rounded-xl flex items-center justify-center hover:brightness-110 transition-all shadow-lg shadow-primary/20"
+            <motion.button
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpdateQuantity(quantity + 1);
+              }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="w-8 h-8 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-primary hover:bg-primary hover:text-white cursor-pointer"
             >
-              <Plus className="w-4 h-4 md:w-6 md:h-6" />
+              <Plus className="w-3.5 h-3.5 md:w-5 md:h-5" />
             </motion.button>
           </div>
         ) : (
@@ -121,7 +128,7 @@ export function DinerMenuItem({
             onClick={onAdd}
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-2.5 md:py-4 bg-foreground text-background font-bold rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all duration-300 text-sm md:text-base mt-auto group/btn md:shadow-lg md:shadow-neutral-200"
+            className="w-full py-2.5 md:py-4 bg-foreground text-background font-bold rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-orange-600 hover:text-white transition-all duration-300 text-sm md:text-base mt-auto group/btn md:shadow-lg md:shadow-neutral-200 cursor-pointer"
           >
             <Plus className="w-4 h-4 transition-transform group-hover/btn:rotate-90" />
             Add <span className="hidden md:inline">to Order</span>

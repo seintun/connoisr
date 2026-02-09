@@ -38,7 +38,7 @@ const MENU_ITEMS = [
     name: "Burrata & Heirloom Tomato",
     price: 22,
     description: "Basil pesto, balsamic glaze, toasted pine nuts",
-    imageUrl: "https://images.unsplash.com/photo-1529312266912-b33cf6227e2f?auto=format&fit=crop&q=80&w=800",
+    imageUrl: "https://images.unsplash.com/photo-1608897013039-887f21d8c804?auto=format&fit=crop&q=80&w=800",
     category: "Starters"
   },
   
@@ -56,7 +56,7 @@ const MENU_ITEMS = [
     name: "Herb-Crusted Lamb Rack",
     price: 45,
     description: "Fondant potatoes, mint pea puree, red wine jus",
-    imageUrl: "https://images.unsplash.com/photo-1551024601-569d6f463871?auto=format&fit=crop&q=80&w=800",
+    imageUrl: "https://images.unsplash.com/photo-1603360946369-dc9bb6f5fabf?auto=format&fit=crop&q=80&w=800",
     category: "Mains"
   },
   {
@@ -100,7 +100,7 @@ const MENU_ITEMS = [
     name: "Signature Old Fashioned",
     price: 18,
     description: "Smoked oak, orange bitters, large ice cube",
-    imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16549766b?auto=format&fit=crop&q=80&w=800",
+    imageUrl: "https://images.unsplash.com/photo-1595981267035-7b04ca84a82d?auto=format&fit=crop&q=80&w=800",
     category: "Drinks"
   },
   {

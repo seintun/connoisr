@@ -66,19 +66,14 @@ export function DinerMenuItem({
 
         {quantity > 0 && onUpdateQuantity ? (
           <div className="flex items-center gap-2">
-             <motion.button
+            <motion.button
               onClick={(e) => {
                 e.stopPropagation();
                 onUpdateQuantity(quantity - 1);
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={cn(
-                "w-12 h-12 rounded-xl flex items-center justify-center transition-colors",
-                 quantity === 1 
-                  ? "bg-destructive/10 text-destructive hover:bg-destructive/20" 
-                  : "bg-muted hover:bg-muted/80"
-              )}
+              className="w-12 h-12 rounded-xl flex items-center justify-center transition-colors bg-destructive/10 text-destructive hover:bg-destructive/20"
             >
               {quantity === 1 ? <Trash2 className="w-5 h-5" /> : <Minus className="w-5 h-5" />}
             </motion.button>
@@ -94,7 +89,7 @@ export function DinerMenuItem({
               }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="w-12 h-12 bg-primary text-white font-bold rounded-xl flex items-center justify-center hover:opacity-90 transition-colors shadow-lg shadow-primary/25"
+              className="w-12 h-12 bg-success text-success-foreground font-bold rounded-xl flex items-center justify-center hover:opacity-90 transition-colors shadow-lg shadow-success/25"
             >
               <Plus className="w-5 h-5" />
             </motion.button>

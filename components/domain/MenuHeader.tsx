@@ -35,13 +35,16 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
 
       requestAnimationFrame(() => {
         let currentSection = categories[0];
+        
+        // Find the last category that has its top above the threshold (active section)
         for (const category of categories) {
           const element = document.getElementById(category);
           if (element) {
             const rect = element.getBoundingClientRect();
-            if (rect.top <= 120 && rect.bottom >= 120) {
+            // 150px threshold allows for the header height + some buffer
+            // Since we scroll to offset 80, this ensures we capture it even if slightly off
+            if (rect.top <= 150) {
               currentSection = category;
-              break;
             }
           }
         }
@@ -76,7 +79,7 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
     // Re-enable scroll spy after the smooth scroll finishes
     setTimeout(() => {
       isProgrammaticScroll.current = false;
-    }, 800);
+    }, 1000);
   };
 
   return (

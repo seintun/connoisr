@@ -3,6 +3,7 @@
 import { DinerMenuItem } from "@/components/domain/DinerMenuItem";
 import { MenuHeader } from "@/components/domain/MenuHeader";
 import { useTableSession } from "@/components/providers/TableSessionProvider";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus"; // Moved to top
 import { AnimatePresence, motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -18,6 +19,7 @@ import { MENU_ITEMS } from "@/lib/menu";
 export default function DinerPageClient() {
   const { session, addItem, updateItemQuantity, removeItem } = useTableSession();
   const [isCartOpen, setIsCartOpen] = useState(false);
+  const isOnline = useOnlineStatus(); // Moved inside component
 
   // Memoize categories to avoid recomputing on every render
   const categories = useMemo(
@@ -84,6 +86,8 @@ export default function DinerPageClient() {
     });
   }, [addItem]);
 
+
+
   return (
      <div className="min-h-screen bg-background pb-32">
        <MenuHeader 
@@ -92,15 +96,15 @@ export default function DinerPageClient() {
           onCategoryClick={handleCategoryClick}
        />
 
-       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-12">
+       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8">
          {categories.map((category) => (
-           <section key={category} id={category} className="scroll-mt-24 transition-all duration-500">
-             <div className="flex items-center gap-4 mb-6">
-               <h2 className="text-2xl font-serif font-bold text-foreground/90 tracking-tight">{category}</h2>
-               <div className="h-px flex-1 bg-gradient-to-r from-border/60 to-transparent" />
+           <section key={category} id={category} className="scroll-mt-28 transition-all duration-500">
+             <div className="flex items-center gap-3 mb-4">
+               <h2 className="text-xl font-serif font-bold text-foreground/90 tracking-tight">{category}</h2>
+               <div className="h-px flex-1 bg-gradient-to-r from-border/40 to-transparent" />
              </div>
              
-             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch">
+             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch">
                {MENU_ITEMS.filter(item => item.category === category).map((item) => (
                  <DinerMenuItem
                    key={item.id}
@@ -120,9 +124,12 @@ export default function DinerPageClient() {
          {(itemCount > 0 || (session?.orders?.length ?? 0) > 0) && (
            <motion.div
              initial={{ y: 100, opacity: 0 }}
-             animate={{ y: 0, opacity: 1 }}
-             exit={{ y: 100, opacity: 0 }}
-             className="fixed bottom-10 right-6 z-50"
+             animate={{ 
+               y: isOnline ? 0 : -36, // Move up just enough to clear banner (~33px + small gap)
+               opacity: 1 
+             }}
+             // transition={{ type: "spring", stiffness: 260, damping: 20 }}
+             className="fixed bottom-4 right-4 z-50" // Closer to bottom/right edge
            >
              <motion.button
                onClick={() => setIsCartOpen(true)}

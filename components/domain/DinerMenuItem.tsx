@@ -53,18 +53,18 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
         description={description} 
       />
 
-      <div className="flex-1 p-3 md:p-6 flex flex-col justify-between bg-gradient-to-b from-white to-neutral-50/50">
+      <div className="flex-1 p-3 md:p-5 flex flex-col justify-between bg-gradient-to-b from-white to-neutral-50/50">
         <div>
-          <div className="flex justify-between items-start mb-1.5 md:mb-3 gap-2">
-            <h3 className="font-serif text-base md:text-2xl font-bold text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-300">
+          <div className="flex justify-between items-start mb-1 md:mb-2 gap-2">
+            <h3 className="font-serif text-base md:text-xl font-bold text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-300">
               {name}
             </h3>
-            <span className="font-sans font-bold text-base md:text-xl text-foreground/90 bg-neutral-100 px-1.5 py-0.5 md:px-2 md:py-1 rounded-lg tabular-nums">
+            <span className="font-sans font-bold text-sm md:text-lg text-foreground/90 bg-neutral-100/80 px-1.5 py-0.5 md:px-2 md:py-0.5 rounded-md tabular-nums tracking-tight">
               ${price}
             </span>
           </div>
 
-          <p className="text-muted-foreground text-[10px] md:text-base leading-relaxed mb-3 line-clamp-2 md:line-clamp-3 font-medium">
+          <p className="text-muted-foreground text-[10px] md:text-sm leading-relaxed mb-3 line-clamp-2 md:line-clamp-3 font-medium opacity-80">
             {description}
           </p>
         </div>
@@ -96,25 +96,25 @@ const MenuItemImage = React.memo(function MenuItemImage({ name, imageUrl, quanti
     <>
       <div
         className={cn(
-          "w-1/3 min-w-[120px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 cursor-zoom-in",
+          "w-1/3 min-w-[110px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 cursor-zoom-in",
           isImageOpen && "z-[100]"
         )}
         onClick={() => setIsImageOpen(true)}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 z-10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 z-10" />
         <Image
           src={imageUrl}
           alt={name}
           fill
           sizes="(max-width: 768px) 33vw, (max-width: 1024px) 50vw, 25vw"
-          className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />
         
         {quantity > 0 && (
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="absolute top-2 left-2 md:top-3 md:left-3 bg-white/95 backdrop-blur-sm text-foreground font-bold px-2.5 py-1 rounded-lg text-xs md:text-sm z-20 flex items-center gap-1.5 shadow-sm border border-black/5"
+            className="absolute top-2 left-2 md:top-3 md:left-3 bg-white/95 backdrop-blur-sm text-foreground font-bold px-2 py-0.5 rounded-md text-[10px] md:text-xs z-20 flex items-center gap-1 shadow-sm border border-black/5"
           >
             <span className="text-primary">{quantity}x</span>
           </motion.div>
@@ -138,26 +138,26 @@ const MenuItemImage = React.memo(function MenuItemImage({ name, imageUrl, quanti
 const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd, onUpdateQuantity }: { quantity: number, onAdd: () => void, onUpdateQuantity?: (q: number) => void }) {
   if (quantity > 0 && onUpdateQuantity) {
     return (
-      <div className="flex items-center gap-2 md:gap-3 p-1 md:p-2 rounded-xl md:rounded-2xl bg-white shadow-sm border border-neutral-100 mt-auto w-full">
+      <div className="flex items-center gap-1.5 md:gap-2 p-1 rounded-lg md:rounded-xl bg-white shadow-sm border border-neutral-100 mt-auto w-full">
         <motion.button
           onClick={(e) => {
             e.stopPropagation();
             onUpdateQuantity(quantity - 1);
           }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-destructive hover:bg-red-500 hover:text-white cursor-pointer"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="w-7 h-7 md:w-10 md:h-10 rounded-md md:rounded-lg flex items-center justify-center transition-colors bg-neutral-50 text-destructive hover:bg-red-500 hover:text-white cursor-pointer"
         >
-          {quantity === 1 ? <Trash2 className="w-4 h-4 md:w-5 md:h-5" /> : <Minus className="w-4 h-4 md:w-5 md:h-5" />}
+          {quantity === 1 ? <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <Minus className="w-3.5 h-3.5 md:w-4 md:h-4" />}
         </motion.button>
 
-        <div className="flex-1 flex items-center justify-center overflow-hidden px-2 md:px-0">
+        <div className="flex-1 flex items-center justify-center overflow-hidden px-1">
           <motion.span
             key={quantity}
-            initial={{ y: 20, opacity: 0 }}
+            initial={{ y: 10, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -20, opacity: 0 }}
-            className="font-bold text-lg md:text-2xl text-foreground"
+            exit={{ y: -10, opacity: 0 }}
+            className="font-bold text-base md:text-xl text-foreground tabular-nums"
           >
             {quantity}
           </motion.span>
@@ -168,11 +168,11 @@ const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd,
             e.stopPropagation();
             onUpdateQuantity(quantity + 1);
           }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="w-8 h-8 md:w-12 md:h-12 rounded-lg md:rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-emerald-600 hover:bg-emerald-600 hover:text-white cursor-pointer"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="w-7 h-7 md:w-10 md:h-10 rounded-md md:rounded-lg flex items-center justify-center transition-colors bg-neutral-50 text-emerald-600 hover:bg-emerald-600 hover:text-white cursor-pointer"
         >
-          <Plus className="w-4 h-4 md:w-5 md:h-5" />
+          <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
         </motion.button>
       </div>
     );
@@ -181,12 +181,12 @@ const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd,
   return (
     <motion.button
       onClick={onAdd}
-      whileHover={{ scale: 1.02, y: -2 }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
-      className="w-full py-2.5 md:py-4 bg-foreground text-background font-bold rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 hover:text-white transition-all duration-300 text-sm md:text-base mt-auto group/btn md:shadow-lg md:shadow-neutral-200 cursor-pointer border border-transparent hover:border-emerald-700/20"
+      className="w-full py-2 md:py-3 bg-foreground text-background font-semibold rounded-lg md:rounded-xl flex items-center justify-center gap-2 hover:bg-primary transition-all duration-300 text-xs md:text-sm mt-auto group/btn shadow-sm hover:shadow-md cursor-pointer"
     >
-      <Plus className="w-4 h-4 transition-transform group-hover/btn:rotate-90" />
-      Add <span className="md:inline">to Order</span>
+      <Plus className="w-3.5 h-3.5 transition-transform group-hover/btn:rotate-90" />
+      <span>Add</span>
     </motion.button>
   );
 });

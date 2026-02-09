@@ -1,12 +1,17 @@
 "use client";
 
-import { Checkout } from "@/components/domain/Checkout";
 import { DinerMenuItem } from "@/components/domain/DinerMenuItem";
 import { MenuHeader } from "@/components/domain/MenuHeader";
 import { useTableSession } from "@/components/providers/TableSessionProvider";
 import { AnimatePresence, motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
+import dynamic from "next/dynamic";
 import { useCallback, useMemo, useState } from "react";
+
+const Checkout = dynamic(
+  () => import("@/components/domain/Checkout").then(mod => ({ default: mod.Checkout })),
+  { ssr: false }
+);
 
 import { MENU_ITEMS } from "@/lib/menu";
 

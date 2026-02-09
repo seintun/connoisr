@@ -67,6 +67,7 @@ export function TableSessionProvider({
         const newCart = [...prev.cart];
         newCart[existingItemIndex] = {
           ...newCart[existingItemIndex],
+          ...item, // Update properties in case they changed (like category)
           quantity: newCart[existingItemIndex].quantity + item.quantity,
         };
 

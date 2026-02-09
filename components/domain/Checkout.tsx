@@ -1,6 +1,7 @@
 "use client";
 
 import { useTableSession } from "@/components/providers/TableSessionProvider";
+import { MENU_ITEMS } from "@/lib/menu";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { CreditCard, Minus, Plus, Trash2, X } from "lucide-react";
@@ -81,7 +82,11 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
             <div className="flex-1 overflow-y-auto p-5 space-y-6">
               {Object.entries(
                 session.cart.reduce((groups, item) => {
-                  const category = item.category || "Other";
+                  // Fallback to looking up category from MENU_ITEMS if missing in cart item
+                  const category = item.category || 
+                    MENU_ITEMS.find(m => m.id === item.menuItemId)?.category || 
+                    "Other";
+                    
                   if (!groups[category]) groups[category] = [];
                   groups[category].push(item);
                   return groups;

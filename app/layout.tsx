@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "Vibrant Modernist Dining",
 };
 
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,6 +30,7 @@ export default function RootLayout({
         className={`${outfit.variable} ${jakarta.variable} font-sans antialiased bg-background text-foreground`}
       >
         {children}
+        <SpeedInsights />
       </body>
     </html>
   );

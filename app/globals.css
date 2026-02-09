@@ -87,44 +87,44 @@
 @layer base {
   :root {
     /* Pure Frost Background */
-    --background: 210 20% 98%;
+    --background: hsl(210 20% 98%);
     /* #F8FAFC */
-    --foreground: 222 47% 11%;
+    --foreground: hsl(222 47% 11%);
     /* #0F172A */
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card: hsl(0 0% 100%);
+    --card-foreground: hsl(222 47% 11%);
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: hsl(0 0% 100%);
+    --popover-foreground: hsl(222 47% 11%);
 
     /* Zesty Coral Primary */
-    --primary: 11 100% 64%;
+    --primary: hsl(11 100% 64%);
     /* #FF6B4A */
-    --primary-foreground: 210 40% 98%;
+    --primary-foreground: hsl(210 40% 98%);
 
     /* Electric Indigo Secondary */
-    --secondary: 239 84% 67%;
+    --secondary: hsl(239 84% 67%);
     /* #6366F1 */
-    --secondary-foreground: 210 40% 98%;
+    --secondary-foreground: hsl(210 40% 98%);
 
     /* Emerald Success */
-    --success: 151 65% 52%;
+    --success: hsl(151 65% 52%);
     /* #10B981 */
-    --success-foreground: 210 40% 98%;
+    --success-foreground: hsl(210 40% 98%);
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: hsl(210 40% 96%);
+    --muted-foreground: hsl(215 16% 47%);
 
-    --accent: 210 40% 96%;
-    --accent-foreground: 222 47% 11%;
+    --accent: hsl(210 40% 96%);
+    --accent-foreground: hsl(222 47% 11%);
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: hsl(0 84% 60%);
+    --destructive-foreground: hsl(210 40% 98%);
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 11 100% 64%;
+    --border: hsl(214 32% 91%);
+    --input: hsl(214 32% 91%);
+    --ring: hsl(11 100% 64%);
 
     --radius: 0.5rem;
   }

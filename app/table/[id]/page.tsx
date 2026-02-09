@@ -3,7 +3,7 @@
 import { Checkout } from "@/components/domain/Checkout";
 import { DinerMenuItem } from "@/components/domain/DinerMenuItem";
 import { useTableSession } from "@/components/providers/TableSessionProvider";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
 import { useState } from "react";
 
@@ -72,22 +72,6 @@ export default function DinerPage() {
                <div className="hidden sm:block px-4 py-1.5 bg-secondary/10 text-secondary rounded-full text-xs font-bold uppercase tracking-wider border border-secondary/20">
                  Table {session?.tableId}
                </div>
-               
-               {/* Cart Button */}
-               <motion.button
-                 onClick={() => setIsCartOpen(true)}
-                 whileHover={{ scale: 1.05 }}
-                 whileTap={{ scale: 0.95 }}
-                 className="relative flex items-center gap-2 px-4 py-1.5 bg-primary text-primary-foreground rounded-full font-bold text-sm shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all"
-               >
-                 <ShoppingBag className="w-4 h-4" />
-                 <span className="hidden sm:inline">Order</span>
-                 {itemCount > 0 && (
-                   <span className="bg-white text-primary rounded-full px-2 py-0.5 text-xs font-bold min-w-[20px]">
-                     {itemCount}
-                   </span>
-                 )}
-               </motion.button>
              </div>
            </div>
 
@@ -140,6 +124,41 @@ export default function DinerPage() {
            </section>
          ))}
        </main>
+
+       {/* Floating Cart Trigger */}
+       <AnimatePresence>
+         {itemCount > 0 && (
+           <motion.div
+             initial={{ y: 100, opacity: 0 }}
+             animate={{ y: 0, opacity: 1 }}
+             exit={{ y: 100, opacity: 0 }}
+             className="fixed bottom-6 right-6 z-50"
+           >
+             <motion.button
+               onClick={() => setIsCartOpen(true)}
+               whileHover={{ scale: 1.05 }}
+               whileTap={{ scale: 0.95 }}
+               className="flex items-center gap-4 bg-primary text-primary-foreground px-6 py-4 rounded-full shadow-2xl shadow-primary/40 hover:shadow-primary/50 transition-all cursor-pointer border border-primary-foreground/10 z-50 backdrop-blur-none"
+             >
+               <div className="relative">
+                 <ShoppingBag className="w-6 h-6" />
+                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                   <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                 </span>
+               </div>
+               <div className="flex flex-col items-start leading-none gap-0.5">
+                 <span className="font-bold text-base">View Order</span>
+                 <div className="flex items-center gap-1.5 text-xs text-primary-foreground/90 font-medium">
+                   <span>{itemCount} items</span>
+                   <span className="w-1 h-1 rounded-full bg-primary-foreground/50" />
+                   <span>${(session?.cart.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0).toFixed(2)}</span>
+                 </div>
+               </div>
+             </motion.button>
+           </motion.div>
+         )}
+       </AnimatePresence>
 
        <Checkout isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
      </div>

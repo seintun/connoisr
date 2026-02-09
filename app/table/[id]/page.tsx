@@ -6,7 +6,7 @@ import { MenuHeader } from "@/components/domain/MenuHeader";
 import { useTableSession } from "@/components/providers/TableSessionProvider";
 import { AnimatePresence, motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { MENU_ITEMS } from "@/lib/menu";
 
@@ -14,21 +14,25 @@ export default function DinerPage() {
   const { session, addItem, updateItemQuantity, removeItem } = useTableSession();
   const [isCartOpen, setIsCartOpen] = useState(false);
 
+  // Memoize categories to avoid recomputing on every render
+  const categories = useMemo(
+    () => Array.from(new Set(MENU_ITEMS.map(item => item.category))),
+    []
+  );
+
   // Helper to find item quantity in cart
-  const getItemQuantity = (menuItemId: string) => {
+  const getItemQuantity = useCallback((menuItemId: string) => {
     return session?.cart.find(item => item.menuItemId === menuItemId)?.quantity || 0;
-  };
+  }, [session?.cart]);
 
   // Helper to get cart item ID for updates
-  const getCartItemId = (menuItemId: string) => {
+  const getCartItemId = useCallback((menuItemId: string) => {
     return session?.cart.find(item => item.menuItemId === menuItemId)?.id;
-  };
+  }, [session?.cart]);
 
-  const handleUpdateQuantity = (menuItemId: string, newQuantity: number) => {
-    const cartItemId = getCartItemId(menuItemId);
+  const handleUpdateQuantity = useCallback((menuItemId: string, newQuantity: number) => {
+    const cartItemId = session?.cart.find(item => item.menuItemId === menuItemId)?.id;
     if (!cartItemId) {
-        // Should catch cases where item was just removed but UI hasn't updated, or logic error
-        // If updating from 0 to 1, use addItem instead
         if (newQuantity > 0) {
             const item = MENU_ITEMS.find(i => i.id === menuItemId);
             if (item) {
@@ -49,26 +53,43 @@ export default function DinerPage() {
     } else {
         updateItemQuantity(cartItemId, newQuantity);
     }
-  };
+  }, [session?.cart, addItem, removeItem, updateItemQuantity]);
 
-  const itemCount = session?.cart.reduce((acc, item) => acc + item.quantity, 0) || 0;
+  // Memoize derived values
+  const itemCount = useMemo(
+    () => session?.cart.reduce((acc, item) => acc + item.quantity, 0) || 0,
+    [session?.cart]
+  );
 
-  // Group items by category
-  const categories = Array.from(new Set(MENU_ITEMS.map(item => item.category)));
+  const cartTotal = useMemo(
+    () => (session?.cart.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0).toFixed(2),
+    [session?.cart]
+  );
+
+  const handleCategoryClick = useCallback((category: string) => {
+    const element = document.getElementById(category);
+    if (element) {
+      const y = element.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }, []);
+
+  const handleAddItem = useCallback((item: typeof MENU_ITEMS[number]) => {
+    addItem({
+      menuItemId: item.id,
+      name: item.name,
+      category: item.category,
+      price: item.price,
+      quantity: 1,
+    });
+  }, [addItem]);
 
   return (
      <div className="min-h-screen bg-background pb-32">
        <MenuHeader 
           categories={categories} 
           tableId={session?.tableId?.toString()} 
-          onCategoryClick={(category) => {
-            const element = document.getElementById(category);
-            if (element) {
-              // Offset for sticky header (approx 80px for just the category bar)
-              const y = element.getBoundingClientRect().top + window.scrollY - 80;
-              window.scrollTo({ top: y, behavior: 'smooth' });
-            }
-          }}
+          onCategoryClick={handleCategoryClick}
        />
 
        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-12">
@@ -86,15 +107,7 @@ export default function DinerPage() {
                    {...item}
                    quantity={getItemQuantity(item.id)}
                    onUpdateQuantity={(qty) => handleUpdateQuantity(item.id, qty)}
-                   onAdd={() =>
-                     addItem({
-                       menuItemId: item.id,
-                       name: item.name,
-                       category: item.category,
-                       price: item.price,
-                       quantity: 1,
-                     })
-                   }
+                   onAdd={() => handleAddItem(item)}
                  />
                ))}
              </div>
@@ -129,7 +142,7 @@ export default function DinerPage() {
                  <div className="flex items-center gap-1.5 text-[10px] text-primary-foreground/90 font-medium">
                    <span>{itemCount} items</span>
                    <span className="w-1 h-1 rounded-full bg-primary-foreground/50" />
-                   <span>${(session?.cart.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0).toFixed(2)}</span>
+                   <span>${cartTotal}</span>
                  </div>
                </div>
              </motion.button>

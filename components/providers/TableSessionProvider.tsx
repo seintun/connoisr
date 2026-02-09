@@ -1,7 +1,7 @@
 "use client";
 
 import { CartItem, TableSession } from "@/types";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 interface TableSessionContextType {
   session: TableSession | null;
@@ -42,19 +42,20 @@ export function TableSessionProvider({
     }
   }, [session]);
 
-  const initializeSession = (tableId: string) => {
-    if (!session || session.tableId !== tableId) {
-      setSession({
-        tableId,
-        cart: [],
-        status: "browsing",
-      });
-    }
-  };
+  const initializeSession = useCallback((tableId: string) => {
+    setSession((prev) => {
+      if (!prev || prev.tableId !== tableId) {
+        return {
+          tableId,
+          cart: [],
+          status: "browsing",
+        };
+      }
+      return prev;
+    });
+  }, []);
 
-  const addItem = (item: Omit<CartItem, "id">) => {
-    if (!session) return;
-    
+  const addItem = useCallback((item: Omit<CartItem, "id">) => {
     setSession((prev) => {
       if (!prev) return null;
 
@@ -63,11 +64,10 @@ export function TableSessionProvider({
       );
 
       if (existingItemIndex > -1) {
-        // Item exists, increment quantity
         const newCart = [...prev.cart];
         newCart[existingItemIndex] = {
           ...newCart[existingItemIndex],
-          ...item, // Update properties in case they changed (like category)
+          ...item,
           quantity: newCart[existingItemIndex].quantity + item.quantity,
         };
 
@@ -77,7 +77,6 @@ export function TableSessionProvider({
         };
       }
 
-      // Item doesn't exist, add new
       const newItem: CartItem = {
         ...item,
         id: crypto.randomUUID(),
@@ -88,9 +87,9 @@ export function TableSessionProvider({
         cart: [...prev.cart, newItem],
       };
     });
-  };
+  }, []);
 
-  const removeItem = (itemId: string) => {
+  const removeItem = useCallback((itemId: string) => {
     setSession((prev) => {
       if (!prev) return null;
       return {
@@ -98,9 +97,9 @@ export function TableSessionProvider({
         cart: prev.cart.filter((i) => i.id !== itemId),
       };
     });
-  };
+  }, []);
 
-  const updateItemQuantity = (itemId: string, quantity: number) => {
+  const updateItemQuantity = useCallback((itemId: string, quantity: number) => {
     setSession((prev) => {
       if (!prev) return null;
       if (quantity <= 0) {
@@ -116,9 +115,9 @@ export function TableSessionProvider({
         ),
       };
     });
-  };
+  }, []);
 
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setSession((prev) => {
       if (!prev) return null;
       return {
@@ -126,7 +125,7 @@ export function TableSessionProvider({
         cart: [],
       };
     });
-  };
+  }, []);
 
   return (
     <TableSessionContext.Provider

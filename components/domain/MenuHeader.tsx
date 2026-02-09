@@ -14,29 +14,38 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
   const navRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      // Simple scroll spy logic
-      let currentSection = categories[0];
-      for (const category of categories) {
-        const element = document.getElementById(category);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          // Offset for header height (approx 80px now)
-          if (rect.top <= 120 && rect.bottom >= 120) {
-            currentSection = category;
-            break;
+      if (ticking) return;
+      ticking = true;
+
+      requestAnimationFrame(() => {
+        // Simple scroll spy logic
+        let currentSection = categories[0];
+        for (const category of categories) {
+          const element = document.getElementById(category);
+          if (element) {
+            const rect = element.getBoundingClientRect();
+            // Offset for header height (approx 80px now)
+            if (rect.top <= 120 && rect.bottom >= 120) {
+              currentSection = category;
+              break;
+            }
           }
         }
-      }
-      setActiveCategory(currentSection);
+        setActiveCategory(currentSection);
       
-      // Auto-scroll the nav item into view
-      const navItem = document.getElementById(`nav-${currentSection}`);
-      if (navItem && navRef.current) {
-          const container = navRef.current;
-          const scrollLeft = navItem.offsetLeft - container.offsetWidth / 2 + navItem.offsetWidth / 2;
-          container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
-      }
+        // Auto-scroll the nav item into view
+        const navItem = document.getElementById(`nav-${currentSection}`);
+        if (navItem && navRef.current) {
+            const container = navRef.current;
+            const scrollLeft = navItem.offsetLeft - container.offsetWidth / 2 + navItem.offsetWidth / 2;
+            container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+        }
+
+        ticking = false;
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });

@@ -54,12 +54,34 @@ export function TableSessionProvider({
 
   const addItem = (item: Omit<CartItem, "id">) => {
     if (!session) return;
-    const newItem: CartItem = {
-      ...item,
-      id: crypto.randomUUID(),
-    };
+    
     setSession((prev) => {
       if (!prev) return null;
+
+      const existingItemIndex = prev.cart.findIndex(
+        (i) => i.menuItemId === item.menuItemId
+      );
+
+      if (existingItemIndex > -1) {
+        // Item exists, increment quantity
+        const newCart = [...prev.cart];
+        newCart[existingItemIndex] = {
+          ...newCart[existingItemIndex],
+          quantity: newCart[existingItemIndex].quantity + item.quantity,
+        };
+
+        return {
+          ...prev,
+          cart: newCart,
+        };
+      }
+
+      // Item doesn't exist, add new
+      const newItem: CartItem = {
+        ...item,
+        id: crypto.randomUUID(),
+      };
+
       return {
         ...prev,
         cart: [...prev.cart, newItem],

@@ -117,7 +117,7 @@ export default function DinerPageClient() {
 
        {/* Floating Cart Trigger */}
        <AnimatePresence>
-         {itemCount > 0 && (
+         {(itemCount > 0 || (session?.orders?.length ?? 0) > 0) && (
            <motion.div
              initial={{ y: 100, opacity: 0 }}
              animate={{ y: 0, opacity: 1 }}
@@ -132,15 +132,19 @@ export default function DinerPageClient() {
              >
                <div className="relative">
                  <ShoppingBag className="w-5 h-5" />
-                 <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
-                 </span>
+                 {itemCount > 0 && (
+                   <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+                   </span>
+                 )}
                </div>
                <div className="flex flex-col items-start leading-none gap-0.5">
-                 <span className="font-bold text-sm">View Order</span>
+                 <span className="font-bold text-sm">
+                   {itemCount > 0 ? "View Order" : "Active Orders"}
+                 </span>
                  <div className="flex items-center gap-1.5 text-[10px] text-primary-foreground/90 font-medium">
-                   <span>{itemCount} items</span>
+                   <span>{itemCount} new items</span>
                    <span className="w-1 h-1 rounded-full bg-primary-foreground/50" />
                    <span>${cartTotal}</span>
                  </div>

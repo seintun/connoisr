@@ -32,10 +32,28 @@ export const MENU_ITEMS = [
     imageUrl: "https://images.unsplash.com/photo-1608897013039-887f21d8c804?auto=format&fit=crop&q=80&w=800",
     category: "Starters"
   },
+
+  // Brunch
+  {
+    id: "item-5",
+    name: "Avocado Toast",
+    price: 16,
+    description: "Sourdough, smashed avocado, poached egg, chili crisp",
+    imageUrl: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?auto=format&fit=crop&q=80&w=800",
+    category: "Brunch"
+  },
+  {
+    id: "item-6",
+    name: "Ricotta Pancakes",
+    price: 18,
+    description: "Blueberry compote, maple butter, toasted pecans",
+    imageUrl: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&q=80&w=800",
+    category: "Brunch"
+  },
   
   // Mains
   {
-    id: "item-5",
+    id: "item-7",
     name: "Miso Glazed Black Cod",
     price: 42,
     description: "Bok choy, ginger dashi broth, sesame crisp",
@@ -43,7 +61,7 @@ export const MENU_ITEMS = [
     category: "Mains"
   },
   {
-    id: "item-7",
+    id: "item-8",
     name: "Wild Mushroom Tagliatelle",
     price: 26,
     description: "Hand-made pasta, truffle cream, aged pecorino",
@@ -51,7 +69,7 @@ export const MENU_ITEMS = [
     category: "Mains"
   },
   {
-    id: "item-8",
+    id: "item-9",
     name: "Crispy Skin Salmon",
     price: 34,
     description: "Quinoa salad, avocado crema, citrus dressing",
@@ -61,7 +79,7 @@ export const MENU_ITEMS = [
 
   // Desserts
   {
-    id: "item-9",
+    id: "item-10",
     name: "Dark Chocolate Fondant",
     price: 16,
     description: "Salted caramel center, vanilla bean ice cream",
@@ -69,7 +87,7 @@ export const MENU_ITEMS = [
     category: "Desserts"
   },
   {
-    id: "item-10",
+    id: "item-11",
     name: "Yuzu Lemon Tart",
     price: 14,
     description: "Italian meringue, raspberry coulis, mint",
@@ -79,7 +97,7 @@ export const MENU_ITEMS = [
 
   // Drinks
   {
-    id: "item-11",
+    id: "item-12",
     name: "Signature Old Fashioned",
     price: 18,
     description: "Smoked oak, orange bitters, large ice cube",
@@ -87,7 +105,7 @@ export const MENU_ITEMS = [
     category: "Drinks"
   },
   {
-    id: "item-12",
+    id: "item-13",
     name: "Matcha Latte",
     price: 8,
     description: "Ceremonial grade matcha, oat milk, honey",
@@ -95,7 +113,7 @@ export const MENU_ITEMS = [
     category: "Drinks"
   },
   {
-    id: "item-13",
+    id: "item-14",
     name: "Espresso Martini",
     price: 16,
     description: "Vodka, fresh espresso, coffee liqueur, vanilla",
@@ -105,7 +123,7 @@ export const MENU_ITEMS = [
 
   // Salads
   {
-    id: "item-14",
+    id: "item-15",
     name: "Grilled Caesar Salad",
     price: 18,
     description: "Charred romaine, anchovy crumbs, parmesan tuile",
@@ -113,7 +131,7 @@ export const MENU_ITEMS = [
     category: "Salads"
   },
   {
-    id: "item-15",
+    id: "item-16",
     name: "Peach & Burrata Salad",
     price: 20,
     description: "Arugula, candied walnut, white balsamic, basil oil",
@@ -123,7 +141,7 @@ export const MENU_ITEMS = [
 
   // Sides
   {
-    id: "item-16",
+    id: "item-17",
     name: "Truffle Parmesan Fries",
     price: 12,
     description: "Hand-cut fries, truffle oil, grated parmesan, herbs",
@@ -131,7 +149,7 @@ export const MENU_ITEMS = [
     category: "Sides"
   },
   {
-    id: "item-17",
+    id: "item-18",
     name: "Charred Broccolini",
     price: 10,
     description: "Lemon zest, chili flake, toasted almonds",
@@ -139,29 +157,11 @@ export const MENU_ITEMS = [
     category: "Sides"
   },
   {
-    id: "item-18",
+    id: "item-19",
     name: "Roasted Garlic Mash",
     price: 9,
     description: "Yukon gold potato, cultured butter, chive",
     imageUrl: "https://images.unsplash.com/photo-1585672840563-f2af2ced55c9?auto=format&fit=crop&q=80&w=800",
     category: "Sides"
   },
-
-  // Brunch
-  {
-    id: "item-19",
-    name: "Avocado Toast",
-    price: 16,
-    description: "Sourdough, smashed avocado, poached egg, chili crisp",
-    imageUrl: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?auto=format&fit=crop&q=80&w=800",
-    category: "Brunch"
-  },
-  {
-    id: "item-20",
-    name: "Ricotta Pancakes",
-    price: 18,
-    description: "Blueberry compote, maple butter, toasted pecans",
-    imageUrl: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&q=80&w=800",
-    category: "Brunch"
-  }
 ];

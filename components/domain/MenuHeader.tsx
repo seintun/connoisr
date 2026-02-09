@@ -12,37 +12,47 @@ interface MenuHeaderProps {
 export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderProps) {
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const navRef = useRef<HTMLDivElement>(null);
+  const isProgrammaticScroll = useRef(false);
+
+  // Auto-scroll the nav pill into center view
+  const scrollNavTo = (category: string) => {
+    const navItem = document.getElementById(`nav-${category}`);
+    if (navItem && navRef.current) {
+      const container = navRef.current;
+      const scrollLeft = navItem.offsetLeft - container.offsetWidth / 2 + navItem.offsetWidth / 2;
+      container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+    }
+  };
 
   useEffect(() => {
     let ticking = false;
 
     const handleScroll = () => {
+      // Skip scroll spy while a click-triggered scroll is in progress
+      if (isProgrammaticScroll.current) return;
       if (ticking) return;
       ticking = true;
 
       requestAnimationFrame(() => {
-        // Simple scroll spy logic
         let currentSection = categories[0];
         for (const category of categories) {
           const element = document.getElementById(category);
           if (element) {
             const rect = element.getBoundingClientRect();
-            // Offset for header height (approx 80px now)
             if (rect.top <= 120 && rect.bottom >= 120) {
               currentSection = category;
               break;
             }
           }
         }
-        setActiveCategory(currentSection);
-      
-        // Auto-scroll the nav item into view
-        const navItem = document.getElementById(`nav-${currentSection}`);
-        if (navItem && navRef.current) {
-            const container = navRef.current;
-            const scrollLeft = navItem.offsetLeft - container.offsetWidth / 2 + navItem.offsetWidth / 2;
-            container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
-        }
+
+        setActiveCategory((prev) => {
+          if (prev !== currentSection) {
+            scrollNavTo(currentSection);
+            return currentSection;
+          }
+          return prev;
+        });
 
         ticking = false;
       });
@@ -55,9 +65,18 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
   }, [categories]);
 
   const handleCategoryClick = (category: string) => {
-      onCategoryClick(category);
-      // Wait for scroll to potentially happen then set active
-      setTimeout(() => setActiveCategory(category), 300);
+    // Immediately set active state and scroll nav
+    setActiveCategory(category);
+    scrollNavTo(category);
+
+    // Suppress scroll spy during the programmatic scroll
+    isProgrammaticScroll.current = true;
+    onCategoryClick(category);
+
+    // Re-enable scroll spy after the smooth scroll finishes
+    setTimeout(() => {
+      isProgrammaticScroll.current = false;
+    }, 800);
   };
 
   return (

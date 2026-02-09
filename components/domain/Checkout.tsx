@@ -19,7 +19,7 @@ export function Checkout() {
       try {
         const supportedInstruments = [
           {
-            supportedMethods: ["basic-card"],
+            supportedMethods: "basic-card",
             data: {
               supportedNetworks: ["visa", "mastercard"],
             },

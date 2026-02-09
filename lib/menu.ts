@@ -163,13 +163,5 @@ export const MENU_ITEMS = [
     description: "Blueberry compote, maple butter, toasted pecans",
     imageUrl: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&q=80&w=800",
     category: "Brunch"
-  },
-  {
-    id: "item-21",
-    name: "Lobster Benedict",
-    price: 28,
-    description: "Butter-poached lobster, brioche, hollandaise, caviar",
-    imageUrl: "https://images.unsplash.com/photo-1608039790184-c33f8568d241?auto=format&fit=crop&q=80&w=800",
-    category: "Brunch"
   }
 ];

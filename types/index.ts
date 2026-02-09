@@ -2,6 +2,7 @@ export interface CartItem {
   id: string;
   menuItemId: string;
   name: string;
+  category: string;
   price: number;
   quantity: number;
   notes?: string;

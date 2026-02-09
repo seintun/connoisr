@@ -77,51 +77,67 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
               </button>
             </div>
 
-            {/* Cart Items - Scrollable */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-4">
-              {session.cart.map((item) => (
-                <div 
-                  key={item.id} 
-                  className="flex justify-between items-center py-3 border-b border-border/30 last:border-0"
-                >
-                  <div className="flex-1">
-                    <p className="font-medium text-foreground">{item.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      ${item.price.toFixed(2)} each
-                    </p>
+            {/* Cart Items - Scrollable & Grouped */}
+            <div className="flex-1 overflow-y-auto p-5 space-y-6">
+              {Object.entries(
+                session.cart.reduce((groups, item) => {
+                  const category = item.category || "Other";
+                  if (!groups[category]) groups[category] = [];
+                  groups[category].push(item);
+                  return groups;
+                }, {} as Record<string, typeof session.cart>)
+              ).map(([category, items]) => (
+                <div key={category} className="space-y-3">
+                  <h3 className="font-serif font-bold text-lg text-primary/80 border-b border-border/50 pb-1">
+                    {category}
+                  </h3>
+                  <div className="space-y-3">
+                    {items.map((item) => (
+                      <div 
+                        key={item.id} 
+                        className="flex justify-between items-center py-2 group"
+                      >
+                        <div className="flex-1 pr-4">
+                          <p className="font-medium text-foreground text-sm">{item.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            ${item.price.toFixed(2)} each
+                          </p>
+                        </div>
+                        
+                        {/* Quantity Controls */}
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
+                            className={cn(
+                              "w-7 h-7 rounded-full flex items-center justify-center transition-colors",
+                              item.quantity === 1
+                                ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
+                                : "bg-muted hover:bg-muted/80"
+                            )}
+                          >
+                            {item.quantity === 1 ? (
+                              <Trash2 className="w-3.5 h-3.5" />
+                            ) : (
+                              <Minus className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                          <span className="font-mono font-bold text-base w-5 text-center">
+                            {item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                            className="w-7 h-7 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors"
+                          >
+                            <Plus className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        
+                        <span className="font-bold text-foreground ml-3 w-16 text-right tabular-nums">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                  
-                  {/* Quantity Controls */}
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
-                      className={cn(
-                        "w-8 h-8 rounded-full flex items-center justify-center transition-colors",
-                        item.quantity === 1
-                          ? "bg-destructive/10 text-destructive hover:bg-destructive/20"
-                          : "bg-muted hover:bg-muted/80"
-                      )}
-                    >
-                      {item.quantity === 1 ? (
-                        <Trash2 className="w-4 h-4" />
-                      ) : (
-                        <Minus className="w-4 h-4" />
-                      )}
-                    </button>
-                    <span className="font-mono font-bold text-lg w-6 text-center">
-                      {item.quantity}
-                    </span>
-                    <button
-                      onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
-                      className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                  
-                  <span className="font-bold text-foreground ml-4 w-20 text-right">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </span>
                 </div>
               ))}
             </div>

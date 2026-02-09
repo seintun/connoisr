@@ -130,6 +130,7 @@ export default function DinerPage() {
                 addItem({
                     menuItemId: item.id,
                     name: item.name,
+                    category: item.category,
                     price: item.price,
                     quantity: newQuantity,
                 });
@@ -205,6 +206,7 @@ export default function DinerPage() {
                     addItem({
                       menuItemId: item.id,
                       name: item.name,
+                      category: item.category,
                       price: item.price,
                       quantity: 1,
                     })

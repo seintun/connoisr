@@ -68,6 +68,9 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 
 const nextConfig: NextConfig = {
   /* config options here */
+  // Enable Turbopack for dev (faster), but use webpack for builds (PWA compatibility)
+  // The empty turbopack config silences the warning about webpack config
+  turbopack: {},
 };
 
 export default withPWA(nextConfig);

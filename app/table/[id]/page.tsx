@@ -2,6 +2,7 @@
 
 import { Checkout } from "@/components/domain/Checkout";
 import { DinerMenuItem } from "@/components/domain/DinerMenuItem";
+import { MenuHeader } from "@/components/domain/MenuHeader";
 import { useTableSession } from "@/components/providers/TableSessionProvider";
 import { AnimatePresence, motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
@@ -57,49 +58,25 @@ export default function DinerPage() {
 
   return (
      <div className="min-h-screen bg-background pb-32">
-       {/* Modern Header */}
-       <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40 transition-all duration-300 shadow-sm">
-         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-           <div className="flex justify-between items-center h-14">
-             <div className="flex items-center gap-3">
-               <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white font-serif font-bold text-lg shadow-lg shadow-primary/30">
-                 T
-               </div>
-               <h1 className="text-xl font-serif font-bold text-foreground tracking-tight">TempoDine</h1>
-             </div>
-             
-             <div className="flex items-center gap-3">
-               <div className="hidden sm:block px-4 py-1.5 bg-secondary/10 text-secondary rounded-full text-xs font-bold uppercase tracking-wider border border-secondary/20">
-                 Table {session?.tableId}
-               </div>
-             </div>
-           </div>
+       <MenuHeader 
+          categories={categories} 
+          tableId={session?.tableId?.toString()} 
+          onCategoryClick={(category) => {
+            const element = document.getElementById(category);
+            if (element) {
+              // Offset for sticky header (approx 140px or calculated dynamically)
+              const y = element.getBoundingClientRect().top + window.scrollY - 160;
+              window.scrollTo({ top: y, behavior: 'smooth' });
+            }
+          }}
+       />
 
-           {/* Sticky Category Navigation */}
-           <div className="flex overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 gap-2 hide-scrollbar mask-gradient-x">
-             {categories.map((category) => (
-               <a
-                 key={category}
-                 href={`#${category}`}
-                 onClick={(e) => {
-                   e.preventDefault();
-                   document.getElementById(category)?.scrollIntoView({ behavior: "smooth", block: "start" });
-                 }}
-                 className="whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-bold transition-all bg-muted/30 hover:bg-muted text-muted-foreground hover:text-foreground border border-transparent hover:border-border/50 snap-start"
-               >
-                 {category}
-               </a>
-             ))}
-           </div>
-         </div>
-       </header>
-
-       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10">
+       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-12">
          {categories.map((category) => (
-           <section key={category} id={category} className="scroll-mt-28">
-             <div className="flex items-center gap-4 mb-4">
-               <h2 className="text-2xl font-serif font-bold text-foreground/90">{category}</h2>
-               <div className="h-px flex-1 bg-border/40" />
+           <section key={category} id={category} className="scroll-mt-40 transition-all duration-500">
+             <div className="flex items-center gap-4 mb-6">
+               <h2 className="text-2xl font-serif font-bold text-foreground/90 tracking-tight">{category}</h2>
+               <div className="h-px flex-1 bg-gradient-to-r from-border/60 to-transparent" />
              </div>
              
              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch">

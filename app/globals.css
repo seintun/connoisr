@@ -5,8 +5,8 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: var(--font-inter);
-  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-jakarta);
+  --font-serif: var(--font-outfit);
 
   --color-border: var(--border);
   --color-input: var(--input);
@@ -23,6 +23,9 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
 
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
 
@@ -35,9 +38,11 @@
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
 
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
+  --radius-2xl: 1rem;
+  --radius-xl: 0.75rem;
+  --radius-lg: 0.5rem;
+  --radius-md: calc(0.5rem - 2px);
+  --radius-sm: calc(0.5rem - 4px);
 
   --animate-accordion-down: accordion-down 0.2s ease-out;
   --animate-accordion-up: accordion-up 0.2s ease-out;
@@ -81,39 +86,60 @@
 
 @layer base {
   :root {
-    --background: 0 0% 7%;
-    /* #121212 */
-    --foreground: 41 33% 96%;
-    /* #F9F7F2 */
+    /* Pure Frost Background */
+    --background: 210 20% 98%;
+    /* #F8FAFC */
+    --foreground: 222 47% 11%;
+    /* #0F172A */
 
-    --card: 0 0% 7%;
-    --card-foreground: 41 33% 96%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
 
-    --popover: 0 0% 7%;
-    --popover-foreground: 41 33% 96%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 40 45% 56%;
-    /* #C5A059 */
-    --primary-foreground: 0 0% 7%;
+    /* Zesty Coral Primary */
+    --primary: 11 100% 64%;
+    /* #FF6B4A */
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 41 33% 96%;
-    --secondary-foreground: 0 0% 7%;
+    /* Electric Indigo Secondary */
+    --secondary: 239 84% 67%;
+    /* #6366F1 */
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 41 10% 70%;
+    /* Emerald Success */
+    --success: 151 65% 52%;
+    /* #10B981 */
+    --success-foreground: 210 40% 98%;
 
-    --accent: 40 45% 56%;
-    --accent-foreground: 0 0% 7%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 41 33% 96%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222 47% 11%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
-    --ring: 40 45% 56%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
 
-    --radius: 0.25rem;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 11 100% 64%;
+
+    --radius: 0.5rem;
   }
+}
+
+@utility glass-card {
+  @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg;
+}
+
+@utility text-glow {
+  text-shadow: 0 0 20px currentColor;
+}
+
+@utility shadow-glow {
+  box-shadow: 0 0 20px -5px currentColor;
 }
 
 @layer base {

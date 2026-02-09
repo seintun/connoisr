@@ -26,7 +26,8 @@ We've pivoted from dark mode to a "Fresh Bistro" aesthetic:
 
 *   **Real-Time State**: Orders sync instantly between Diner and Kitchen interfaces.
 *   **Smart KDS**: Orders change color based on wait time (Coral -> Indigo -> Amber -> Emerald).
-*   **Offline-First**: Built with PWA capabilities in mind.
+*   **Offline-First**: Fully capable PWA with service worker caching and offline fallback.
+*   **Installable**: Add to home screen support on iOS and Android.
 *   **Frictionless Checkout**: Integrated Web Payment API support (simulated).
 
 ## Tech Stack
@@ -35,6 +36,7 @@ We've pivoted from dark mode to a "Fresh Bistro" aesthetic:
 *   **Core**: React 19
 *   **Styling**: Tailwind CSS v4
 *   **Animation**: Framer Motion 12
+*   **PWA**: @ducanh2912/next-pwa
 *   **Icons**: Lucide React
 
 ## Key Features
@@ -64,6 +66,10 @@ npm install
 
 # Run development server
 npm run dev
+
+# Build for Production (PWA)
+# Note: --webpack is required as the PWA plugin does not yet support Turbopack
+npx next build --webpack
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view the app.

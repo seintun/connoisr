@@ -26,6 +26,14 @@ We welcome contributions to TempoDine! This document outlines the standards and 
     npm run dev
     ```
 
+4.  **Build for Production**:
+    To test PWA features (Service Worker, Manifest), you must run a production build.
+    ```bash
+    # Turbopack is currently incompatible with the PWA plugin
+    npx next build --webpack
+    npm start
+    ```
+
 4.  **Open the application**:
     *   Landing: `http://localhost:3000`
     *   Diner App: `http://localhost:3000/table/1`

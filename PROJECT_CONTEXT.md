@@ -44,7 +44,11 @@ Border/Glow logic based on ticket age:
 (Planned) Implement a pattern for real-time state updates.
 
 ### PWA Essentials
-(Planned) Configure a Service Worker for offline menu caching.
+(Implemented)
+- **Library**: `@ducanh2912/next-pwa` for service worker generation and caching strategy.
+- **Manifest**: Dynamic `app/manifest.ts` for type-safe manifest generation.
+- **Offline**: Custom offline fallback page at `app/~offline/page.tsx`.
+- **Build**: Requires `npx next build --webpack` due to Turbopack incompatibility.
 
 ### State Management
 Use Context API + `useLocalStorage` for lightweight, persistent cart state on the client.

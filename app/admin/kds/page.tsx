@@ -10,8 +10,8 @@ const MOCK_ORDERS: Order[] = [
     id: "ord-123",
     tableId: "4",
     items: [
-      { id: "1", menuItemId: "item-1", name: "Truffle Risotto", price: 28, quantity: 2 },
-      { id: "2", menuItemId: "item-2", name: "Pan-Seared Scallops", price: 32, quantity: 1 },
+      { id: "1", menuItemId: "item-1", name: "Truffle Risotto", category: "Mains", price: 28, quantity: 2 },
+      { id: "2", menuItemId: "item-2", name: "Pan-Seared Scallops", category: "Mains", price: 32, quantity: 1 },
     ],
     status: "cooking",
     createdAt: new Date(Date.now() - 1000 * 60 * 12), // 12 mins ago
@@ -22,7 +22,7 @@ const MOCK_ORDERS: Order[] = [
     id: "ord-124",
     tableId: "7",
     items: [
-      { id: "3", menuItemId: "item-3", name: "Wagyu Beef Carpaccio", price: 24, quantity: 1 },
+      { id: "3", menuItemId: "item-3", name: "Wagyu Beef Carpaccio", category: "Appetizers", price: 24, quantity: 1 },
     ],
     status: "pending",
     createdAt: new Date(Date.now() - 1000 * 60 * 2), // 2 mins ago

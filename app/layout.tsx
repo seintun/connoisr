@@ -21,6 +21,7 @@ export const viewport: Viewport = {
   themeColor: "#000000",
 };
 
+import { NetworkStatus } from "@/components/domain/NetworkStatus";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 export default function RootLayout({
@@ -34,7 +35,8 @@ export default function RootLayout({
         className={`${outfit.variable} ${jakarta.variable} font-sans antialiased bg-background text-foreground`}
       >
         {children}
-        <SpeedInsights />
+        <NetworkStatus />
+        {process.env.VERCEL && <SpeedInsights />}
       </body>
     </html>
   );

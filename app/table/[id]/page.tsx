@@ -109,24 +109,24 @@ export default function DinerPage() {
              initial={{ y: 100, opacity: 0 }}
              animate={{ y: 0, opacity: 1 }}
              exit={{ y: 100, opacity: 0 }}
-             className="fixed bottom-6 right-6 z-50"
+             className="fixed bottom-10 right-6 z-50"
            >
              <motion.button
                onClick={() => setIsCartOpen(true)}
                whileHover={{ scale: 1.05 }}
                whileTap={{ scale: 0.95 }}
-               className="flex items-center gap-4 bg-primary text-primary-foreground px-6 py-4 rounded-full shadow-2xl shadow-primary/40 hover:shadow-primary/50 transition-all cursor-pointer border border-primary-foreground/10 z-50 backdrop-blur-none"
+               className="flex items-center gap-3 bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-2xl shadow-primary/40 hover:shadow-primary/50 transition-all cursor-pointer border border-primary-foreground/10 z-50 backdrop-blur-none"
              >
                <div className="relative">
-                 <ShoppingBag className="w-6 h-6" />
-                 <span className="absolute -top-1 -right-1 flex h-3 w-3">
+                 <ShoppingBag className="w-5 h-5" />
+                 <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                   <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
                  </span>
                </div>
                <div className="flex flex-col items-start leading-none gap-0.5">
-                 <span className="font-bold text-base">View Order</span>
-                 <div className="flex items-center gap-1.5 text-xs text-primary-foreground/90 font-medium">
+                 <span className="font-bold text-sm">View Order</span>
+                 <div className="flex items-center gap-1.5 text-[10px] text-primary-foreground/90 font-medium">
                    <span>{itemCount} items</span>
                    <span className="w-1 h-1 rounded-full bg-primary-foreground/50" />
                    <span>${(session?.cart.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0).toFixed(2)}</span>

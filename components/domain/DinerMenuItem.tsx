@@ -1,8 +1,9 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import { Minus, Plus, Trash2 } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Minus, Plus, Trash2, X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface DinerMenuItemProps {
   id: string;
@@ -25,11 +26,32 @@ export function DinerMenuItem({
   quantity = 0,
   onUpdateQuantity,
 }: DinerMenuItemProps) {
+  const [isImageOpen, setIsImageOpen] = useState(false);
+
+  /* 
+    Added keyboard support for accessibility and desktop users.
+    Listens for 'Escape' key to close the modal.
+  */
+  // ... rest of imports are updated below in full replace if needed, but here just injecting the hook logic inside component
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsImageOpen(false);
+      }
+    };
+
+    if (isImageOpen) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isImageOpen]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileTap={{ scale: 0.98 }}
+      whileTap={isImageOpen ? {} : { scale: 0.98 }}
       className={cn(
         "group relative overflow-hidden rounded-[2rem] bg-white transition-all duration-300 h-full",
         "flex flex-row md:flex-col", 
@@ -37,11 +59,16 @@ export function DinerMenuItem({
         "border border-neutral-200/60",
         quantity > 0 
           ? "ring-2 ring-primary/20 shadow-md" 
-          : "shadow-sm hover:shadow-md hover:-translate-y-0.5"
+          : "shadow-sm hover:shadow-md hover:-translate-y-0.5",
+        // Force height context for the image
+        isImageOpen ? "z-[100]" : ""
       )}
     >
       {/* Image Container */}
-      <div className="w-1/3 min-w-[120px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0">
+      <div 
+        className="w-1/3 min-w-[120px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 cursor-zoom-in"
+        onClick={() => setIsImageOpen(true)}
+      >
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 z-10" />
         <img
           src={imageUrl}
@@ -128,6 +155,54 @@ export function DinerMenuItem({
           </motion.button>
         )}
       </div>
+
+      {/* Full Screen Image Modal */}
+      <AnimatePresence>
+        {isImageOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsImageOpen(false);
+            }}
+            className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-10 cursor-zoom-out"
+          >
+            <div
+              className="relative w-full h-full flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()} // Prevent clicking image from closing if desired, but general standard is background closes
+            >
+               {/* Close Button */}
+               <motion.button
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.5 }}
+                onClick={() => setIsImageOpen(false)}
+                className="absolute top-4 right-4 md:top-8 md:right-8 z-50 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-colors cursor-pointer"
+              >
+                <X className="w-6 h-6" />
+              </motion.button>
+
+              <img
+                src={imageUrl}
+                alt={name}
+                className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+              />
+              
+              <div
+                className="absolute bottom-4 left-0 right-0 text-center text-white/90 p-4"
+              >
+                <h3 className="text-xl md:text-3xl font-serif font-bold mb-1">{name}</h3>
+                <p className="text-white/70 text-sm md:text-lg max-w-2xl mx-auto line-clamp-2 md:line-clamp-none">
+                  {description}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

@@ -111,14 +111,7 @@ export function DinerMenuItem({
               }}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
-            <motion.button
-              onClick={(e) => {
-                e.stopPropagation();
-                onUpdateQuantity(quantity + 1);
-              }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="w-8 h-8 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-primary hover:bg-primary hover:text-white cursor-pointer"
+              className="w-8 h-8 md:w-12 md:h-12 rounded-xl flex items-center justify-center transition-colors bg-neutral-100 text-emerald-600 hover:bg-emerald-600 hover:text-white cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5 md:w-5 md:h-5" />
             </motion.button>
@@ -128,7 +121,7 @@ export function DinerMenuItem({
             onClick={onAdd}
             whileHover={{ scale: 1.02, y: -2 }}
             whileTap={{ scale: 0.98 }}
-            className="w-full py-2.5 md:py-4 bg-foreground text-background font-bold rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-orange-600 hover:text-white transition-all duration-300 text-sm md:text-base mt-auto group/btn md:shadow-lg md:shadow-neutral-200 cursor-pointer"
+            className="w-full py-2.5 md:py-4 bg-foreground text-background font-bold rounded-xl md:rounded-2xl flex items-center justify-center gap-2 hover:bg-emerald-600 hover:text-white transition-all duration-300 text-sm md:text-base mt-auto group/btn md:shadow-lg md:shadow-neutral-200 cursor-pointer"
           >
             <Plus className="w-4 h-4 transition-transform group-hover/btn:rotate-90" />
             Add <span className="hidden md:inline">to Order</span>

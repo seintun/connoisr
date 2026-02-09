@@ -3,7 +3,8 @@
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, Trash2, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import Image from "next/image";
+import React, { useEffect, useState } from "react";
 
 interface DinerMenuItemProps {
   id: string;
@@ -16,7 +17,7 @@ interface DinerMenuItemProps {
   onUpdateQuantity?: (quantity: number) => void;
 }
 
-export function DinerMenuItem({
+export const DinerMenuItem = React.memo(function DinerMenuItem({
   id,
   name,
   price,
@@ -70,11 +71,11 @@ export function DinerMenuItem({
       </div>
     </motion.div>
   );
-}
+});
 
 // Sub-components
 
-function MenuItemImage({ name, imageUrl, quantity, description }: { name: string, imageUrl: string, quantity: number, description: string }) {
+const MenuItemImage = React.memo(function MenuItemImage({ name, imageUrl, quantity, description }: { name: string, imageUrl: string, quantity: number, description: string }) {
   const [isImageOpen, setIsImageOpen] = useState(false);
 
   useEffect(() => {
@@ -90,15 +91,17 @@ function MenuItemImage({ name, imageUrl, quantity, description }: { name: string
       <div
         className={cn(
           "w-1/3 min-w-[120px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 cursor-zoom-in",
-          isImageOpen && "z-[100]" // Keep context if needed, though modal is fixed.
+          isImageOpen && "z-[100]"
         )}
         onClick={() => setIsImageOpen(true)}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 z-10" />
-        <img
+        <Image
           src={imageUrl}
           alt={name}
-          className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 absolute inset-0 md:static"
+          fill
+          sizes="(max-width: 768px) 33vw, (max-width: 1024px) 50vw, 25vw"
+          className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
         />
         
         {quantity > 0 && (
@@ -139,10 +142,13 @@ function MenuItemImage({ name, imageUrl, quantity, description }: { name: string
                 <X className="w-6 h-6" />
               </motion.button>
 
-              <img
+              <Image
                 src={imageUrl}
                 alt={name}
-                className="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+                fill
+                sizes="100vw"
+                className="object-contain rounded-xl shadow-2xl"
+                priority
               />
 
               <div className="absolute bottom-4 left-0 right-0 text-center text-white/90 p-4">
@@ -157,9 +163,9 @@ function MenuItemImage({ name, imageUrl, quantity, description }: { name: string
       </AnimatePresence>
     </>
   );
-}
+});
 
-function MenuItemControls({ quantity, onAdd, onUpdateQuantity }: { quantity: number, onAdd: () => void, onUpdateQuantity?: (q: number) => void }) {
+const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd, onUpdateQuantity }: { quantity: number, onAdd: () => void, onUpdateQuantity?: (q: number) => void }) {
   if (quantity > 0 && onUpdateQuantity) {
     return (
       <div className="flex items-center gap-2 md:gap-3 p-1 md:p-2 rounded-xl md:rounded-2xl bg-white shadow-sm border border-neutral-100 mt-auto w-full">
@@ -213,4 +219,4 @@ function MenuItemControls({ quantity, onAdd, onUpdateQuantity }: { quantity: num
       Add <span className="md:inline">to Order</span>
     </motion.button>
   );
-}
+});

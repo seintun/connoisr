@@ -71,6 +71,14 @@ const nextConfig: NextConfig = {
   // Enable Turbopack for dev (faster), but use webpack for builds (PWA compatibility)
   // The empty turbopack config silences the warning about webpack config
   turbopack: {},
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
+  },
 };
 
 export default withPWA(nextConfig);

@@ -183,18 +183,18 @@ export default function DinerPage() {
       </header>
 
       {/* Menu Sections */}
-      <div className="space-y-12">
+      <div className="space-y-8">
         {categories.map((category) => (
           <section key={category}>
             <motion.h2 
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="text-3xl font-serif font-bold mb-6 text-foreground/90 sticky top-24 z-20 bg-background/80 backdrop-blur-md py-2"
+              className="text-xl font-serif font-bold mb-3 text-foreground/90 sticky top-20 z-20 bg-background/95 backdrop-blur-md py-3 border-b border-border/50 uppercase tracking-wide"
             >
               {category}
             </motion.h2>
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4 md:gap-6 items-stretch">
               {MENU_ITEMS.filter(item => item.category === category).map((item) => (
                 <DinerMenuItem
                   key={item.id}

@@ -52,14 +52,6 @@ const MENU_ITEMS = [
     category: "Mains"
   },
   {
-    id: "item-6",
-    name: "Herb-Crusted Lamb Rack",
-    price: 45,
-    description: "Fondant potatoes, mint pea puree, red wine jus",
-    imageUrl: "https://images.unsplash.com/photo-1603360946369-dc9bb6f5fabf?auto=format&fit=crop&q=80&w=800",
-    category: "Mains"
-  },
-  {
     id: "item-7",
     name: "Wild Mushroom Tagliatelle",
     price: 26,

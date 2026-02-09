@@ -65,21 +65,29 @@ export function DinerMenuItem({
         </p>
 
         {quantity > 0 && onUpdateQuantity ? (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3 p-2 rounded-2xl bg-muted/50 border border-primary/10">
             <motion.button
               onClick={(e) => {
                 e.stopPropagation();
                 onUpdateQuantity(quantity - 1);
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-12 h-12 rounded-xl flex items-center justify-center transition-colors bg-destructive/10 text-destructive hover:bg-destructive/20"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors bg-white shadow-sm border border-border text-destructive hover:bg-destructive hover:text-white hover:border-destructive"
             >
-              {quantity === 1 ? <Trash2 className="w-5 h-5" /> : <Minus className="w-5 h-5" />}
+              {quantity === 1 ? <Trash2 className="w-4 h-4" /> : <Minus className="w-4 h-4" />}
             </motion.button>
 
-            <div className="flex-1 h-12 bg-primary/5 rounded-xl flex items-center justify-center font-bold text-lg text-primary">
-              {quantity}
+            <div className="flex-1 flex items-center justify-center overflow-hidden">
+               <motion.span
+                key={quantity}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -20, opacity: 0 }}
+                className="font-bold text-xl text-primary"
+              >
+                {quantity}
+              </motion.span>
             </div>
 
             <motion.button
@@ -87,9 +95,9 @@ export function DinerMenuItem({
                 e.stopPropagation();
                 onUpdateQuantity(quantity + 1);
               }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-12 h-12 bg-success text-success-foreground font-bold rounded-xl flex items-center justify-center hover:opacity-90 transition-colors shadow-lg shadow-success/25"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              className="w-10 h-10 bg-success text-success-foreground font-bold rounded-full flex items-center justify-center hover:brightness-110 transition-all shadow-md shadow-success/20"
             >
               <Plus className="w-5 h-5" />
             </motion.button>
@@ -97,9 +105,9 @@ export function DinerMenuItem({
         ) : (
           <motion.button
             onClick={onAdd}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="w-full py-3 bg-primary/10 text-primary font-bold rounded-xl flex items-center justify-center gap-2 hover:bg-primary/20 transition-colors"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="w-full py-3 bg-primary text-primary-foreground font-bold rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-lg shadow-primary/25"
           >
             <Plus className="w-4 h-4" />
             Add to Order

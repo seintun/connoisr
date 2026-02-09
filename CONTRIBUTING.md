@@ -5,8 +5,8 @@ We welcome contributions to TempoDine! This document outlines the standards and 
 ## Development Setup
 
 ### Prerequisites
-*   Node.js 18+
-*   npm or yarn
+*   Node.js 20+ (LTS)
+*   npm 10+ or yarn
 
 ### Installation
 
@@ -29,23 +29,28 @@ We welcome contributions to TempoDine! This document outlines the standards and 
 4.  **Open the application**:
     *   Landing: `http://localhost:3000`
     *   Diner App: `http://localhost:3000/table/1`
-    *   KDS: `http://localhost:3000/admin/kds`
 
 ## Project Structure
 
 *   `app/`: Next.js App Router pages and layouts.
-*   `components/domain/`: Business logic components (e.g., `KDSTicket`, `DinerMenuItem`).
-*   `components/ui/`: Reusable primitive components (shadcn/ui).
+*   `components/domain/`: Business logic components (e.g., `DinerMenuItem`, `Checkout`).
+*   `components/ui/`: Reusable primitive components.
 *   `hooks/`: Custom React hooks (e.g., `useOrderTimer`, `useTableSession`).
 *   `lib/`: Utility functions and constants.
 *   `types/`: TypeScript definitions.
 
 ## Aesthetic Guidelines (Vibrant Modernism)
 
-*   **Colors**: Use the CSS variables defined in `globals.css` (e.g., `bg-primary`, `text-foreground`).
-*   **Components**: Use `rounded-2xl` for cards and containers.
-*   **Glassmorphism**: Use the `.glass-card` utility for overlays and sticky headers.
-*   **Animations**: Use `Framer Motion` for interactions (e.g., enter/exit animations, hover states).
+### Mobile First Philosophy 📱
+All diner-facing components must be optimized for mobile devices first.
+*   **Compactness**: Maximize vertical screen real estate. Avoid excessive padding on cards.
+*   **Touch Targets**: Interactive elements (buttons, inputs) must be at least 44px height/width or span `w-full`.
+*   **Gestures**: Support natural swipes and taps (e.g., tap backdrop to dismiss).
+
+### Styling
+*   **Tailwind CSS v4**: usage of `@theme` and CSS variables in `app/globals.css`.
+*   **Colors**: Use semantic variables (e.g., `--primary`, `--muted-foreground`).
+*   **Motion**: Transitions should be snappy (`duration-200` to `duration-300`) or spring-based for a premium feel.
 
 ## Git Workflow
 

@@ -31,10 +31,28 @@ We've pivoted from dark mode to a "Fresh Bistro" aesthetic:
 
 ## Tech Stack
 
-*   **Framework**: Next.js 14 (App Router)
-*   **Styling**: Tailwind CSS v4 + shadcn/ui
-*   **State**: React Query + Context API (LocalStorage persistence)
-*   **Animation**: Framer Motion
+*   **Framework**: Next.js 16 (App Router)
+*   **Core**: React 19
+*   **Styling**: Tailwind CSS v4
+*   **Animation**: Framer Motion 12
+*   **Icons**: Lucide React
+
+## Key Features
+
+### 🛒 Smart Floating Cart
+A persistent, non-intrusive "Smart Pill" that tracks order totals in real-time.
+*   **Pulse Animation**: Subtle "alive" indicators when items are added.
+*   **Glassmorphism**: Premium blurred backdrop for context retention.
+
+### 🖼️ Instant Image Viewer
+Immersive full-screen visual experience for menu items.
+*   **Instant Load**: Zero-latency opening of high-res food imagery.
+*   **Keyboard Support**: `Esc` to dismiss for desktop power users.
+
+### 📱 Mobile-First Design
+Optimized for the "Fresh Bistro" experience on any device.
+*   **Compact Cards**: Maximized screen real estate for menu browsing.
+*   **Touch Targets**: Full-width action buttons for easy one-handed use.
 
 ## Getting Started
 

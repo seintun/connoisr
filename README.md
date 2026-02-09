@@ -58,22 +58,28 @@ Optimized for the "Fresh Bistro" experience on any device.
 
 ## Getting Started
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed development setup and guidelines.
-
+### Quick Start
 ```bash
-# Install dependencies
 npm install
-
-# Run development server
 npm run dev
-
-# Build for Production (PWA)
-# Note: --webpack is required as the PWA plugin does not yet support Turbopack
-npx next build --webpack
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the app.
+Development uses **Turbopack** (faster builds). Open [http://localhost:3000](http://localhost:3000).
 
+### PWA Testing (Production Build)
+```bash
+npm run build  # Uses webpack (PWA compatible)
+npm start
+```
+
+### Key Features
+- **Offline-First**: Cached pages and images work without internet
+- **Installable**: Add to home screen on mobile/desktop  
+- **Smart Caching**: Images (30 days), Pages/API (24 hours)
+
+> **Note**: PWA features only work in production builds. Dev mode disables service workers.
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed development guidelines.
 ## License
 
 MIT

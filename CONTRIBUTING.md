@@ -4,6 +4,37 @@ We welcome contributions to TempoDine! This document outlines the standards and 
 
 ## Development Setup
 
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+2. **Run development server** (Turbopack - fast):
+   ```bash
+   npm run dev
+   ```
+   - Hot reload enabled
+   - PWA features disabled in dev
+   - Open [http://localhost:3000](http://localhost:3000)
+
+3. **Test PWA features** (webpack - production):
+   ```bash
+   npm run build
+   npm start
+   ```
+   - Service worker active
+   - Test offline mode, caching, installability
+   - **Tip**: Unregister old service workers in DevTools → Application → Service Workers
+
+4. **Type checking**:
+   ```bash
+   npm run type-check
+   ```
+
+### Why Two Build Systems?
+- **Dev (Turbopack)**: 10x faster hot reload, better DX
+- **Build (webpack)**: PWA plugin compatibility
+- Empty `turbopack: {}` config silences warnings
 ### Prerequisites
 *   Node.js 20+ (LTS)
 *   npm 10+ or yarn

@@ -44,12 +44,23 @@ Border/Glow logic based on ticket age:
 (Planned) Implement a pattern for real-time state updates.
 
 ### PWA Essentials
-(Implemented)
-- **Library**: `@ducanh2912/next-pwa` for service worker generation and caching strategy.
-- **Manifest**: Dynamic `app/manifest.ts` for type-safe manifest generation.
-- **Offline**: Custom offline fallback page at `app/~offline/page.tsx`.
-- **Build**: Requires `npx next build --webpack` due to Turbopack incompatibility.
+**Status**: ✅ Implemented
 
+**Architecture**:
+- **Dev**: Turbopack (default, faster)
+- **Build**: Webpack (PWA compatible)
+- Empty `turbopack: {}` silences compatibility warnings
+
+**Implementation**:
+- **Plugin**: `@ducanh2912/next-pwa`
+- **Manifest**: Dynamic `app/manifest.ts`
+- **Offline Page**: `app/~offline/page.tsx`
+- **Network Indicator**: `components/domain/NetworkStatus.tsx`
+
+**Caching Strategy**:
+- **Images**: CacheFirst (30 days)
+- **Static Assets**: StaleWhileRevalidate (24 hours)
+- **Pages/API**: StaleWhileRevalidate (24 hours)
 ### State Management
 Use Context API + `useLocalStorage` for lightweight, persistent cart state on the client.
 

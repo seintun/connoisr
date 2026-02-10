@@ -1,5 +1,6 @@
 "use client";
 
+import { TAG_EMOJIS } from "@/lib/menu";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, Trash2 } from "lucide-react";
@@ -21,6 +22,7 @@ interface DinerMenuItemProps {
   onAdd: () => void;
   quantity?: number;
   onUpdateQuantity?: (quantity: number) => void;
+  tags?: string[];
 }
 
 export const DinerMenuItem = React.memo(function DinerMenuItem({
@@ -32,6 +34,7 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
   onAdd,
   quantity = 0,
   onUpdateQuantity,
+  tags = [],
 }: DinerMenuItemProps) {
   return (
     <motion.div
@@ -67,6 +70,18 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
           <p className="text-muted-foreground text-[10px] md:text-sm leading-relaxed mb-3 line-clamp-2 md:line-clamp-3 font-medium opacity-80">
             {description}
           </p>
+          
+          {/* Tags Display - Above Add */}
+          {tags && tags.length > 0 && (
+            <div className="flex flex-wrap gap-1.5 mb-3">
+              {tags.map(tag => (
+                <span key={tag} className="text-[10px] uppercase font-bold text-foreground/70 bg-neutral-100/80 px-2 py-0.5 rounded-md border border-black/5 flex items-center gap-1">
+                  <span>{TAG_EMOJIS[tag]}</span>
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         <MenuItemControls 

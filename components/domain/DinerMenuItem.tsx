@@ -24,6 +24,7 @@ interface DinerMenuItemProps {
   quantity?: number;
   onUpdateQuantity?: (quantity: number) => void;
   tags?: string[];
+  priority?: boolean;
 }
 
 export const DinerMenuItem = React.memo(function DinerMenuItem({
@@ -37,6 +38,7 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
   quantity = 0,
   onUpdateQuantity,
   tags = [],
+  priority = false,
 }: DinerMenuItemProps) {
   return (
     <motion.div
@@ -56,6 +58,7 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
         imageUrl={imageUrl} 
         quantity={quantity} 
         description={description} 
+        priority={priority}
       />
 
       <div className="flex-1 p-3 md:p-5 flex flex-col justify-between bg-gradient-to-b from-card to-card/50">
@@ -76,12 +79,25 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
           {/* Tags Display - Above Add */}
           {tags && tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-3">
-              {tags.map(tag => (
-                <span key={tag} className="text-[10px] uppercase font-bold text-foreground/70 bg-muted px-2 py-0.5 rounded-md border border-foreground/5 flex items-center gap-1">
-                  <span>{TAG_EMOJIS[tag]}</span>
-                  {tag}
-                </span>
-              ))}
+              {tags.map(tag => {
+                // Dynamic colors for tags
+                let colorClass = "bg-secondary text-secondary-foreground border-border/50";
+                
+                if (["Spicy"].includes(tag)) colorClass = "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20";
+                else if (["Vegetarian", "Vegan"].includes(tag)) colorClass = "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20";
+                else if (["GF", "Gluten Free"].includes(tag)) colorClass = "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20";
+                else if (["Seafood", "Shellfish"].includes(tag)) colorClass = "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20";
+                else if (["Sweet"].includes(tag)) colorClass = "bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-500/10 dark:text-pink-400 dark:border-pink-500/20";
+                else if (["Alcohol"].includes(tag)) colorClass = "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20";
+                else if (["Nuts", "Nut Free"].includes(tag)) colorClass = "bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-500/10 dark:text-stone-400 dark:border-stone-500/20";
+
+                return (
+                  <span key={tag} className={cn("text-[10px] uppercase font-bold px-2 py-0.5 rounded-md border flex items-center gap-1", colorClass)}>
+                    <span className="opacity-80 scale-90">{TAG_EMOJIS[tag]}</span>
+                    {tag}
+                  </span>
+                )
+              })}
             </div>
           )}
         </div>
@@ -99,7 +115,7 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
 
 // Sub-components
 
-const MenuItemImage = React.memo(function MenuItemImage({ name, imageUrl, quantity, description }: { name: string, imageUrl: string, quantity: number, description: string }) {
+const MenuItemImage = React.memo(function MenuItemImage({ name, imageUrl, quantity, description, priority = false }: { name: string, imageUrl: string, quantity: number, description: string, priority?: boolean }) {
   const [isImageOpen, setIsImageOpen] = useState(false);
 
   useEffect(() => {
@@ -124,6 +140,7 @@ const MenuItemImage = React.memo(function MenuItemImage({ name, imageUrl, quanti
           src={imageUrl}
           alt={name}
           fill
+          priority={priority}
           sizes="(max-width: 768px) 33vw, (max-width: 1024px) 50vw, 25vw"
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />

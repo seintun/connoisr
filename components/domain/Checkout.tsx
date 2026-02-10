@@ -236,12 +236,25 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                               
                               return (
                                 <div className="flex flex-wrap gap-1 mb-2 ml-1">
-                                  {tags.map(tag => (
-                                    <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-secondary text-secondary-foreground border border-border/50 flex items-center gap-1 font-medium" title={tag}>
-                                      <span className="grayscale opacity-70">{TAG_EMOJIS[tag]}</span>
-                                      <span>{tag}</span>
-                                    </span>
-                                  ))}
+                                  {tags.map(tag => {
+                                     // Dynamic colors for tags
+                                    let colorClass = "bg-secondary text-secondary-foreground border-border/50";
+                                    
+                                    if (["Spicy"].includes(tag)) colorClass = "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20";
+                                    else if (["Vegetarian", "Vegan"].includes(tag)) colorClass = "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20";
+                                    else if (["GF", "Gluten Free"].includes(tag)) colorClass = "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20";
+                                    else if (["Seafood", "Shellfish"].includes(tag)) colorClass = "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20";
+                                    else if (["Sweet"].includes(tag)) colorClass = "bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-500/10 dark:text-pink-400 dark:border-pink-500/20";
+                                    else if (["Alcohol"].includes(tag)) colorClass = "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20";
+                                    else if (["Nuts", "Nut Free"].includes(tag)) colorClass = "bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-500/10 dark:text-stone-400 dark:border-stone-500/20";
+
+                                    return (
+                                      <span key={tag} className={cn("text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1 font-medium", colorClass)}>
+                                        <span className="opacity-80 scale-90">{TAG_EMOJIS[tag]}</span>
+                                        <span>{tag}</span>
+                                      </span>
+                                    )
+                                  })}
                                 </div>
                               );
                             })()}
@@ -310,10 +323,10 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
 
             {/* Footer */}
             <div className="px-4 pt-2.5 pb-5 sm:pb-4 border-t border-border/40 bg-card/95 shrink-0">
-              <div className="flex items-center justify-between text-[11px] text-muted-foreground/60 mb-3 px-1">
-                <span>Total Items: {session.cart.reduce((a,b)=>a+b.quantity,0) + (session.orders||[]).reduce((a,b)=>a+b.items.reduce((c,d)=>c+d.quantity,0),0)}</span>
-                <div className="flex gap-2">
-                   <span>Tax ${tax.toFixed(2)}</span>
+              <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-3 px-1">
+                <span className="font-medium">Total Items: {session.cart.reduce((a,b)=>a+b.quantity,0) + (session.orders||[]).reduce((a,b)=>a+b.items.reduce((c,d)=>c+d.quantity,0),0)}</span>
+                <div className="flex gap-3">
+                   <span className="font-medium">Tax ${tax.toFixed(2)}</span>
                    <span className="font-bold text-foreground">Total ${total.toFixed(2)}</span>
                 </div>
               </div>

@@ -5,6 +5,7 @@ import React, { createContext, useCallback, useContext, useEffect, useReducer } 
 
 type Action =
   | { type: "SET_SESSION"; payload: TableSession }
+  | { type: "SET_GUEST_NAME"; payload: string }
   | { type: "ADD_ITEM"; payload: Omit<CartItem, "id"> }
   | { type: "REMOVE_ITEM"; payload: { itemId: string } }
   | { type: "UPDATE_QUANTITY"; payload: { itemId: string; quantity: number } }
@@ -15,6 +16,7 @@ type Action =
 const sessionReducer = (state: TableSession | null, action: Action): TableSession | null => {
   if (action.type === "SET_SESSION") return action.payload;
   if (!state) return null;
+  if (action.type === "SET_GUEST_NAME") return { ...state, guestName: action.payload };
 
   switch (action.type) {
     case "ADD_ITEM": {
@@ -92,6 +94,7 @@ interface TableSessionContextType {
   sendOrder: () => void;
   updateOrderStatus: (orderId: string, status: Order["status"]) => void;
   initializeSession: (tableId: string) => void;
+  setGuestName: (name: string) => void;
 }
 
 const TableSessionContext = createContext<TableSessionContextType | undefined>(undefined);
@@ -160,6 +163,7 @@ export function TableSessionProvider({
   const clearCart = useCallback(() => dispatch({ type: "CLEAR_CART" }), []);
   const sendOrder = useCallback(() => dispatch({ type: "SEND_ORDER" }), []);
   const updateOrderStatus = useCallback((orderId: string, status: Order["status"]) => dispatch({ type: "UPDATE_ORDER_STATUS", payload: { orderId, status } }), []);
+  const setGuestName = useCallback((name: string) => dispatch({ type: "SET_GUEST_NAME", payload: name }), []);
 
   return (
     <TableSessionContext.Provider
@@ -172,6 +176,7 @@ export function TableSessionProvider({
         sendOrder,
         updateOrderStatus,
         initializeSession,
+        setGuestName,
       }}
     >
       {children}

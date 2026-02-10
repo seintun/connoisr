@@ -15,10 +15,12 @@ export interface CartItem {
   };
   isCustomized?: boolean;
   tags?: string[];
+  orderedByName?: string;
 }
 
 export interface TableSession {
   tableId: string;
+  guestName?: string;
   cart: CartItem[];
   orders: Order[];
   status: 'browsing' | 'ordering' | 'payment' | 'completed';

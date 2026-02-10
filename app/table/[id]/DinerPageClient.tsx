@@ -2,7 +2,10 @@
 
 import { DinerMenuItem } from "@/components/domain/DinerMenuItem";
 import { MenuHeader } from "@/components/domain/MenuHeader";
+import { IdentityModal } from "@/components/onboarding/IdentityModal";
 import { useTableSession } from "@/components/providers/TableSessionProvider";
+import { useIdentity } from "@/context/IdentityContext";
+import { useMenuPrefetch } from "@/hooks/useMenuPrefetch";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { CartItem } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
@@ -24,8 +27,10 @@ import { MENU_ITEMS } from "@/lib/menu";
 
 export default function DinerPageClient() {
   const { session, addItem, updateItemQuantity, removeItem } = useTableSession();
+  const { userName } = useIdentity();
+  const { isReady } = useMenuPrefetch(session?.tableId || "1");
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const isOnline = useOnlineStatus(); // Moved inside component
+  const isOnline = useOnlineStatus();
 
   const [selectedItemForCustomization, setSelectedItemForCustomization] = useState<(typeof MENU_ITEMS)[0] | null>(null);
 
@@ -110,10 +115,28 @@ export default function DinerPageClient() {
       setSelectedItemForCustomization(null);
   }, [addItem]);
 
-
+  const showMenu = !!userName && isReady;
 
   return (
-     <div className="min-h-screen bg-background pb-32">
+    <>
+      <AnimatePresence mode="wait">
+        {!userName && (
+          <IdentityModal
+            key="identity-modal"
+            tableId={session?.tableId || "1"}
+            prefetchProgress={isReady}
+          />
+        )}
+      </AnimatePresence>
+
+      {showMenu && (
+        <motion.div
+          key="menu-grid"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+          className="min-h-screen bg-background pb-32"
+        >
        <MenuHeader 
           categories={categories} 
           tableId={session?.tableId?.toString()} 
@@ -201,6 +224,8 @@ export default function DinerPageClient() {
             item={selectedItemForCustomization}
             onAddToCart={handleAddToCartFromDrawer}
         />
-     </div>
+      </motion.div>
+      )}
+    </>
   );
 }

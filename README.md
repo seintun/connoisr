@@ -13,7 +13,7 @@ TempoDine is built with **Next.js 14+**, **TypeScript**, and **Tailwind CSS v4**
 *   **Diner PWA (The "Fresh Bistro" Experience)**: A guest-facing, zero-auth flow. Focus on "Time-to-Table" with a <3-tap path from scan to order.
     *   *Route:* `/table/[id]`
 *   **Kitchen Display System (KDS)**: A real-time dashboard where **Color = Priority**. Functional color theory helps staff manage orders without reading fine print.
-    *   *Route:* `/admin/kds`
+    *   *Route:* `/kitchen`
 
 ## Aesthetics: Vibrant Modernism ✨
 

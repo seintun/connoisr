@@ -14,7 +14,7 @@ export default function Home() {
           <Link href="/table/1" className="px-6 py-2 bg-primary text-primary-foreground rounded-sm font-medium hover:opacity-90 transition-opacity">
             Diner App
           </Link>
-          <Link href="/admin/kds" className="px-6 py-2 border border-border rounded-sm font-medium hover:bg-muted transition-colors">
+          <Link href="/kitchen" className="px-6 py-2 border border-border rounded-sm font-medium hover:bg-muted transition-colors">
             Kitchen Display
           </Link>
         </div>

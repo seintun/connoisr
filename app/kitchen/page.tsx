@@ -1,7 +1,7 @@
 "use client";
 
 import { useTableSession } from "@/components/providers/TableSessionProvider";
-import { MENU_ITEMS, TAG_EMOJIS } from "@/lib/menu";
+import { MENU_ITEMS } from "@/lib/menu";
 import { cn } from "@/lib/utils";
 import { Order } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
@@ -91,77 +91,75 @@ export default function KitchenPage() {
                     const hasNotes = !!item.notes;
                     const isCustom = item.isCustomized || hasOptions || hasNotes;
 
+                    // Helper for Spiciness Color
+                    const getSpicinessColor = (level: string) => {
+                      switch (level) {
+                        case 'Extra Hot': return 'bg-red-500/20 text-red-300 border-red-500/30';
+                        case 'Hot': return 'bg-orange-500/20 text-orange-300 border-orange-500/30';
+                        case 'Medium': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
+                        case 'Mild': return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+                        default: return 'bg-neutral-800 text-neutral-400';
+                      }
+                    };
+
                     return (
-                      <div key={idx} className={cn("flex flex-col gap-2 p-3 rounded-xl transition-colors", isCustom ? "bg-white/5 border border-white/5" : "hover:bg-white/5")}>
+                      <div key={idx} className={cn("flex flex-col gap-3 p-3 rounded-xl transition-colors", isCustom ? "bg-white/5 border border-white/5" : "hover:bg-white/5")}>
                         {/* Main Item Row */}
-                        <div className="flex items-start gap-3">
-                          <span className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-neutral-200 text-neutral-900 font-bold font-mono text-lg shadow-sm">
+                        <div className="flex items-start gap-4">
+                          <span className="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-200 text-neutral-900 font-bold font-mono text-xl shadow-sm">
                             {item.quantity}
                           </span>
-                          <div className="flex-1 min-w-0">
+                          <div className="flex-1 min-w-0 pt-1">
                              <div className="flex items-baseline justify-between gap-2">
-                                <span className={cn("font-bold text-xl tracking-tight leading-tight", isCustom ? "text-white" : "text-neutral-200")}>
+                                <span className={cn("font-bold text-lg leading-tight", isCustom ? "text-white" : "text-neutral-200")}>
                                   {item.name}
                                 </span>
                              </div>
                              
-                             {/* Tags */}
-                             {tags.length > 0 && (
-                                <div className="flex flex-wrap gap-1.5 mt-1.5 opacity-80">
-                                  {tags.map(tag => (
-                                    <span key={tag} className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400 border border-white/10 flex items-center gap-1">
-                                      <span className="grayscale">{TAG_EMOJIS[tag]}</span>
-                                      <span>{tag}</span>
-                                    </span>
-                                  ))}
-                                </div>
-                             )}
+
                           </div>
                         </div>
 
                         {/* Customizations Block */}
                         {(hasOptions || hasNotes) && (
-                          <div className="ml-11 space-y-1.5">
+                          <div className="ml-14 space-y-2">
                             
                             {/* Spiciness */}
                             {item.options?.spiciness && (
-                              <div className="flex items-center gap-2 text-orange-400 font-medium bg-orange-950/30 px-2 py-1.5 rounded-md border border-orange-500/20">
-                                <Flame className="w-3.5 h-3.5 fill-orange-400/20" />
-                                <span className="text-xs uppercase tracking-wider opacity-70">Spice:</span>
-                                <span className="text-sm">{item.options.spiciness}</span>
+                              <div className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg border w-fit", getSpicinessColor(item.options.spiciness))}>
+                                <Flame className="w-4 h-4 fill-current opacity-50" />
+                                <span className="text-xs font-bold uppercase tracking-wider">{item.options.spiciness}</span>
                               </div>
                             )}
 
                             {/* Removals */}
                             {item.options?.removals && (
-                               <div className="flex items-start gap-2 text-red-400 font-medium bg-red-950/30 px-2 py-1.5 rounded-md border border-red-500/20">
+                               <div className="flex items-start gap-2 text-red-400 font-medium bg-red-950/20 px-3 py-2 rounded-lg border border-red-500/20">
                                   <div className="mt-0.5 relative shrink-0">
-                                    <span className="w-3.5 h-3.5 flex items-center justify-center border border-red-400 rounded-full text-[10px] font-bold">✕</span>
+                                    <span className="w-4 h-4 flex items-center justify-center border border-red-400 rounded-full text-[10px] font-bold">✕</span>
                                   </div>
-                                  <div className="flex flex-col leading-tight">
-                                    <span className="text-[10px] uppercase tracking-wider opacity-70">NO:</span>
-                                    <span className="text-sm">{item.options.removals}</span>
-                                  </div>
+                                  <span className="text-sm">NO {item.options.removals}</span>
                                </div>
                             )}
 
                             {/* Dietary */}
                             {item.options?.allergens && (
-                              <div className="flex items-center gap-2 text-emerald-400 font-medium bg-emerald-950/30 px-2 py-1.5 rounded-md border border-emerald-500/20">
+                              <div className="flex items-center gap-2 text-emerald-400 font-medium bg-emerald-950/20 px-3 py-2 rounded-lg border border-emerald-500/20">
                                 <span className="text-lg leading-none">🥬</span>
-                                <span className="text-xs uppercase tracking-wider opacity-70">Dietary:</span>
                                 <span className="text-sm">{item.options.allergens}</span>
                               </div>
                             )}
 
-                            {/* Notes - High Visibility */}
+                            {/* Notes - High Visibility Sticky Note Style */}
                             {(item.options?.note || item.notes) && (
-                              <div className="flex items-start gap-2 text-amber-300 font-medium bg-amber-500/10 px-3 py-2 rounded-lg border border-amber-500/30 shadow-sm mt-1">
-                                <span className="text-lg leading-none mt-0.5">📝</span>
-                                <div className="flex flex-col">
-                                   <span className="text-[10px] uppercase tracking-wider text-amber-500 font-bold mb-0.5">Kitchen Note:</span>
-                                   <span className="italic text-base text-amber-200">"{item.options?.note || item.notes}"</span>
+                              <div className="flex flex-col gap-1 bg-yellow-300/10 border border-yellow-300/40 p-3 rounded-tr-xl rounded-bl-xl rounded-br-sm rounded-tl-sm relative mt-1">
+                                <div className="flex items-center gap-2 text-yellow-500 font-bold text-xs uppercase tracking-wider mb-1">
+                                   <ChefHat className="w-3 h-3" />
+                                   Kitchen Note
                                 </div>
+                                <p className="text-yellow-100 font-medium italic text-base leading-snug">
+                                  "{item.options?.note || item.notes}"
+                                </p>
                               </div>
                             )}
                           </div>

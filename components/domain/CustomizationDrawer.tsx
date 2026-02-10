@@ -106,7 +106,7 @@ export function CustomizationDrawer({ isOpen, onClose, item, onAddToCart }: Cust
                     <Flame className={cn("w-4 h-4", item.tags?.includes("Sweet") ? "text-pink-500" : "text-orange-500")} /> 
                     {item.tags?.includes("Sweet") ? "Sweetness Level" : "Spiciness Level"}
                   </h3>
-                  <div className="flex justify-between bg-neutral-100 p-1.5 rounded-2xl relative">
+                  <div className="flex justify-between bg-muted p-1.5 rounded-2xl relative">
                      <motion.div 
                       className={cn("absolute top-1.5 bottom-1.5 rounded-xl shadow-sm transition-colors duration-300", 
                         item.tags?.includes("Sweet") ? "bg-pink-500" : SPICINESS_LEVELS[spiciness].color
@@ -124,7 +124,7 @@ export function CustomizationDrawer({ isOpen, onClose, item, onAddToCart }: Cust
                         onClick={() => setSpiciness(level.value)}
                         className={cn(
                           "flex-1 py-3 text-sm font-bold rounded-xl relative z-10 transition-colors duration-300",
-                          spiciness === level.value ? "text-white" : "text-neutral-500 hover:text-neutral-700"
+                          spiciness === level.value ? "text-white" : "text-muted-foreground hover:text-foreground"
                         )}
                       >
                         {level.label}
@@ -145,7 +145,7 @@ export function CustomizationDrawer({ isOpen, onClose, item, onAddToCart }: Cust
                   <textarea
                     value={chefNote}
                     onChange={(e) => setChefNote(e.target.value.slice(0, 100))}
-                    className="w-full bg-neutral-50 border border-neutral-200 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none h-24"
+                    className="w-full bg-muted/50 border border-border/50 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none h-24"
                     placeholder="Extra crispy? Sauce on side?"
                   />
                   <div className="absolute bottom-3 right-3 text-xs text-muted-foreground font-mono">
@@ -162,17 +162,17 @@ export function CustomizationDrawer({ isOpen, onClose, item, onAddToCart }: Cust
             <div className="fixed bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-background via-background to-transparent z-[80]">
               
               <div className="flex items-center gap-4 max-w-md mx-auto">
-                <div className="flex items-center gap-3 bg-neutral-100 rounded-xl p-1.5 h-14">
+                <div className="flex items-center gap-3 bg-muted rounded-xl p-1.5 h-14">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-11 h-full rounded-lg bg-white shadow-sm flex items-center justify-center text-foreground hover:bg-neutral-50 transition-colors"
+                    className="w-11 h-full rounded-lg bg-card shadow-sm flex items-center justify-center text-foreground hover:bg-muted/80 transition-colors"
                   >
                     -
                   </button>
                   <span className="font-bold text-lg w-4 text-center tabular-nums">{quantity}</span>
                   <button
                     onClick={() => setQuantity(quantity + 1)}
-                    className="w-11 h-full rounded-lg bg-white shadow-sm flex items-center justify-center text-foreground hover:bg-neutral-50 transition-colors"
+                    className="w-11 h-full rounded-lg bg-card shadow-sm flex items-center justify-center text-foreground hover:bg-muted/80 transition-colors"
                   >
                     +
                   </button>
@@ -180,7 +180,7 @@ export function CustomizationDrawer({ isOpen, onClose, item, onAddToCart }: Cust
 
                 <button
                   onClick={handleAddToCart}
-                  className="flex-1 h-14 bg-black text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg hover:bg-neutral-800 transition-colors active:scale-95 duration-200"
+                  className="flex-1 h-14 bg-primary text-primary-foreground rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg hover:bg-primary/90 transition-colors active:scale-95 duration-200"
                 >
                   <span className="text-lg">Add to Order</span>
                   <span className="bg-white/20 px-2 py-0.5 rounded text-sm">

@@ -26,6 +26,8 @@ export const viewport: Viewport = {
 import { NetworkStatus } from "@/components/domain/NetworkStatus";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -34,11 +36,18 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${outfit.variable} ${jakarta.variable} font-sans antialiased bg-background text-foreground`}
+        className={`${outfit.variable} ${jakarta.variable} antialiased bg-background text-foreground`}
       >
-        {children}
-        <NetworkStatus />
-        {process.env.VERCEL && <SpeedInsights />}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <NetworkStatus />
+          {process.env.VERCEL && <SpeedInsights />}
+        </ThemeProvider>
       </body>
     </html>
   );

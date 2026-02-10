@@ -14,20 +14,31 @@ A guest-facing, zero-auth flow. Focus on "Time-to-Table" by ensuring a <3-tap pa
 ### Kitchen Display System (KDS) (The "High-Velocity" Board)
 A real-time dashboard where **Color = Priority**. (Currently deprioritized for initial Diner MVP focus).
 
-## Design & Aesthetic (Vibrant Modernism)
+## Design & Aesthetic (Modern Fine Dining)
+
+### Design Concept
+Moving away from "tech" colors towards materials found in physical luxury spaces: **Stone, Gold, Slate, and Crisp Linen**.
 
 ### Palette
-- **Background**: `#F8FAFC` (Pure Frost)
-- **Primary/Brand**: `#FF6B4A` (Zesty Coral)
-- **Staff Action**: `#6366F1` (Electric Indigo)
-- **Success**: `#10B981` (Emerald)
 
-### Functional KDS Colors
-Border/Glow logic based on ticket age:
-- **New**: Coral
-- **In-Progress**: Indigo
-- **Delayed**: Amber (`#F59E0B`)
-- **Ready**: Emerald
+#### Dark Mode ("Midnight Slate")
+*Best for: Evening service, modern bar atmosphere.*
+- **Background**: `hsl(224 71% 4%)` (Deepest Blue/Black)
+- **Foreground**: `hsl(210 40% 98%)` (Crisp White)
+- **Primary / Accent**: `hsl(217 91% 60%)` (Electric Indigo)
+- **Surface**: `hsl(222 47% 11%)` (Dark Slate)
+- **Border**: `hsl(217 33% 20%)` (Cool Grey)
+
+#### Light Mode ("Alabaster & Ink")
+*Best for: Lunch service, readability.*
+- **Background**: `hsl(40 20% 99%)` (Warm Alabaster)
+- **Foreground**: `hsl(240 10% 3.9%)` (Deep Ink)
+- **Primary**: `hsl(45 93% 47%)` (Champagne Gold) or Deep Bronze
+- **Surface**: Pure White
+
+### Functional Colors
+- **Success**: Emerald (retained for clarity)
+- **Error**: Burnt Sienna or Muted Red (less jarring than bright red)
 
 ### Typography
 - **Headers**: Outfit (for a friendly, modern feel)

@@ -15,12 +15,14 @@ TempoDine is built with **Next.js 14+**, **TypeScript**, and **Tailwind CSS v4**
 *   **Kitchen Display System (KDS)**: A real-time dashboard where **Color = Priority**. Functional color theory helps staff manage orders without reading fine print.
     *   *Route:* `/kitchen`
 
-## Aesthetics: Vibrant Modernism ✨
+## Aesthetics: Modern Fine Dining 🥂
 
-We've pivoted from dark mode to a "Fresh Bistro" aesthetic:
-*   **Palette**: Pure Frost (`#F8FAFC`), Zesty Coral (`#FF6B4A`), and Electric Indigo (`#6366F1`).
+We've pivoted to a premium "Modern Fine Dining" aesthetic, featuring materials found in physical luxury spaces: **Stone, Gold, Slate, and Crisp Linen**.
+
+*   **Dark Mode ("Midnight Slate")**: Deepest Blue/Black (`hsl(224 71% 4%)`) backgrounds with Electric Indigo (`hsl(217 91% 60%)`) accents. Modern, high-contrast, and tech-forward.
+*   **Light Mode ("Alabaster & Ink")**: Warm Alabaster (`hsl(40 20% 99%)`) with sharp Deep Ink text. designed for clarity during lunch service.
 *   **Typography**: `Outfit` (Headers) and `Plus Jakarta Sans` (Body).
-*   **UI Polish**: Glassmorphism, `rounded-2xl` components, and ambient glows.
+*   **UI Polish**: Glassmorphism, subtle borders, and refined transitions.
 
 ## Features
 

@@ -8,35 +8,7 @@
   --font-sans: var(--font-jakarta);
   --font-serif: var(--font-outfit);
 
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-
-  --color-success: var(--success);
-  --color-success-foreground: var(--success-foreground);
-
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
+  /* Colors moved to bottom @theme block with correct hsl() syntax */
 
   --radius-2xl: 1rem;
   --radius-xl: 0.75rem;
@@ -86,52 +58,114 @@
 
 @layer base {
   :root {
-    /* Pure Frost Background */
-    --background: hsl(210 20% 98%);
-    /* #F8FAFC */
-    --foreground: hsl(222 47% 11%);
-    /* #0F172A */
+    /* Luxury Light Mode - Alabaster & Ink */
+    --background: 40 20% 99%;
+    --foreground: 240 10% 3.9%;
 
-    --card: hsl(0 0% 100%);
-    --card-foreground: hsl(222 47% 11%);
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
 
-    --popover: hsl(0 0% 100%);
-    --popover-foreground: hsl(222 47% 11%);
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
 
-    /* Zesty Coral Primary */
-    --primary: hsl(11 100% 64%);
-    /* #FF6B4A */
-    --primary-foreground: hsl(210 40% 98%);
+    --primary: 30 20% 30%;
+    --primary-foreground: 30 20% 98%;
 
-    /* Electric Indigo Secondary */
-    --secondary: hsl(239 84% 67%);
-    /* #6366F1 */
-    --secondary-foreground: hsl(210 40% 98%);
+    --secondary: 40 5% 85%;
+    --secondary-foreground: 240 10% 3.9%;
 
-    /* Emerald Success */
-    --success: hsl(151 65% 52%);
-    /* #10B981 */
-    --success-foreground: hsl(210 40% 98%);
+    --muted: 40 10% 96%;
+    --muted-foreground: 240 4% 46%;
 
-    --muted: hsl(210 40% 96%);
-    --muted-foreground: hsl(215 16% 47%);
+    --accent: 40 10% 94%;
+    --accent-foreground: 240 10% 3.9%;
 
-    --accent: hsl(210 40% 96%);
-    --accent-foreground: hsl(222 47% 11%);
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
 
-    --destructive: hsl(0 84% 60%);
-    --destructive-foreground: hsl(210 40% 98%);
+    --success: 150 40% 40%;
+    --success-foreground: 0 0% 98%;
 
-    --border: hsl(214 32% 91%);
-    --input: hsl(214 32% 91%);
-    --ring: hsl(11 100% 64%);
+    --border: 240 6% 90%;
+    --input: 240 6% 90%;
+    --ring: 30 20% 30%;
 
     --radius: 0.5rem;
   }
+
+  /* Force dark mode specificty */
+  html.dark {
+    /* Cloud Bar / Moody Night Mode */
+    --background: 220 15% 8%;
+    /* Deep Oxford Blue/Charcoal - richer than flat black */
+    --foreground: 220 10% 96%;
+    /* Crisp White-Grey */
+
+    --card: 220 15% 10%;
+    --card-foreground: 220 10% 96%;
+
+    --popover: 220 15% 10%;
+    --popover-foreground: 220 10% 96%;
+
+    /* Primary: Muted Amber/Cognac -> sophisticated, not neon yellow */
+    --primary: 35 60% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary: Gunmetal */
+    --secondary: 215 15% 20%;
+    --secondary-foreground: 220 10% 96%;
+
+    --muted: 215 15% 15%;
+    --muted-foreground: 215 10% 65%;
+    /* Higher contrast for muted text */
+
+    --accent: 215 15% 20%;
+    --accent-foreground: 220 10% 96%;
+
+    --destructive: 0 60% 40%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 150 40% 40%;
+    --success-foreground: 0 0% 98%;
+
+    --border: 215 15% 20%;
+    --input: 215 15% 20%;
+    --ring: 35 60% 55%;
+  }
+}
+
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
 }
 
 @utility glass-card {
-  @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-lg;
+  @apply bg-white/70 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/10 shadow-lg;
 }
 
 @utility text-glow {

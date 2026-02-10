@@ -43,9 +43,9 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className={cn(
-        "group relative overflow-hidden rounded-[2rem] bg-white transition-all duration-300 h-full",
+        "group relative overflow-hidden rounded-[2rem] bg-card transition-all duration-300 h-full",
         "flex flex-row md:flex-col",
-        "border border-neutral-200/60",
+        "border border-border/60",
         quantity > 0
           ? "ring-2 ring-primary/20 shadow-md"
           : "shadow-sm hover:shadow-md hover:-translate-y-0.5"
@@ -58,13 +58,13 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
         description={description} 
       />
 
-      <div className="flex-1 p-3 md:p-5 flex flex-col justify-between bg-gradient-to-b from-white to-neutral-50/50">
+      <div className="flex-1 p-3 md:p-5 flex flex-col justify-between bg-gradient-to-b from-card to-card/50">
         <div>
           <div className="flex justify-between items-start mb-1 md:mb-2 gap-2">
             <h3 className="font-serif text-base md:text-xl font-bold text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors duration-300">
               {name}
             </h3>
-            <span className="font-sans font-bold text-sm md:text-lg text-foreground/90 bg-neutral-100/80 px-1.5 py-0.5 md:px-2 md:py-0.5 rounded-md tabular-nums tracking-tight">
+            <span className="font-sans font-bold text-sm md:text-lg text-foreground/90 bg-muted px-1.5 py-0.5 md:px-2 md:py-0.5 rounded-md tabular-nums tracking-tight">
               ${price}
             </span>
           </div>
@@ -77,7 +77,7 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
           {tags && tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-3">
               {tags.map(tag => (
-                <span key={tag} className="text-[10px] uppercase font-bold text-foreground/70 bg-neutral-100/80 px-2 py-0.5 rounded-md border border-black/5 flex items-center gap-1">
+                <span key={tag} className="text-[10px] uppercase font-bold text-foreground/70 bg-muted px-2 py-0.5 rounded-md border border-foreground/5 flex items-center gap-1">
                   <span>{TAG_EMOJIS[tag]}</span>
                   {tag}
                 </span>
@@ -158,7 +158,7 @@ const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd,
     <div className="flex items-center gap-1.5 mt-auto">
       {/* Add button OR Quantity Stepper */}
       {quantity > 0 && onUpdateQuantity ? (
-        <div className="flex-1 flex items-center gap-1.5 md:gap-2 p-1 rounded-lg md:rounded-xl bg-white shadow-sm border border-neutral-100">
+        <div className="flex-1 flex items-center gap-1.5 md:gap-2 p-1 rounded-lg md:rounded-xl bg-card shadow-sm border border-border/50">
           <motion.button
             onClick={(e) => {
               e.stopPropagation();
@@ -166,7 +166,7 @@ const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd,
             }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="w-7 h-7 md:w-10 md:h-10 rounded-md md:rounded-lg flex items-center justify-center transition-colors bg-neutral-50 text-destructive hover:bg-red-500 hover:text-white cursor-pointer"
+            className="w-7 h-7 md:w-10 md:h-10 rounded-md md:rounded-lg flex items-center justify-center transition-colors bg-muted text-destructive hover:bg-destructive hover:text-destructive-foreground cursor-pointer"
           >
             {quantity === 1 ? <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <Minus className="w-3.5 h-3.5 md:w-4 md:h-4" />}
           </motion.button>
@@ -190,7 +190,7 @@ const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd,
             }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="w-7 h-7 md:w-10 md:h-10 rounded-md md:rounded-lg flex items-center justify-center transition-colors bg-neutral-50 text-emerald-600 hover:bg-emerald-600 hover:text-white cursor-pointer"
+            className="w-7 h-7 md:w-10 md:h-10 rounded-md md:rounded-lg flex items-center justify-center transition-colors bg-muted text-success hover:bg-success hover:text-success-foreground cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
           </motion.button>
@@ -200,7 +200,7 @@ const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd,
           onClick={onAdd}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="flex-1 py-2 md:py-3 bg-foreground text-background font-semibold rounded-lg md:rounded-xl flex items-center justify-center gap-2 hover:bg-primary transition-all duration-300 text-xs md:text-sm group/btn shadow-sm hover:shadow-md cursor-pointer"
+          className="flex-1 py-2 md:py-3 bg-primary text-primary-foreground font-semibold rounded-lg md:rounded-xl flex items-center justify-center gap-2 hover:bg-primary/90 transition-all duration-300 text-xs md:text-sm group/btn shadow-sm hover:shadow-md cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5 transition-transform group-hover/btn:rotate-90" />
           <span>Add</span>
@@ -212,7 +212,7 @@ const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd,
         onClick={onModify}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="py-2 md:py-3 px-2.5 md:px-3 bg-amber-50 text-amber-700 rounded-lg md:rounded-xl flex items-center justify-center gap-1.5 hover:bg-amber-100 transition-all duration-200 cursor-pointer border border-amber-200/60"
+        className="py-2 md:py-3 px-2.5 md:px-3 bg-secondary text-secondary-foreground rounded-lg md:rounded-xl flex items-center justify-center gap-1.5 hover:bg-secondary/80 transition-all duration-200 cursor-pointer border border-border/50"
         title="Customize"
       >
         <span className="text-sm md:text-base">🍽️</span>

@@ -48,6 +48,7 @@ export function CustomizationDrawer({ isOpen, onClose, item, onAddToCart }: Cust
       name: item.name,
       category: item.category,
       price: item.price,
+      tags: item.tags,
       quantity,
       options,
       isCustomized: true,

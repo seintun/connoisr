@@ -53,6 +53,7 @@ export default function DinerPageClient() {
                     name: item.name,
                     category: item.category,
                     price: item.price,
+                    tags: item.tags,
                     quantity: newQuantity,
                     // No options, isCustomized is undefined/false
                 });
@@ -93,6 +94,7 @@ export default function DinerPageClient() {
       name: item.name,
       category: item.category,
       price: item.price,
+      tags: item.tags,
       quantity: 1,
     });
   }, [addItem]);

@@ -14,6 +14,7 @@ export interface CartItem {
     [key: string]: string | undefined;
   };
   isCustomized?: boolean;
+  tags?: string[];
 }
 
 export interface TableSession {

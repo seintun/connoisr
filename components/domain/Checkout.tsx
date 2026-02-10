@@ -226,6 +226,26 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                               </span>
                             </div>
                             
+
+
+                            {/* Tags (Static) */}
+                            {(() => {
+                              const menuDef = MENU_ITEMS.find(i => i.id === item.menuItemId);
+                              const tags = menuDef?.tags || item.tags || [];
+                              if (tags.length === 0) return null;
+                              
+                              return (
+                                <div className="flex flex-wrap gap-1 mb-2 ml-1">
+                                  {tags.map(tag => (
+                                    <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-100/80 text-neutral-500 border border-neutral-200/50 flex items-center gap-1" title={tag}>
+                                      <span className="grayscale opacity-70">{TAG_EMOJIS[tag]}</span>
+                                      <span>{tag}</span>
+                                    </span>
+                                  ))}
+                                </div>
+                              );
+                            })()}
+                            
                             {/* Customization Options */}
                              {item.options && Object.keys(item.options).length > 0 && (
                                <div className="mb-2 space-y-0.5 bg-neutral-50/50 p-1.5 rounded-lg border border-neutral-100">

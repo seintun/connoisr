@@ -1,7 +1,7 @@
 "use client";
 
 import { useTableSession } from "@/components/providers/TableSessionProvider";
-import { MENU_ITEMS } from "@/lib/menu";
+import { MENU_ITEMS, TAG_EMOJIS } from "@/lib/menu";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, ChefHat, Clock, CreditCard, Minus, Plus, Trash2, X } from "lucide-react";

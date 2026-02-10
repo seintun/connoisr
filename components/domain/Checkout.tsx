@@ -123,8 +123,8 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 350 }}
-            className="fixed bottom-0 left-0 right-0 sm:bottom-4 sm:left-4 sm:right-4 z-50 bg-card/95 backdrop-blur-2xl rounded-t-[1.75rem] sm:rounded-[2rem] shadow-[0_-8px_40px_-10px_rgba(0,0,0,0.5)] max-h-[85vh] flex flex-col border border-border/50 overflow-hidden ring-1 ring-black/5"
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed bottom-0 left-0 right-0 sm:bottom-4 sm:left-4 sm:right-4 z-50 bg-card/95 backdrop-blur-2xl rounded-t-[1.75rem] sm:rounded-[2rem] shadow-[0_-8px_40px_-10px_rgba(0,0,0,0.5)] max-h-[92vh] flex flex-col border border-border/50 overflow-hidden ring-1 ring-black/5"
           >
             {/* Header */}
             <div className="pt-2 pb-0 shrink-0">
@@ -383,34 +383,47 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
             </div>
 
             {/* Footer */}
-            <div className="px-4 pt-2.5 pb-5 sm:pb-4 border-t border-border/40 bg-card/95 shrink-0">
-               <div className="space-y-1.5 text-[11px] text-muted-foreground mb-3 px-1">
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">Ordered: {(session.orders||[]).reduce((a,b)=>a+b.items.reduce((c,d)=>c+d.quantity,0),0)} items</span>
-                  <span className="font-semibold text-xs">Total Due: <span className="text-red-500 font-bold">${(ordersTotal * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></span>
+            <div className="px-3 pt-2 pb-3 border-t border-border/40 bg-card/95 shrink-0">
+                <div className="flex items-center justify-between text-[11px] leading-tight mb-0.5">
+                   <span className="font-medium text-muted-foreground">Subtotal</span>
+                   <span className="font-medium">${ordersTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                 </div>
+                <div className="flex items-center justify-between text-[11px] leading-tight mb-1.5">
+                   <span className="font-medium text-muted-foreground">Tax (8%)</span>
+                   <span className="font-medium">${(ordersTotal * 0.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                </div>
+                <div className="flex items-center justify-between pt-1.5 border-t border-border/30">
+                  <span className="font-semibold text-xs text-foreground">Total Due</span>
+                  <span className="font-bold text-red-500 text-sm">${(ordersTotal * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                </div>
+
                 {hasCartItems && (
-                  <div className="flex items-center justify-between pt-1 border-t border-border/30">
-                    <span className="font-medium">+ {session.cart.reduce((a,b)=>a+b.quantity,0)} pending items</span>
-                    <span className="font-medium">Grand Total: <span className="text-foreground font-bold">${(grandSubtotal * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></span>
+                  <div className="mt-2 pt-2 border-t border-dashed border-border/40">
+                     <div className="flex items-center justify-between text-[10px] text-muted-foreground/80 mb-0.5">
+                        <span>+ {session.cart.length} pending</span>
+                        <span>${session.cart.reduce((a, b) => a + (b.price * b.quantity), 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                     </div>
+                     <div className="flex items-center justify-between text-[11px] mt-0.5">
+                       <span className="font-medium">Grand Total</span>
+                       <span className="font-bold text-foreground">${(grandSubtotal * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                     </div>
                   </div>
                 )}
-              </div>
-
-              <div className="flex gap-3">
+                
+                <div className="mt-3 flex gap-2">
                 {/* Pay Bill Button - Always visible if there are orders, distinct style */}
                 {hasOrders && (
                    <button
                     onClick={handlePayment}
                     disabled={isProcessing}
                     className={cn(
-                      "flex-1 h-12 border border-border/50 bg-secondary/50 text-foreground font-semibold rounded-2xl text-[13px]",
+                      "flex-1 h-10 border border-border/50 bg-secondary/50 text-foreground font-semibold rounded-xl text-xs",
                       "active:scale-[0.98] transition-all duration-200 hover:bg-secondary/80",
-                      "flex items-center justify-center gap-1.5 whitespace-nowrap px-4",
+                      "flex items-center justify-center gap-1.5 whitespace-nowrap px-3",
                       isProcessing && "opacity-60 cursor-not-allowed"
                     )}
                    >
-                     <CreditCard className="w-4 h-4 shrink-0" />
+                     <CreditCard className="w-3.5 h-3.5 shrink-0" />
                      <span>Pay ${(ordersTotal * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                    </button>
                 )}
@@ -421,22 +434,22 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                     onClick={handleSendToKitchen}
                     disabled={isProcessing}
                     className={cn(
-                      "flex-[2] h-12 bg-foreground text-background font-semibold rounded-2xl text-[15px]",
-                      "shadow-lg shadow-black/10 hover:shadow-xl hover:shadow-black/15",
+                      "flex-[2] h-10 bg-foreground text-background font-semibold rounded-xl text-sm",
+                      "shadow-md hover:shadow-lg",
                       "active:scale-[0.98] transition-all duration-200",
-                      "flex items-center justify-center gap-2.5",
+                      "flex items-center justify-center gap-2",
                       isProcessing && "opacity-60 cursor-not-allowed"
                     )}
                   >
                     {isProcessing ? (
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 border-2 border-background/30 border-t-background rounded-full animate-spin" />
+                        <div className="w-3.5 h-3.5 border-2 border-background/30 border-t-background rounded-full animate-spin" />
                         <span>Sending...</span>
                       </div>
                     ) : (
                       <>
                         <ChefHat className="w-4 h-4 opacity-70" />
-                        <span>Send to Kitchen</span>
+                        <span>Send Order</span>
                       </>
                     )}
                   </button>

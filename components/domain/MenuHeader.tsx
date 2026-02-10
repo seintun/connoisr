@@ -15,8 +15,27 @@ interface MenuHeaderProps {
 export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderProps) {
   const { userName } = useIdentity();
   const [activeCategory, setActiveCategory] = useState(categories[0]);
+  const [displayText, setDisplayText] = useState("");
   const navRef = useRef<HTMLDivElement>(null);
   const isProgrammaticScroll = useRef(false);
+
+  // Typewriter effect
+  useEffect(() => {
+    const targetText = userName ? `${userName} is ordering` : "TempoDine is ready";
+    let i = 0;
+    setDisplayText("");
+    
+    const timer = setInterval(() => {
+      if (i < targetText.length) {
+        setDisplayText((prev) => targetText.slice(0, i + 1));
+        i++;
+      } else {
+        clearInterval(timer);
+      }
+    }, 50);
+    
+    return () => clearInterval(timer);
+  }, [userName]);
 
   // Auto-scroll the nav pill into center view
   const scrollNavTo = (category: string) => {
@@ -100,8 +119,9 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
                 <h1 className="text-2xl font-serif font-bold text-foreground tracking-tight leading-none">
                   TempoDine
                 </h1>
-                <p className="text-xs text-muted-foreground font-medium tracking-wide">
-                  {userName} is ordering
+                <p className="text-xs text-muted-foreground font-medium tracking-wide h-4 flex items-center">
+                  {displayText}
+                  <span className="inline-block w-[1.5px] h-3 bg-primary/70 ml-0.5 animate-pulse" />
                 </p>
               </div>
             </div>

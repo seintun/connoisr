@@ -6,7 +6,7 @@
 
 ## Overview
 
-TempoDine is built with **Next.js 14+**, **TypeScript**, and **Tailwind CSS v4**. It features a "Product-Led" design philosophy, balancing a beautiful, vibrant user experience for guests with high-utility tools for staff.
+TempoDine is built with **Next.js 16+**, **TypeScript**, and **Tailwind CSS v4**. It features a "Product-Led" design philosophy, balancing a beautiful, vibrant user experience for guests with high-utility tools for staff.
 
 ### Core Interfaces
 
@@ -27,6 +27,7 @@ We've pivoted to a premium "Modern Fine Dining" aesthetic, featuring materials f
 ## Features
 
 *   **Real-Time State**: Orders sync instantly between Diner and Kitchen interfaces.
+*   **Table Isolation**: Each table has its own isolated order session, ensuring data privacy and correct order tracking.
 *   **Smart KDS**: Orders change color based on wait time (Coral -> Indigo -> Amber -> Emerald).
 *   **Offline-First**: Fully capable PWA with service worker caching and offline fallback.
 *   **Installable**: Add to home screen support on iOS and Android.

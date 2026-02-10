@@ -12,7 +12,7 @@ Develop the technical architecture and UI components for TempoDine using **Next.
 A guest-facing, zero-auth flow. Focus on "Time-to-Table" by ensuring a <3-tap path from QR scan to order. Use Glassmorphism and vibrant colors to stimulate appetite.
 
 ### Kitchen Display System (KDS) (The "High-Velocity" Board)
-A real-time dashboard where **Color = Priority**. (Currently deprioritized for initial Diner MVP focus).
+A real-time dashboard where **Color = Priority**. Functional color theory helps staff manage orders without reading fine print.
 
 ## Design & Aesthetic (Modern Fine Dining)
 

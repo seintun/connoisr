@@ -129,7 +129,7 @@ export default function DinerPageClient() {
              </div>
              
              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch">
-               {MENU_ITEMS.filter(item => item.category === category).map((item) => (
+               {MENU_ITEMS.filter(item => item.category === category).map((item, index) => (
                  <DinerMenuItem
                    key={item.id}
                    {...item}
@@ -137,6 +137,7 @@ export default function DinerPageClient() {
                    onUpdateQuantity={(qty) => handleUpdateQuantity(item.id, qty)}
                    onAdd={() => handleAddItem(item)}
                    onModify={() => handleModifyItem(item)}
+                    priority={index < 4}
                  />
                ))}
              </div>

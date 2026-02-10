@@ -286,7 +286,7 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                                </div>
                              )}
                             <div className="flex items-center justify-between">
-                              <span className="text-[11px] text-muted-foreground/60">
+                              <span className="text-[11px] text-muted-foreground">
                                 ${item.price.toFixed(2)} ea
                               </span>
                               <div className="flex items-center gap-0.5 bg-muted rounded-lg p-0.5">
@@ -324,7 +324,7 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
             {/* Footer */}
             <div className="px-4 pt-2.5 pb-5 sm:pb-4 border-t border-border/40 bg-card/95 shrink-0">
               <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-3 px-1">
-                <span className="font-medium">Total Items: {session.cart.reduce((a,b)=>a+b.quantity,0) + (session.orders||[]).reduce((a,b)=>a+b.items.reduce((c,d)=>c+d.quantity,0),0)}</span>
+                <span className="font-medium">Ordered: {(session.orders||[]).reduce((a,b)=>a+b.items.reduce((c,d)=>c+d.quantity,0),0)} items</span>
                 <div className="flex gap-3">
                    <span className="font-medium">Tax ${tax.toFixed(2)}</span>
                    <span className="font-bold text-foreground">Total ${total.toFixed(2)}</span>

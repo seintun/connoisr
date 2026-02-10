@@ -46,17 +46,6 @@ export default function DinerPageClient() {
         if (newQuantity > 0) {
             const item = MENU_ITEMS.find(i => i.id === menuItemId);
             if (item) {
-                // Determine if item needs customization (could be based on logic, but here we enforce drawer for new items)
-                // For direct quantity updates on card, maybe imply default/no-customization?
-                // OR: If updating from 0 -> 1, open drawer.
-                // But the UI has independent +/- buttons.
-                // Let's keep the existing logic: simple add.
-                // IF we want customization on every add, we need to intercept.
-                // Strategy: The +/- on the card is for "Easy Add". The "Add" button opens drawer?
-                // The prompt says "can add items to a cart in <3 taps".
-                // Let's say: "Add" button opens drawer. +/- updates existing.
-                
-                // If it's a new item via +/-... maybe just add default.
                 addItem({
                     menuItemId: item.id,
                     name: item.name,
@@ -96,6 +85,16 @@ export default function DinerPageClient() {
   }, []);
 
   const handleAddItem = useCallback((item: typeof MENU_ITEMS[number]) => {
+    addItem({
+      menuItemId: item.id,
+      name: item.name,
+      category: item.category,
+      price: item.price,
+      quantity: 1,
+    });
+  }, [addItem]);
+
+  const handleModifyItem = useCallback((item: typeof MENU_ITEMS[number]) => {
     setSelectedItemForCustomization(item);
   }, []);
 
@@ -132,6 +131,7 @@ export default function DinerPageClient() {
                    quantity={getItemQuantity(item.id)}
                    onUpdateQuantity={(qty) => handleUpdateQuantity(item.id, qty)}
                    onAdd={() => handleAddItem(item)}
+                   onModify={() => handleModifyItem(item)}
                  />
                ))}
              </div>

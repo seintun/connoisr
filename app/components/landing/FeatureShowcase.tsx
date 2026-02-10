@@ -36,30 +36,40 @@ const features = [
 
 export function FeatureShowcase() {
   return (
-    <section id="features" className="py-24 relative overflow-hidden">
-      <div className="container max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+    <section id="features" className="py-24 relative bg-background">
+      <div className="container max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-8 pb-24">
           {features.map((feature, index) => (
-            <motion.div
+            <div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              whileHover={{ y: -5 }}
-              whileTap={{ scale: 0.98 }}
-              className="glass-card p-8 rounded-2xl group transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 select-none touch-manipulation active:bg-muted/50"
+              className="sticky transition-all duration-500 will-change-transform"
+              style={{
+                top: `calc(10vh + ${index * 1.5}rem)`,
+                zIndex: index + 1,
+              }}
             >
-              <div className="bg-muted w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                <feature.icon className={`w-7 h-7 ${feature.color}`} />
-              </div>
-              <h3 className="text-2xl font-serif font-bold mb-3 text-foreground">
-                {feature.title}
-              </h3>
-              <p className="text-muted-foreground font-sans leading-relaxed">
-                {feature.description}
-              </p>
-            </motion.div>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true, margin: "-10%" }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="glass-card p-8 sm:p-10 rounded-3xl border border-white/10 dark:border-white/5 backdrop-blur-xl shadow-2xl bg-card/50"
+              >
+                <div className="flex items-start gap-6">
+                  <div className="shrink-0 bg-primary/10 w-14 h-14 rounded-2xl flex items-center justify-center">
+                    <feature.icon className={`w-7 h-7 ${feature.color}`} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl sm:text-3xl font-serif font-bold mb-3 text-foreground">
+                      {feature.title}
+                    </h3>
+                    <p className="text-lg text-muted-foreground font-sans leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           ))}
         </div>
       </div>

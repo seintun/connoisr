@@ -3,7 +3,8 @@
 import { DinerMenuItem } from "@/components/domain/DinerMenuItem";
 import { MenuHeader } from "@/components/domain/MenuHeader";
 import { useTableSession } from "@/components/providers/TableSessionProvider";
-import { useOnlineStatus } from "@/hooks/useOnlineStatus"; // Moved to top
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
+import { CartItem } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
 import dynamic from "next/dynamic";
@@ -14,12 +15,19 @@ const Checkout = dynamic(
   { ssr: false }
 );
 
+const CustomizationDrawer = dynamic(
+  () => import("@/components/domain/CustomizationDrawer").then(mod => ({ default: mod.CustomizationDrawer })),
+  { ssr: false }
+);
+
 import { MENU_ITEMS } from "@/lib/menu";
 
 export default function DinerPageClient() {
   const { session, addItem, updateItemQuantity, removeItem } = useTableSession();
   const [isCartOpen, setIsCartOpen] = useState(false);
   const isOnline = useOnlineStatus(); // Moved inside component
+
+  const [selectedItemForCustomization, setSelectedItemForCustomization] = useState<(typeof MENU_ITEMS)[0] | null>(null);
 
   // Memoize categories to avoid recomputing on every render
   const categories = useMemo(
@@ -38,6 +46,17 @@ export default function DinerPageClient() {
         if (newQuantity > 0) {
             const item = MENU_ITEMS.find(i => i.id === menuItemId);
             if (item) {
+                // Determine if item needs customization (could be based on logic, but here we enforce drawer for new items)
+                // For direct quantity updates on card, maybe imply default/no-customization?
+                // OR: If updating from 0 -> 1, open drawer.
+                // But the UI has independent +/- buttons.
+                // Let's keep the existing logic: simple add.
+                // IF we want customization on every add, we need to intercept.
+                // Strategy: The +/- on the card is for "Easy Add". The "Add" button opens drawer?
+                // The prompt says "can add items to a cart in <3 taps".
+                // Let's say: "Add" button opens drawer. +/- updates existing.
+                
+                // If it's a new item via +/-... maybe just add default.
                 addItem({
                     menuItemId: item.id,
                     name: item.name,
@@ -77,13 +96,14 @@ export default function DinerPageClient() {
   }, []);
 
   const handleAddItem = useCallback((item: typeof MENU_ITEMS[number]) => {
-    addItem({
-      menuItemId: item.id,
-      name: item.name,
-      category: item.category,
-      price: item.price,
-      quantity: 1,
-    });
+    setSelectedItemForCustomization(item);
+  }, []);
+
+  const handleAddToCartFromDrawer = useCallback((customizedItem: Partial<CartItem>) => {
+      if (customizedItem.menuItemId) {
+          addItem(customizedItem as any); // Type assertion needed as CartItem expects id which is generated in provider
+      }
+      setSelectedItemForCustomization(null);
   }, [addItem]);
 
 
@@ -161,7 +181,14 @@ export default function DinerPageClient() {
          )}
        </AnimatePresence>
 
-       <Checkout isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+        <Checkout isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+        
+        <CustomizationDrawer 
+            isOpen={!!selectedItemForCustomization}
+            onClose={() => setSelectedItemForCustomization(null)}
+            item={selectedItemForCustomization}
+            onAddToCart={handleAddToCartFromDrawer}
+        />
      </div>
   );
 }

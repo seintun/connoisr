@@ -87,13 +87,16 @@ export default function KitchenPage() {
                   {order.items.map((item, idx) => {
                     const menuDef = MENU_ITEMS.find(i => i.id === item.menuItemId);
                     const tags = menuDef?.tags || item.tags || [];
+                    const hasOptions = item.options && Object.keys(item.options).length > 0;
+                    const hasNotes = !!item.notes;
+                    const isCustom = item.isCustomized || hasOptions || hasNotes;
 
                     return (
                       <div key={idx} className="space-y-1">
                         <div className="flex justify-between items-start">
                           <span className="font-bold text-lg text-neutral-200 flex items-center gap-2">
                             {item.quantity}x {item.name}
-                            {item.isCustomized && (
+                            {isCustom && (
                               <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/30">
                                 Custom
                               </span>
@@ -114,30 +117,36 @@ export default function KitchenPage() {
                         )}
                         
                         {/* Customizations */}
-                        {item.options && Object.keys(item.options).length > 0 && (
+                        {(hasOptions || hasNotes) && (
                           <div className="bg-white/5 rounded-lg p-2 text-sm space-y-1 mt-1">
-                            {item.options.spiciness && (
+                            {item.options?.spiciness && (
                               <div className="text-orange-400 flex items-center gap-1.5">
                                 <span className="text-[10px] uppercase tracking-wider opacity-70">Spiciness</span>
                                 <span className="font-medium">{item.options.spiciness}</span>
                               </div>
                             )}
-                            {item.options.removals && (
+                            {item.options?.removals && (
                                <div className="text-red-400 flex items-start gap-1.5">
                                   <span className="text-[10px] uppercase tracking-wider opacity-70 shrink-0 mt-0.5">No</span>
                                   <span className="font-medium line-through decoration-red-400/50">{item.options.removals}</span>
                                </div>
                             )}
-                            {item.options.allergens && (
+                            {item.options?.allergens && (
                               <div className="text-emerald-400 flex items-center gap-1.5">
                                 <span className="text-[10px] uppercase tracking-wider opacity-70">Dietary</span>
                                 <span className="font-medium">{item.options.allergens}</span>
                               </div>
                             )}
-                            {item.options.note && (
+                            {item.options?.note && (
                               <div className="text-indigo-400 flex items-start gap-1.5">
                                 <span className="text-[10px] uppercase tracking-wider opacity-70 shrink-0 mt-0.5">Note</span>
                                 <span className="italic font-medium">"{item.options.note}"</span>
+                              </div>
+                            )}
+                             {item.notes && !item.options?.note && (
+                              <div className="text-indigo-400 flex items-start gap-1.5">
+                                <span className="text-[10px] uppercase tracking-wider opacity-70 shrink-0 mt-0.5">Note</span>
+                                <span className="italic font-medium">"{item.notes}"</span>
                               </div>
                             )}
                           </div>

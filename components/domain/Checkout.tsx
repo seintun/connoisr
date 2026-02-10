@@ -175,6 +175,9 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                                  <div className="flex items-baseline gap-2">
                                    <span className="text-xs font-medium text-foreground/80">{item.quantity}x</span>
                                    <span className="text-xs text-foreground/70">{item.name}</span>
+                                   {item.orderedByName && (
+                                     <span className="text-[9px] text-muted-foreground/60 font-medium">· {item.orderedByName}</span>
+                                   )}
                                  </div>
                                  <span className="text-xs font-medium text-foreground/50">${(item.price * item.quantity).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                                </div>
@@ -270,6 +273,9 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                             <div className="flex items-baseline justify-between gap-3 mb-1.5">
                               <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 flex-1 min-w-0 flex items-center gap-1.5">
                                 {item.name}
+                                {item.orderedByName && (
+                                  <span className="text-[9px] text-muted-foreground/60 font-medium shrink-0">· {item.orderedByName}</span>
+                                )}
                                 {item.isCustomized && (
                                   <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-md border border-amber-200/60">🍽️ Custom</span>
                                 )}

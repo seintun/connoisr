@@ -60,7 +60,7 @@ export default function DinerPageClient() {
                     price: item.price,
                     tags: item.tags,
                     quantity: newQuantity,
-                    // No options, isCustomized is undefined/false
+                    orderedByName: userName || undefined,
                 });
             }
         }
@@ -101,8 +101,9 @@ export default function DinerPageClient() {
       price: item.price,
       tags: item.tags,
       quantity: 1,
+      orderedByName: userName || undefined,
     });
-  }, [addItem]);
+  }, [addItem, userName]);
 
   const handleModifyItem = useCallback((item: typeof MENU_ITEMS[number]) => {
     setSelectedItemForCustomization(item);
@@ -110,10 +111,10 @@ export default function DinerPageClient() {
 
   const handleAddToCartFromDrawer = useCallback((customizedItem: Partial<CartItem>) => {
       if (customizedItem.menuItemId) {
-          addItem(customizedItem as any); // Type assertion needed as CartItem expects id which is generated in provider
+          addItem({ ...customizedItem, orderedByName: userName || undefined } as any);
       }
       setSelectedItemForCustomization(null);
-  }, [addItem]);
+  }, [addItem, userName]);
 
   const showMenu = !!userName && isReady;
 

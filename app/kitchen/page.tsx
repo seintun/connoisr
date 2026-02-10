@@ -130,6 +130,9 @@ export default function KitchenPage() {
                               >
                                 {item.name}
                               </span>
+                              {item.orderedByName && (
+                                <span className="text-xs text-neutral-500 font-medium">— {item.orderedByName}</span>
+                              )}
                             </div>
                           </div>
                         </div>

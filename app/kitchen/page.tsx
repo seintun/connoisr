@@ -1,6 +1,7 @@
 "use client";
 
 import { useKitchenOrders } from "@/hooks/useKitchenOrders";
+import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Order } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
@@ -38,7 +39,7 @@ export default function KitchenPage() {
       <header className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
           <ChefHat className="w-8 h-8 text-primary" />
-          <h1 className="text-2xl font-bold tracking-tight">TempoDine KDS</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{APP_NAME} KDS</h1>
         </div>
         <div className="flex items-center gap-4 text-sm text-neutral-400 font-mono">
           <span>Active Orders: {activeOrders.length}</span>
@@ -60,18 +61,20 @@ export default function KitchenPage() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 className={cn(
                   "rounded-2xl border bg-neutral-900/50 backdrop-blur-sm overflow-hidden flex flex-col shadow-xl",
-                  getStatusColor(order.status).split(" ")[2] // Use border color
+                  getStatusColor(order.status).split(" ")[2], // Use border color
                 )}
               >
                 {/* Order Header */}
                 <div
                   className={cn(
                     "px-4 py-3 flex justify-between items-center border-b",
-                    getStatusColor(order.status)
+                    getStatusColor(order.status),
                   )}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-lg">Table {order.tableId}</span>
+                    <span className="font-bold text-lg">
+                      Table {order.tableId}
+                    </span>
                     <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/20">
                       {order.status}
                     </span>
@@ -85,9 +88,11 @@ export default function KitchenPage() {
                 {/* Order Items */}
                 <div className="p-4 space-y-4 flex-1">
                   {order.items.map((item, idx) => {
-                    const hasOptions = item.options && Object.keys(item.options).length > 0;
+                    const hasOptions =
+                      item.options && Object.keys(item.options).length > 0;
                     const hasNotes = !!item.notes;
-                    const isCustom = item.isCustomized || hasOptions || hasNotes;
+                    const isCustom =
+                      item.isCustomized || hasOptions || hasNotes;
 
                     // Helper for Spiciness Color
                     const getSpicinessColor = (level: string) => {
@@ -112,7 +117,7 @@ export default function KitchenPage() {
                           "flex flex-col gap-3 p-3 rounded-xl transition-colors",
                           isCustom
                             ? "bg-white/5 border border-white/5"
-                            : "hover:bg-white/5"
+                            : "hover:bg-white/5",
                         )}
                       >
                         {/* Main Item Row */}
@@ -125,13 +130,15 @@ export default function KitchenPage() {
                               <span
                                 className={cn(
                                   "font-bold text-lg leading-tight",
-                                  isCustom ? "text-white" : "text-neutral-200"
+                                  isCustom ? "text-white" : "text-neutral-200",
                                 )}
                               >
                                 {item.name}
                               </span>
                               {item.orderedByName && (
-                                <span className="text-xs text-neutral-500 font-medium">— {item.orderedByName}</span>
+                                <span className="text-xs text-neutral-500 font-medium">
+                                  — {item.orderedByName}
+                                </span>
                               )}
                             </div>
                           </div>
@@ -145,7 +152,7 @@ export default function KitchenPage() {
                               <div
                                 className={cn(
                                   "flex items-center gap-2 px-3 py-1.5 rounded-lg border w-fit",
-                                  getSpicinessColor(item.options.spiciness)
+                                  getSpicinessColor(item.options.spiciness),
                                 )}
                               >
                                 <Flame className="w-4 h-4 fill-current opacity-50" />
@@ -241,4 +248,3 @@ export default function KitchenPage() {
     </div>
   );
 }
-

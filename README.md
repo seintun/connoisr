@@ -1,67 +1,72 @@
-# TempoDine 🍽️
+# Connoisr 🍽️
 
 > **Vibrant Modernist Dining.** A high-performance, real-time Progressive Web App (PWA) designed for modern, high-volume dining environments.
 
-![TempoDine Banner](/Users/seintun/.gemini/antigravity/brain/781b0f27-bc3c-46eb-ba12-5e14bde9e159/landing_page_1770629440830.png)
-
 ## Overview
 
-TempoDine is built with **Next.js 16+**, **TypeScript**, and **Tailwind CSS v4**. It features a "Product-Led" design philosophy, balancing a beautiful, vibrant user experience for guests with high-utility tools for staff.
+Connoisr is built with **Next.js 16+**, **TypeScript**, and **Tailwind CSS v4**. It features a "Product-Led" design philosophy, balancing a beautiful, vibrant user experience for guests with high-utility tools for staff.
 
 ### Core Interfaces
 
-*   **Diner PWA (The "Fresh Bistro" Experience)**: A guest-facing, zero-auth flow. Focus on "Time-to-Table" with a <3-tap path from scan to order.
-    *   *Route:* `/table/[id]`
-*   **Kitchen Display System (KDS)**: A real-time dashboard where **Color = Priority**. Functional color theory helps staff manage orders without reading fine print.
-    *   *Route:* `/kitchen`
+- **Diner PWA (The "Fresh Bistro" Experience)**: A guest-facing, zero-auth flow. Focus on "Time-to-Table" with a <3-tap path from scan to order.
+  - _Route:_ `/table/[id]`
+- **Kitchen Display System (KDS)**: A real-time dashboard where **Color = Priority**. Functional color theory helps staff manage orders without reading fine print.
+  - _Route:_ `/kitchen`
 
 ## Aesthetics: Modern Fine Dining 🥂
 
 We've pivoted to a premium "Modern Fine Dining" aesthetic, featuring materials found in physical luxury spaces: **Stone, Gold, Slate, and Crisp Linen**.
 
-*   **Dark Mode ("Midnight Slate")**: Deepest Blue/Black (`hsl(224 71% 4%)`) backgrounds with Electric Indigo (`hsl(217 91% 60%)`) accents. Modern, high-contrast, and tech-forward.
-*   **Light Mode ("Alabaster & Ink")**: Warm Alabaster (`hsl(40 20% 99%)`) with sharp Deep Ink text. designed for clarity during lunch service.
-*   **Typography**: `Outfit` (Headers) and `Plus Jakarta Sans` (Body).
-*   **UI Polish**: Glassmorphism, subtle borders, and refined transitions.
+- **Dark Mode ("Midnight Slate")**: Deepest Blue/Black (`hsl(224 71% 4%)`) backgrounds with Electric Indigo (`hsl(217 91% 60%)`) accents. Modern, high-contrast, and tech-forward.
+- **Light Mode ("Alabaster & Ink")**: Warm Alabaster (`hsl(40 20% 99%)`) with sharp Deep Ink text. designed for clarity during lunch service.
+- **Typography**: `Outfit` (Headers) and `Plus Jakarta Sans` (Body).
+- **UI Polish**: Glassmorphism, subtle borders, and refined transitions.
 
 ## Features
 
-*   **Real-Time State**: Orders sync instantly between Diner and Kitchen interfaces.
-*   **Table Isolation**: Each table has its own isolated order session, ensuring data privacy and correct order tracking.
-*   **Smart KDS**: Orders change color based on wait time (Coral -> Indigo -> Amber -> Emerald).
-*   **Offline-First**: Fully capable PWA with service worker caching and offline fallback.
-*   **Installable**: Add to home screen support on iOS and Android.
-*   **Frictionless Checkout**: Integrated Web Payment API support (simulated).
+- **Real-Time State**: Orders sync instantly between Diner and Kitchen interfaces.
+- **Table Isolation**: Each table has its own isolated order session, ensuring data privacy and correct order tracking.
+- **Smart KDS**: Orders change color based on wait time (Coral -> Indigo -> Amber -> Emerald).
+- **Offline-First**: Fully capable PWA with service worker caching and offline fallback.
+- **Installable**: Add to home screen support on iOS and Android.
+- **Frictionless Checkout**: Integrated Web Payment API support (simulated).
 
 ## Tech Stack
 
-*   **Framework**: Next.js 16 (App Router)
-*   **Core**: React 19
-*   **Styling**: Tailwind CSS v4
-*   **Animation**: Framer Motion 12
-*   **PWA**: @ducanh2912/next-pwa
-*   **Icons**: Lucide React
+- **Framework**: Next.js 16 (App Router)
+- **Core**: React 19
+- **Styling**: Tailwind CSS v4
+- **Animation**: Framer Motion 12
+- **PWA**: @ducanh2912/next-pwa
+- **Icons**: Lucide React
 
 ## Key Features
 
 ### 🛒 Smart Floating Cart
+
 A persistent, non-intrusive "Smart Pill" that tracks order totals in real-time.
-*   **Pulse Animation**: Subtle "alive" indicators when items are added.
-*   **Glassmorphism**: Premium blurred backdrop for context retention.
+
+- **Pulse Animation**: Subtle "alive" indicators when items are added.
+- **Glassmorphism**: Premium blurred backdrop for context retention.
 
 ### 🖼️ Instant Image Viewer
+
 Immersive full-screen visual experience for menu items.
-*   **Instant Load**: Zero-latency opening of high-res food imagery.
-*   **Keyboard Support**: `Esc` to dismiss for desktop power users.
+
+- **Instant Load**: Zero-latency opening of high-res food imagery.
+- **Keyboard Support**: `Esc` to dismiss for desktop power users.
 
 ### 📱 Mobile-First Design
+
 Optimized for the "Fresh Bistro" experience on any device.
-*   **Compact Cards**: Maximized screen real estate for menu browsing.
-*   **Touch Targets**: Full-width action buttons for easy one-handed use.
+
+- **Compact Cards**: Maximized screen real estate for menu browsing.
+- **Touch Targets**: Full-width action buttons for easy one-handed use.
 
 ## Getting Started
 
 ### Quick Start
+
 ```bash
 npm install
 npm run dev
@@ -70,25 +75,29 @@ npm run dev
 Development uses **Turbopack** (faster builds). Open [http://localhost:3000](http://localhost:3000).
 
 ### Running Tests
+
 ```bash
 npm test             # Run components/unit tests (Vitest)
 npm run test:e2e     # Run end-to-end tests (Playwright)
 ```
 
 ### PWA Testing (Production Build)
+
 ```bash
 npm run build  # Uses webpack (PWA compatible)
 npm start
 ```
 
 ### Key Features
+
 - **Offline-First**: Cached pages and images work without internet
-- **Installable**: Add to home screen on mobile/desktop  
+- **Installable**: Add to home screen on mobile/desktop
 - **Smart Caching**: Images (30 days), Pages/API (24 hours)
 
 > **Note**: PWA features only work in production builds. Dev mode disables service workers.
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed development guidelines.
+
 ## License
 
 MIT

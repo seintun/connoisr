@@ -9,8 +9,11 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
 const ImageLightbox = dynamic(
-  () => import("@/components/domain/ImageLightbox").then(mod => ({ default: mod.ImageLightbox })),
-  { ssr: false }
+  () =>
+    import("@/components/domain/ImageLightbox").then((mod) => ({
+      default: mod.ImageLightbox,
+    })),
+  { ssr: false },
 );
 
 interface DinerMenuItemProps {
@@ -50,14 +53,14 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
         "border border-border/60",
         quantity > 0
           ? "ring-2 ring-primary/20 shadow-md"
-          : "shadow-sm hover:shadow-md hover:-translate-y-0.5"
+          : "shadow-sm hover:shadow-md hover:-translate-y-0.5",
       )}
     >
-      <MenuItemImage 
-        name={name} 
-        imageUrl={imageUrl} 
-        quantity={quantity} 
-        description={description} 
+      <MenuItemImage
+        name={name}
+        imageUrl={imageUrl}
+        quantity={quantity}
+        description={description}
         priority={priority}
       />
 
@@ -68,45 +71,68 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
               {name}
             </h3>
             <span className="font-sans font-bold text-sm md:text-lg text-foreground/90 bg-muted px-1.5 py-0.5 md:px-2 md:py-0.5 rounded-md tabular-nums tracking-tight">
-              ${price.toLocaleString('en-US')}
+              ${price.toLocaleString("en-US")}
             </span>
           </div>
 
           <p className="text-muted-foreground text-[10px] md:text-sm leading-relaxed mb-3 line-clamp-2 md:line-clamp-3 font-medium opacity-80">
             {description}
           </p>
-          
+
           {/* Tags Display - Above Add */}
           {tags && tags.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-3">
-              {tags.map(tag => {
+              {tags.map((tag) => {
                 // Dynamic colors for tags
-                let colorClass = "bg-secondary text-secondary-foreground border-border/50";
-                
-                if (["Spicy"].includes(tag)) colorClass = "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20";
-                else if (["Vegetarian", "Vegan"].includes(tag)) colorClass = "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20";
-                else if (["GF", "Gluten Free"].includes(tag)) colorClass = "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20";
-                else if (["Seafood", "Shellfish"].includes(tag)) colorClass = "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20";
-                else if (["Sweet"].includes(tag)) colorClass = "bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-500/10 dark:text-pink-400 dark:border-pink-500/20";
-                else if (["Alcohol"].includes(tag)) colorClass = "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20";
-                else if (["Nuts", "Nut Free"].includes(tag)) colorClass = "bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-500/10 dark:text-stone-400 dark:border-stone-500/20";
+                let colorClass =
+                  "bg-secondary text-secondary-foreground border-border/50";
+
+                if (["Spicy"].includes(tag))
+                  colorClass =
+                    "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20";
+                else if (["Vegetarian", "Vegan"].includes(tag))
+                  colorClass =
+                    "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20";
+                else if (["GF", "Gluten Free"].includes(tag))
+                  colorClass =
+                    "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20";
+                else if (["Seafood", "Shellfish"].includes(tag))
+                  colorClass =
+                    "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20";
+                else if (["Sweet"].includes(tag))
+                  colorClass =
+                    "bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-500/10 dark:text-pink-400 dark:border-pink-500/20";
+                else if (["Alcohol"].includes(tag))
+                  colorClass =
+                    "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20";
+                else if (["Nuts", "Nut Free"].includes(tag))
+                  colorClass =
+                    "bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-500/10 dark:text-stone-400 dark:border-stone-500/20";
 
                 return (
-                  <span key={tag} className={cn("text-[10px] uppercase font-bold px-2 py-0.5 rounded-md border flex items-center gap-1", colorClass)}>
-                    <span className="opacity-80 scale-90">{TAG_EMOJIS[tag]}</span>
+                  <span
+                    key={tag}
+                    className={cn(
+                      "text-[10px] uppercase font-bold px-2 py-0.5 rounded-md border flex items-center gap-1",
+                      colorClass,
+                    )}
+                  >
+                    <span className="opacity-80 scale-90">
+                      {TAG_EMOJIS[tag]}
+                    </span>
                     {tag}
                   </span>
-                )
+                );
               })}
             </div>
           )}
         </div>
 
-        <MenuItemControls 
-          quantity={quantity} 
-          onAdd={onAdd} 
+        <MenuItemControls
+          quantity={quantity}
+          onAdd={onAdd}
           onModify={onModify}
-          onUpdateQuantity={onUpdateQuantity} 
+          onUpdateQuantity={onUpdateQuantity}
         />
       </div>
     </motion.div>
@@ -115,7 +141,19 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
 
 // Sub-components
 
-const MenuItemImage = React.memo(function MenuItemImage({ name, imageUrl, quantity, description, priority = false }: { name: string, imageUrl: string, quantity: number, description: string, priority?: boolean }) {
+const MenuItemImage = React.memo(function MenuItemImage({
+  name,
+  imageUrl,
+  quantity,
+  description,
+  priority = false,
+}: {
+  name: string;
+  imageUrl: string;
+  quantity: number;
+  description: string;
+  priority?: boolean;
+}) {
   const [isImageOpen, setIsImageOpen] = useState(false);
 
   useEffect(() => {
@@ -131,7 +169,7 @@ const MenuItemImage = React.memo(function MenuItemImage({ name, imageUrl, quanti
       <div
         className={cn(
           "w-1/3 min-w-[110px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 cursor-zoom-in",
-          isImageOpen && "z-[100]"
+          isImageOpen && "z-[100]",
         )}
         onClick={() => setIsImageOpen(true)}
       >
@@ -144,7 +182,7 @@ const MenuItemImage = React.memo(function MenuItemImage({ name, imageUrl, quanti
           sizes="(max-width: 768px) 33vw, (max-width: 1024px) 50vw, 25vw"
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />
-        
+
         {quantity > 0 && (
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -170,7 +208,17 @@ const MenuItemImage = React.memo(function MenuItemImage({ name, imageUrl, quanti
   );
 });
 
-const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd, onModify, onUpdateQuantity }: { quantity: number, onAdd: () => void, onModify: () => void, onUpdateQuantity?: (q: number) => void }) {
+const MenuItemControls = React.memo(function MenuItemControls({
+  quantity,
+  onAdd,
+  onModify,
+  onUpdateQuantity,
+}: {
+  quantity: number;
+  onAdd: () => void;
+  onModify: () => void;
+  onUpdateQuantity?: (q: number) => void;
+}) {
   return (
     <div className="flex items-center gap-1.5 mt-auto">
       {/* Add button OR Quantity Stepper */}
@@ -185,7 +233,11 @@ const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd,
             whileTap={{ scale: 0.95 }}
             className="w-7 h-7 md:w-10 md:h-10 rounded-md md:rounded-lg flex items-center justify-center transition-colors bg-muted text-destructive hover:bg-destructive hover:text-destructive-foreground cursor-pointer"
           >
-            {quantity === 1 ? <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <Minus className="w-3.5 h-3.5 md:w-4 md:h-4" />}
+            {quantity === 1 ? (
+              <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
+            ) : (
+              <Minus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+            )}
           </motion.button>
 
           <div className="flex-1 flex items-center justify-center overflow-hidden px-1">
@@ -232,7 +284,7 @@ const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd,
         className="py-2 md:py-3 px-2.5 md:px-3 bg-secondary text-secondary-foreground rounded-lg md:rounded-xl flex items-center justify-center gap-1.5 hover:bg-secondary/80 transition-all duration-200 cursor-pointer border border-border/50"
         title="Customize"
       >
-        <span className="text-sm md:text-base">🍽️</span>
+        <span className="text-sm md:text-base">✏️ Modify</span>
       </motion.button>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
@@ -12,7 +13,11 @@ interface MenuHeaderProps {
   onCategoryClick: (category: string) => void;
 }
 
-export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderProps) {
+export function MenuHeader({
+  categories,
+  tableId,
+  onCategoryClick,
+}: MenuHeaderProps) {
   const { userName } = useIdentity();
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const [displayText, setDisplayText] = useState("");
@@ -21,10 +26,12 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
 
   // Typewriter effect
   useEffect(() => {
-    const targetText = userName ? `${userName} is ordering` : "TempoDine is ready";
+    const targetText = userName
+      ? `${userName} is ordering`
+      : `${APP_NAME} is ready`;
     let i = 0;
     setDisplayText("");
-    
+
     const timer = setInterval(() => {
       if (i < targetText.length) {
         setDisplayText((prev) => targetText.slice(0, i + 1));
@@ -33,7 +40,7 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
         clearInterval(timer);
       }
     }, 50);
-    
+
     return () => clearInterval(timer);
   }, [userName]);
 
@@ -42,8 +49,11 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
     const navItem = document.getElementById(`nav-${category}`);
     if (navItem && navRef.current) {
       const container = navRef.current;
-      const scrollLeft = navItem.offsetLeft - container.offsetWidth / 2 + navItem.offsetWidth / 2;
-      container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+      const scrollLeft =
+        navItem.offsetLeft -
+        container.offsetWidth / 2 +
+        navItem.offsetWidth / 2;
+      container.scrollTo({ left: scrollLeft, behavior: "smooth" });
     }
   };
 
@@ -58,7 +68,7 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
 
       requestAnimationFrame(() => {
         let currentSection = categories[0];
-        
+
         // Find the last category that has its top above the threshold (active section)
         for (const category of categories) {
           const element = document.getElementById(category);
@@ -86,7 +96,7 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
-    
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, [categories]);
 
@@ -107,17 +117,17 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
 
   return (
     <>
-       {/* Brand Bar - Scrolls away naturally */}
+      {/* Brand Bar - Scrolls away naturally */}
       <div className="bg-background w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex justify-between items-center h-14">
             <div className="flex items-center gap-3.5">
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center text-white font-serif font-bold text-xl shadow-lg shadow-primary/30 transform -rotate-3">
-                T
+                C
               </div>
               <div className="flex flex-col gap-0.5">
                 <h1 className="text-2xl font-serif font-bold text-foreground tracking-tight leading-none">
-                  TempoDine
+                  {APP_NAME}
                 </h1>
                 <p className="text-xs text-muted-foreground font-medium tracking-wide h-4 flex items-center">
                   {displayText}
@@ -128,7 +138,7 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
 
             {/* Right Side Actions */}
             <div className="flex items-center gap-2">
-               {tableId && (
+              {tableId && (
                 <div className="flex px-2.5 py-1 bg-secondary/10 text-secondary-foreground/80 rounded-full text-[10px] font-bold uppercase tracking-wider border border-secondary/20 items-center gap-1.5 whitespace-nowrap">
                   <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shrink-0" />
                   Table {tableId}
@@ -143,26 +153,26 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
       {/* Sticky Category Navigation */}
       <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div
+          <div
             ref={navRef}
             className="flex overflow-x-auto py-3 -mx-4 px-4 sm:mx-0 sm:px-0 gap-3 hide-scrollbar select-none snap-x"
-            >
+          >
             {categories.map((category) => (
-                <button
+              <button
                 key={category}
                 id={`nav-${category}`}
                 onClick={() => handleCategoryClick(category)}
                 className={cn(
-                    "whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 snap-start flex-shrink-0 border-2",
-                    activeCategory === category
+                  "whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 snap-start flex-shrink-0 border-2",
+                  activeCategory === category
                     ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/25 scale-100"
-                    : "bg-muted/50 border-transparent text-muted-foreground hover:bg-muted hover:text-foreground"
+                    : "bg-muted/50 border-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
-                >
+              >
                 {category}
-                </button>
+              </button>
             ))}
-            </div>
+          </div>
         </div>
       </div>
     </>

@@ -1,5 +1,6 @@
 "use client";
 
+import { IDENTITY_STORAGE_KEY } from "@/lib/constants";
 import { generateGuestName } from "@/lib/utils";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 
@@ -15,10 +16,12 @@ interface IdentityContextType extends IdentityState {
   clearIdentity: () => void;
 }
 
-const IdentityContext = React.createContext<IdentityContextType | undefined>(undefined);
+const IdentityContext = React.createContext<IdentityContextType | undefined>(
+  undefined,
+);
 
 function getStorageKey(tableId: string) {
-  return `tempodine-identity-${tableId}`;
+  return IDENTITY_STORAGE_KEY(tableId);
 }
 
 export function IdentityProvider({
@@ -64,17 +67,14 @@ export function IdentityProvider({
     }
   }, [state, tableId]);
 
-  const setIdentity = useCallback(
-    (name: string) => {
-      setState((prev) => ({
-        ...prev,
-        userName: name.trim(),
-        isGuest: false,
-        userId: prev.userId || crypto.randomUUID(),
-      }));
-    },
-    []
-  );
+  const setIdentity = useCallback((name: string) => {
+    setState((prev) => ({
+      ...prev,
+      userName: name.trim(),
+      isGuest: false,
+      userId: prev.userId || crypto.randomUUID(),
+    }));
+  }, []);
 
   const joinAsGuest = useCallback(() => {
     setState((prev) => ({
@@ -105,6 +105,7 @@ export function IdentityProvider({
 
 export function useIdentity() {
   const context = useContext(IdentityContext);
-  if (!context) throw new Error("useIdentity must be used within IdentityProvider");
+  if (!context)
+    throw new Error("useIdentity must be used within IdentityProvider");
   return context;
 }

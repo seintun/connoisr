@@ -1,4 +1,5 @@
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { APP_NAME } from "@/lib/constants";
 import Link from "next/link";
 
 export default function Home() {
@@ -9,16 +10,22 @@ export default function Home() {
       </div>
       <div className="text-center space-y-4">
         <h1 className="text-6xl font-serif font-bold tracking-tight text-primary">
-          TempoDine
+          {APP_NAME}
         </h1>
         <p className="text-xl text-muted-foreground font-sans max-w-md mx-auto">
           Experience the future of dining. Seamless, elegant, and efficient.
         </p>
         <div className="flex gap-4 justify-center mt-8">
-          <Link href="/table/1" className="px-6 py-2 bg-primary text-primary-foreground rounded-sm font-medium hover:opacity-90 transition-opacity">
+          <Link
+            href="/table/1"
+            className="px-6 py-2 bg-primary text-primary-foreground rounded-sm font-medium hover:opacity-90 transition-opacity"
+          >
             Diner App
           </Link>
-          <Link href="/kitchen" className="px-6 py-2 border border-border rounded-sm font-medium hover:bg-muted transition-colors">
+          <Link
+            href="/kitchen"
+            className="px-6 py-2 border border-border rounded-sm font-medium hover:bg-muted transition-colors"
+          >
             Kitchen Display
           </Link>
         </div>

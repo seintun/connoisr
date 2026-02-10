@@ -1,10 +1,11 @@
+import { APP_DESCRIPTION, APP_NAME, APP_NAME_SHORT } from "@/lib/constants";
 import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "TempoDine",
-    short_name: "TempoDine",
-    description: "Vibrant Modernist Dining",
+    name: APP_NAME,
+    short_name: APP_NAME_SHORT,
+    description: APP_DESCRIPTION,
     start_url: "/",
     display: "standalone",
     background_color: "#ffffff",

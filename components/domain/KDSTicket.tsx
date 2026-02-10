@@ -52,21 +52,24 @@ export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
       </div>
 
       <div className="flex-1 space-y-3 mb-6">
-        {order.items.map((item) => (
-          <div key={item.id} className="flex justify-between items-center text-foreground/90">
-            <div className="flex items-center gap-2">
-              <span className="font-bold font-sans bg-foreground/5 px-2 py-0.5 rounded-md text-sm">
-                {item.quantity}x
-              </span>
-              <span className="font-medium text-base">{item.name}</span>
-            </div>
-            {item.notes && (
-              <div className="text-xs text-muted-foreground italic max-w-[40%] text-right">
-                {item.notes}
+        {order.items.map((item) => {
+          const displayNote = item.notes || item.options?.note;
+          return (
+            <div key={item.id} className="flex justify-between items-center text-foreground/90">
+              <div className="flex items-center gap-2">
+                <span className="font-bold font-sans bg-foreground/5 px-2 py-0.5 rounded-md text-sm">
+                  {item.quantity}x
+                </span>
+                <span className="font-medium text-base">{item.name}</span>
               </div>
-            )}
-          </div>
-        ))}
+              {displayNote && (
+                <div className="text-xs text-muted-foreground italic max-w-[40%] text-right">
+                  {displayNote}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-2 gap-3 mt-auto">

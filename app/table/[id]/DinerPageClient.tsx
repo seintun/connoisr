@@ -35,13 +35,15 @@ export default function DinerPageClient() {
     []
   );
 
-  // Helper to find item quantity in cart
+  // Helper to find item quantity in cart - only counts UNMODIFIED items
   const getItemQuantity = useCallback((menuItemId: string) => {
-    return session?.cart.find(item => item.menuItemId === menuItemId)?.quantity || 0;
+    return session?.cart.find(item => item.menuItemId === menuItemId && !item.isCustomized)?.quantity || 0;
   }, [session?.cart]);
 
   const handleUpdateQuantity = useCallback((menuItemId: string, newQuantity: number) => {
-    const cartItemId = session?.cart.find(item => item.menuItemId === menuItemId)?.id;
+    // Find the cart item ID for the UNMODIFIED version of this menu item
+    const cartItemId = session?.cart.find(item => item.menuItemId === menuItemId && !item.isCustomized)?.id;
+    
     if (!cartItemId) {
         if (newQuantity > 0) {
             const item = MENU_ITEMS.find(i => i.id === menuItemId);
@@ -52,6 +54,7 @@ export default function DinerPageClient() {
                     category: item.category,
                     price: item.price,
                     quantity: newQuantity,
+                    // No options, isCustomized is undefined/false
                 });
             }
         }

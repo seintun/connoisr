@@ -13,6 +13,7 @@ export interface CartItem {
     note?: string;
     [key: string]: string | undefined;
   };
+  isCustomized?: boolean;
 }
 
 export interface TableSession {

@@ -86,11 +86,13 @@ export function TableSessionProvider({
     setSession((prev) => {
       if (!prev) return null;
 
-      // Find an existing cart item with same menuItemId AND identical options
-      const areOptionsEqual = (a: any, b: any) => JSON.stringify(a || {}) === JSON.stringify(b || {});
-      const existingItemIndex = prev.cart.findIndex(
-        (i) => i.menuItemId === item.menuItemId && areOptionsEqual(i.options, item.options)
-      );
+      // Customized items always get their own line
+      // Plain items merge if same menuItemId
+      const existingItemIndex = item.isCustomized
+        ? -1
+        : prev.cart.findIndex(
+            (i) => i.menuItemId === item.menuItemId && !i.isCustomized
+          );
 
       if (existingItemIndex > -1) {
         const newCart = [...prev.cart];

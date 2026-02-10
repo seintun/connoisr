@@ -215,8 +215,11 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                             className="py-2.5 px-3 rounded-xl bg-white/70 border border-gray-100/60 hover:border-border/40 transition-colors"
                           >
                             <div className="flex items-baseline justify-between gap-3 mb-1.5">
-                              <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 flex-1 min-w-0">
+                              <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 flex-1 min-w-0 flex items-center gap-1.5">
                                 {item.name}
+                                {item.isCustomized && (
+                                  <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-md border border-amber-200/60">🍽️ Custom</span>
+                                )}
                               </span>
                               <span className="font-semibold text-[13px] text-foreground tabular-nums shrink-0">
                                 ${(item.price * item.quantity).toFixed(2)}

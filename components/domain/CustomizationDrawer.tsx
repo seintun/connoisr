@@ -50,6 +50,7 @@ export function CustomizationDrawer({ isOpen, onClose, item, onAddToCart }: Cust
       price: item.price,
       quantity,
       options,
+      isCustomized: true,
     });
     
     // Reset state

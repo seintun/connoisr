@@ -86,8 +86,13 @@ export default function KitchenPage() {
                   {order.items.map((item, idx) => (
                     <div key={idx} className="space-y-1">
                       <div className="flex justify-between items-start">
-                        <span className="font-bold text-lg text-neutral-200">
+                        <span className="font-bold text-lg text-neutral-200 flex items-center gap-2">
                           {item.quantity}x {item.name}
+                          {item.isCustomized && (
+                            <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                              Custom
+                            </span>
+                          )}
                         </span>
                       </div>
                       

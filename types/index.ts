@@ -6,7 +6,13 @@ export interface CartItem {
   price: number;
   quantity: number;
   notes?: string;
-  options?: Record<string, string>;
+  options?: {
+    spiciness?: string;
+    allergens?: string;
+    removals?: string;
+    note?: string;
+    [key: string]: string | undefined;
+  };
 }
 
 export interface TableSession {

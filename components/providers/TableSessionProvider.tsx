@@ -86,19 +86,16 @@ export function TableSessionProvider({
     setSession((prev) => {
       if (!prev) return null;
 
+      // Find an existing cart item with same menuItemId AND identical options
+      const areOptionsEqual = (a: any, b: any) => JSON.stringify(a || {}) === JSON.stringify(b || {});
       const existingItemIndex = prev.cart.findIndex(
-        (i) => i.menuItemId === item.menuItemId
+        (i) => i.menuItemId === item.menuItemId && areOptionsEqual(i.options, item.options)
       );
 
-      // Only merge if options are identical (or both undefined)
-      // Simple equality check for options
-      const areOptionsEqual = (a: any, b: any) => JSON.stringify(a || {}) === JSON.stringify(b || {});
-
-      if (existingItemIndex > -1 && areOptionsEqual(prev.cart[existingItemIndex].options, item.options)) {
+      if (existingItemIndex > -1) {
         const newCart = [...prev.cart];
         newCart[existingItemIndex] = {
           ...newCart[existingItemIndex],
-          ...item,
           quantity: newCart[existingItemIndex].quantity + item.quantity,
         };
 

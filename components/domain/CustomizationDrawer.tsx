@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { CartItem } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChefHat, Flame } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 interface CustomizationDrawerProps {
   isOpen: boolean;
@@ -27,49 +27,20 @@ const SPICINESS_LEVELS = [
   { value: 3, label: "Extra Hot", color: "bg-red-600" },
 ];
 
-const ALLERGENS = [
-  { id: "gluten", label: "Gluten Free", icon: "🌾" },
-  { id: "dairy", label: "Dairy Free", icon: "🥛" },
-  { id: "nut", label: "Nut Free", icon: "🥜" },
-  { id: "vegan", label: "Vegan", icon: "🌱" },
-];
 
 
 
 export function CustomizationDrawer({ isOpen, onClose, item, onAddToCart }: CustomizationDrawerProps) {
   const [spiciness, setSpiciness] = useState(0);
-  const [selectedAllergens, setSelectedAllergens] = useState<string[]>([]);
-  const [removedIngredients, setRemovedIngredients] = useState<string[]>([]);
   const [chefNote, setChefNote] = useState("");
   const [quantity, setQuantity] = useState(1);
 
-  // Parse ingredients from description for removal tags
-  const ingredients = useMemo(() => {
-    if (!item?.description) return [];
-    return item.description.split(/,\s*/).map((i) => i.trim());
-  }, [item?.description]);
-
-  const toggleAllergen = (id: string) => {
-    setSelectedAllergens((prev) =>
-      prev.includes(id) ? prev.filter((a) => a !== id) : [...prev, id]
-    );
-  };
-
-  const toggleIngredientRemoval = (ingredient: string) => {
-    setRemovedIngredients((prev) =>
-      prev.includes(ingredient)
-        ? prev.filter((i) => i !== ingredient)
-        : [...prev, ingredient]
-    );
-  };
 
   const handleAddToCart = () => {
     if (!item) return;
 
     const options: Record<string, string> = {};
     if (spiciness > 0) options.spiciness = SPICINESS_LEVELS[spiciness].label;
-    if (selectedAllergens.length > 0) options.allergens = selectedAllergens.join(", ");
-    if (removedIngredients.length > 0) options.removals = removedIngredients.join(", ");
     if (chefNote.trim()) options.note = chefNote.trim();
 
     onAddToCart({
@@ -83,8 +54,6 @@ export function CustomizationDrawer({ isOpen, onClose, item, onAddToCart }: Cust
     
     // Reset state
     setSpiciness(0);
-    setSelectedAllergens([]);
-    setRemovedIngredients([]);
     setChefNote("");
     setQuantity(1);
     onClose();

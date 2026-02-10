@@ -68,7 +68,7 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
               {name}
             </h3>
             <span className="font-sans font-bold text-sm md:text-lg text-foreground/90 bg-muted px-1.5 py-0.5 md:px-2 md:py-0.5 rounded-md tabular-nums tracking-tight">
-              ${price}
+              ${price.toLocaleString('en-US')}
             </span>
           </div>
 

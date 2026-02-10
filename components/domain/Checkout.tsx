@@ -5,7 +5,7 @@ import { MENU_ITEMS, TAG_EMOJIS } from "@/lib/menu";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { CheckCircle2, ChefHat, Clock, CreditCard, Minus, Plus, Trash2, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface CheckoutProps {
   isOpen: boolean;
@@ -16,6 +16,25 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
   const { session, clearCart, updateItemQuantity, sendOrder } = useTableSession();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [idleMinutes, setIdleMinutes] = useState(0);
+  const cartTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const cartAddedAtRef = useRef<number | null>(null);
+
+  // Track how long items have been sitting in the cart
+  useEffect(() => {
+    if (session && session.cart.length > 0) {
+      if (!cartAddedAtRef.current) cartAddedAtRef.current = Date.now();
+      cartTimerRef.current = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - (cartAddedAtRef.current || Date.now())) / 60000);
+        setIdleMinutes(elapsed);
+      }, 30000); // Update every 30s
+      return () => { if (cartTimerRef.current) clearInterval(cartTimerRef.current); };
+    } else {
+      cartAddedAtRef.current = null;
+      setIdleMinutes(0);
+      if (cartTimerRef.current) clearInterval(cartTimerRef.current);
+    }
+  }, [session?.cart.length]);
 
   if (!session) return null;
 
@@ -157,7 +176,7 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                                    <span className="text-xs font-medium text-foreground/80">{item.quantity}x</span>
                                    <span className="text-xs text-foreground/70">{item.name}</span>
                                  </div>
-                                 <span className="text-xs font-medium text-foreground/50">${(item.price * item.quantity).toFixed(2)}</span>
+                                 <span className="text-xs font-medium text-foreground/50">${(item.price * item.quantity).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                                </div>
                                {/* Customization Options */}
                                {item.options && Object.keys(item.options).length > 0 && (
@@ -198,22 +217,48 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
               {hasCartItems && (
                 <div className="space-y-2">
                   {hasOrders && <div className="h-px bg-border/40 my-4" />}
-                  <div className="flex items-center gap-2 px-1 mb-1">
-                    <ChefHat className="w-4 h-4 text-orange-500" />
-                    <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">New Items</h3>
-                  </div>
-                  
-                  {groupItems(session.cart).map(([category, items]) => (
-                    <div key={category} className="space-y-1">
-                      <h4 className="font-medium text-[10px] text-muted-foreground/50 uppercase tracking-[0.15em] px-1 mt-2">
-                        {category}
-                      </h4>
-                      <div className="space-y-1">
-                        {items.map((item) => (
-                          <div 
-                            key={item.id} 
-                            className="py-2.5 px-3 rounded-xl bg-card border border-border/40 hover:border-border/60 transition-colors shadow-sm"
-                          >
+
+                  {/* Amber-tinted pending section */}
+                  <div className="rounded-lg bg-amber-50/60 dark:bg-amber-500/5 border border-amber-200/40 dark:border-amber-500/10 p-2 space-y-1.5">
+
+                    {/* Combined header + inline hint */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5">
+                        <div className="relative">
+                          <ChefHat className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                          <span className="absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75" />
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500" />
+                          </span>
+                        </div>
+                        <span className="text-[11px] font-semibold text-amber-800 dark:text-amber-300 uppercase tracking-wider">Pending</span>
+                      </div>
+                      <span className="text-[10px] text-amber-600/80 dark:text-amber-400/60 font-medium">Not sent to kitchen</span>
+                    </div>
+
+                    {/* Idle timer nudge */}
+                    {idleMinutes >= 2 && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -3 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-orange-100/80 dark:bg-orange-500/10 border border-orange-300/40 dark:border-orange-500/20"
+                      >
+                        <Clock className="w-3 h-3 text-orange-600 dark:text-orange-400 shrink-0" />
+                        <span className="text-[10px] text-orange-700 dark:text-orange-300 font-medium">Waiting {idleMinutes} min — ready to send?</span>
+                      </motion.div>
+                    )}
+
+                    {groupItems(session.cart).map(([category, items]) => (
+                      <div key={category} className="space-y-1">
+                        <h4 className="font-medium text-[10px] text-muted-foreground/50 uppercase tracking-[0.15em] px-0.5">
+                          {category}
+                        </h4>
+                        <div className="space-y-1">
+                          {items.map((item) => (
+                            <div 
+                              key={item.id} 
+                              className="py-2 px-2.5 rounded-lg bg-card border border-dashed border-amber-300/60 dark:border-amber-500/30 hover:border-amber-400/80 dark:hover:border-amber-500/50 transition-colors"
+                            >
                             <div className="flex items-baseline justify-between gap-3 mb-1.5">
                               <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 flex-1 min-w-0 flex items-center gap-1.5">
                                 {item.name}
@@ -222,7 +267,7 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                                 )}
                               </span>
                               <span className="font-semibold text-[13px] text-foreground tabular-nums shrink-0">
-                                ${(item.price * item.quantity).toFixed(2)}
+                                ${(item.price * item.quantity).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                               </span>
                             </div>
                             
@@ -287,7 +332,7 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                              )}
                             <div className="flex items-center justify-between">
                               <span className="text-[11px] text-muted-foreground">
-                                ${item.price.toFixed(2)} ea
+                                ${item.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ea
                               </span>
                               <div className="flex items-center gap-0.5 bg-muted rounded-lg p-0.5">
                                 <button
@@ -317,18 +362,24 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                       </div>
                     </div>
                   ))}
+                  </div> {/* close amber wrapper */}
                 </div>
               )}
             </div>
 
             {/* Footer */}
             <div className="px-4 pt-2.5 pb-5 sm:pb-4 border-t border-border/40 bg-card/95 shrink-0">
-              <div className="flex items-center justify-between text-[11px] text-muted-foreground mb-3 px-1">
-                <span className="font-medium">Ordered: {(session.orders||[]).reduce((a,b)=>a+b.items.reduce((c,d)=>c+d.quantity,0),0)} items</span>
-                <div className="flex gap-3">
-                   <span className="font-medium">Tax ${tax.toFixed(2)}</span>
-                   <span className="font-bold text-foreground">Total ${total.toFixed(2)}</span>
+               <div className="space-y-1.5 text-[11px] text-muted-foreground mb-3 px-1">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium">Ordered: {(session.orders||[]).reduce((a,b)=>a+b.items.reduce((c,d)=>c+d.quantity,0),0)} items</span>
+                  <span className="font-semibold text-xs">Total Due: <span className="text-red-500 font-bold">${(ordersTotal * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></span>
                 </div>
+                {hasCartItems && (
+                  <div className="flex items-center justify-between pt-1 border-t border-border/30">
+                    <span className="font-medium">+ {session.cart.reduce((a,b)=>a+b.quantity,0)} pending items</span>
+                    <span className="font-medium">Grand Total: <span className="text-foreground font-bold">${(grandSubtotal * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span></span>
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3">
@@ -338,14 +389,14 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                     onClick={handlePayment}
                     disabled={isProcessing}
                     className={cn(
-                      "flex-1 h-12 border border-border/50 bg-secondary/50 text-foreground font-semibold rounded-2xl text-[14px]",
+                      "flex-1 h-12 border border-border/50 bg-secondary/50 text-foreground font-semibold rounded-2xl text-[13px]",
                       "active:scale-[0.98] transition-all duration-200 hover:bg-secondary/80",
-                      "flex items-center justify-center gap-2",
+                      "flex items-center justify-center gap-1.5 whitespace-nowrap px-4",
                       isProcessing && "opacity-60 cursor-not-allowed"
                     )}
                    >
-                     <CreditCard className="w-4 h-4" />
-                     <span>Pay Bill</span>
+                     <CreditCard className="w-4 h-4 shrink-0" />
+                     <span>Pay ${(ordersTotal * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                    </button>
                 )}
 

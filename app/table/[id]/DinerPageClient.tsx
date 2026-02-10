@@ -76,7 +76,7 @@ export default function DinerPageClient() {
   );
 
   const cartTotal = useMemo(
-    () => (session?.cart.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0).toFixed(2),
+    () => (session?.cart.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
     [session?.cart]
   );
 
@@ -174,12 +174,18 @@ export default function DinerPageClient() {
                </div>
                <div className="flex flex-col items-start leading-none gap-0.5">
                  <span className="font-bold text-sm">
-                   {itemCount > 0 ? "View Order" : "Active Orders"}
+                   {itemCount > 0 ? "Review & Send" : `Pay $${((session?.orders || []).reduce((a, o) => a + o.total, 0) * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
                  </span>
                  <div className="flex items-center gap-1.5 text-[10px] text-primary-foreground/90 font-medium">
-                   <span>{itemCount} new items</span>
-                   <span className="w-1 h-1 rounded-full bg-primary-foreground/50" />
-                   <span>${cartTotal}</span>
+                   {itemCount > 0 ? (
+                     <>
+                       <span>{itemCount} pending</span>
+                       <span className="w-1 h-1 rounded-full bg-primary-foreground/50" />
+                       <span>${cartTotal}</span>
+                     </>
+                   ) : (
+                     <span>{(session?.orders || []).reduce((a, o) => a + o.items.reduce((c, d) => c + d.quantity, 0), 0)} items ordered</span>
+                   )}
                  </div>
                </div>
              </motion.button>

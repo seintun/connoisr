@@ -95,7 +95,7 @@ export function CustomizationDrawer({ isOpen, onClose, item, onAddToCart }: Cust
                   <p className="text-muted-foreground text-sm">{item.description}</p>
                 </div>
                 <div className="text-xl font-bold text-primary bg-primary/10 px-3 py-1 rounded-full">
-                  ${item.price}
+                  ${item.price.toLocaleString('en-US')}
                 </div>
               </div>
 

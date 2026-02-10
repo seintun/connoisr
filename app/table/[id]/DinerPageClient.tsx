@@ -40,14 +40,22 @@ export default function DinerPageClient() {
     []
   );
 
-  // Helper to find item quantity in cart - only counts UNMODIFIED items
+  // Helper to find item quantity in cart - only counts UNMODIFIED items for CURRENT user
   const getItemQuantity = useCallback((menuItemId: string) => {
-    return session?.cart.find(item => item.menuItemId === menuItemId && !item.isCustomized)?.quantity || 0;
-  }, [session?.cart]);
+    return session?.cart.find(i => 
+      i.menuItemId === menuItemId && 
+      !i.isCustomized && 
+      i.orderedByName === userName
+    )?.quantity || 0;
+  }, [session?.cart, userName]);
 
   const handleUpdateQuantity = useCallback((menuItemId: string, newQuantity: number) => {
-    // Find the cart item ID for the UNMODIFIED version of this menu item
-    const cartItemId = session?.cart.find(item => item.menuItemId === menuItemId && !item.isCustomized)?.id;
+    // Find the cart item ID for the UNMODIFIED version of this menu item for CURRENT user
+    const cartItemId = session?.cart.find(i => 
+      i.menuItemId === menuItemId && 
+      !i.isCustomized && 
+      i.orderedByName === userName
+    )?.id;
     
     if (!cartItemId) {
         if (newQuantity > 0) {
@@ -72,7 +80,7 @@ export default function DinerPageClient() {
     } else {
         updateItemQuantity(cartItemId, newQuantity);
     }
-  }, [session?.cart, addItem, removeItem, updateItemQuantity]);
+  }, [session?.cart, addItem, removeItem, updateItemQuantity, userName]);
 
   // Memoize derived values
   const itemCount = useMemo(

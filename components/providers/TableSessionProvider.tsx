@@ -23,7 +23,11 @@ const sessionReducer = (state: TableSession | null, action: Action): TableSessio
       const item = action.payload;
       const existingIdx = item.isCustomized
         ? -1
-        : state.cart.findIndex((i) => i.menuItemId === item.menuItemId && !i.isCustomized);
+        : state.cart.findIndex((i) => 
+            i.menuItemId === item.menuItemId && 
+            !i.isCustomized && 
+            i.orderedByName === item.orderedByName
+          );
 
       if (existingIdx > -1) {
         const newCart = [...state.cart];

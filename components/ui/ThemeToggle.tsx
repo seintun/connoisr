@@ -1,3 +1,5 @@
+"use client"
+
 import { AnimatePresence, motion } from "framer-motion"
 import { Coffee, Wine } from "lucide-react"
 import { useTheme } from "next-themes"

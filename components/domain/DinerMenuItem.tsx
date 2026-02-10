@@ -155,10 +155,10 @@ const MenuItemImage = React.memo(function MenuItemImage({ name, imageUrl, quanti
 
 const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd, onModify, onUpdateQuantity }: { quantity: number, onAdd: () => void, onModify: () => void, onUpdateQuantity?: (q: number) => void }) {
   return (
-    <div className="flex flex-col gap-1.5 mt-auto">
-      {/* Quantity Stepper - shown when items in cart */}
-      {quantity > 0 && onUpdateQuantity && (
-        <div className="flex items-center gap-1.5 md:gap-2 p-1 rounded-lg md:rounded-xl bg-white shadow-sm border border-neutral-100 w-full">
+    <div className="flex items-center gap-1.5 mt-auto">
+      {/* Add button OR Quantity Stepper */}
+      {quantity > 0 && onUpdateQuantity ? (
+        <div className="flex-1 flex items-center gap-1.5 md:gap-2 p-1 rounded-lg md:rounded-xl bg-white shadow-sm border border-neutral-100">
           <motion.button
             onClick={(e) => {
               e.stopPropagation();
@@ -195,10 +195,7 @@ const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd,
             <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
           </motion.button>
         </div>
-      )}
-
-      {/* Add + Customize - always visible */}
-      <div className="flex items-center gap-1.5">
+      ) : (
         <motion.button
           onClick={onAdd}
           whileHover={{ scale: 1.02 }}
@@ -208,16 +205,18 @@ const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd,
           <Plus className="w-3.5 h-3.5 transition-transform group-hover/btn:rotate-90" />
           <span>Add</span>
         </motion.button>
-        <motion.button
-          onClick={onModify}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="py-2 md:py-3 px-2.5 md:px-3 bg-amber-50 text-amber-700 rounded-lg md:rounded-xl flex items-center justify-center gap-1.5 hover:bg-amber-100 transition-all duration-200 cursor-pointer border border-amber-200/60"
-          title="Customize"
-        >
-          <span className="text-sm md:text-base">🍽️</span>
-        </motion.button>
-      </div>
+      )}
+
+      {/* Customize - always visible */}
+      <motion.button
+        onClick={onModify}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="py-2 md:py-3 px-2.5 md:px-3 bg-amber-50 text-amber-700 rounded-lg md:rounded-xl flex items-center justify-center gap-1.5 hover:bg-amber-100 transition-all duration-200 cursor-pointer border border-amber-200/60"
+        title="Customize"
+      >
+        <span className="text-sm md:text-base">🍽️</span>
+      </motion.button>
     </div>
   );
 });

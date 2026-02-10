@@ -384,33 +384,37 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
 
             {/* Footer */}
             <div className="px-3 pt-2 pb-3 border-t border-border/40 bg-card/95 shrink-0">
-                <div className="flex items-center justify-between text-[11px] leading-tight mb-0.5">
-                   <span className="font-medium text-muted-foreground">Subtotal</span>
-                   <span className="font-medium">${ordersTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                </div>
-                <div className="flex items-center justify-between text-[11px] leading-tight mb-1.5">
-                   <span className="font-medium text-muted-foreground">Tax (8%)</span>
-                   <span className="font-medium">${(ordersTotal * 0.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                </div>
-                <div className="flex items-center justify-between pt-1.5 border-t border-border/30">
-                  <span className="font-semibold text-xs text-foreground">Total Due</span>
-                  <span className="font-bold text-red-500 text-sm">${(ordersTotal * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                <div className="flex justify-between items-end">
+                   {/* Left Side: Breakdown */}
+                   <div className="flex flex-col text-[10px] text-muted-foreground leading-tight space-y-0.5 w-1/2">
+                      <div className="flex justify-between gap-2">
+                         <span>Subtotal</span>
+                         <span>${ordersTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                      </div>
+                      <div className="flex justify-between gap-2">
+                         <span>Tax (8%)</span>
+                         <span>${(ordersTotal * 0.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                      </div>
+                   </div>
+                   
+                   {/* Right Side: Total */}
+                   <div className="flex flex-col items-end leading-none">
+                      <span className="text-[10px] text-muted-foreground font-medium mb-0.5">Total Due</span>
+                      <span className="font-bold text-red-500 text-sm">${(ordersTotal * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                   </div>
                 </div>
 
                 {hasCartItems && (
-                  <div className="mt-2 pt-2 border-t border-dashed border-border/40">
-                     <div className="flex items-center justify-between text-[10px] text-muted-foreground/80 mb-0.5">
-                        <span>+ {session.cart.length} pending</span>
-                        <span>${session.cart.reduce((a, b) => a + (b.price * b.quantity), 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
-                     </div>
-                     <div className="flex items-center justify-between text-[11px] mt-0.5">
-                       <span className="font-medium">Grand Total</span>
-                       <span className="font-bold text-foreground">${(grandSubtotal * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                  <div className="mt-2 pt-2 border-t border-dashed border-border/40 flex justify-between items-center text-[10px]">
+                     <span className="text-muted-foreground font-medium">+ {session.cart.length} pending (${session.cart.reduce((a, b) => a + (b.price * b.quantity), 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})})</span>
+                     <div className="flex gap-1 items-baseline">
+                       <span className="font-medium text-muted-foreground">Grand Total:</span>
+                       <span className="font-bold text-foreground text-xs">${(grandSubtotal * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                      </div>
                   </div>
                 )}
                 
-                <div className="mt-3 flex gap-2">
+                <div className="mt-2 flex gap-2">
                 {/* Pay Bill Button - Always visible if there are orders, distinct style */}
                 {hasOrders && (
                    <button

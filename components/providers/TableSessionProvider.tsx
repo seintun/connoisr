@@ -10,6 +10,7 @@ interface TableSessionContextType {
   updateItemQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
   sendOrder: () => void;
+  updateOrderStatus: (orderId: string, status: Order['status']) => void;
   initializeSession: (tableId: string) => void;
 }
 
@@ -23,6 +24,8 @@ export function TableSessionProvider({
   children: React.ReactNode;
 }) {
   const [session, setSession] = useState<TableSession | null>(null);
+
+  // ... (keep existing useEffects)
 
   // Load session from localStorage on mount
   useEffect(() => {
@@ -50,8 +53,6 @@ export function TableSessionProvider({
         try {
           const newSession = JSON.parse(e.newValue);
           setSession(prev => {
-            // Only update if content changed to avoid loops, though basic equality check is hard.
-            // We mainly trust the event.
             if (JSON.stringify(prev) !== e.newValue) {
                return newSession;
             }
@@ -89,7 +90,11 @@ export function TableSessionProvider({
         (i) => i.menuItemId === item.menuItemId
       );
 
-      if (existingItemIndex > -1) {
+      // Only merge if options are identical (or both undefined)
+      // Simple equality check for options
+      const areOptionsEqual = (a: any, b: any) => JSON.stringify(a || {}) === JSON.stringify(b || {});
+
+      if (existingItemIndex > -1 && areOptionsEqual(prev.cart[existingItemIndex].options, item.options)) {
         const newCart = [...prev.cart];
         newCart[existingItemIndex] = {
           ...newCart[existingItemIndex],
@@ -168,10 +173,22 @@ export function TableSessionProvider({
 
       return {
         ...prev,
-        orders: [...(prev.orders || []), newOrder], // Handle existing sessions without orders
+        orders: [...(prev.orders || []), newOrder],
         cart: [],
         status: 'ordering',
       };
+    });
+  }, []);
+
+  const updateOrderStatus = useCallback((orderId: string, status: Order['status']) => {
+    setSession((prev) => {
+        if (!prev) return null;
+        return {
+            ...prev,
+            orders: (prev.orders || []).map(order => 
+                order.id === orderId ? { ...order, status } : order
+            )
+        };
     });
   }, []);
 
@@ -184,6 +201,7 @@ export function TableSessionProvider({
         updateItemQuantity,
         clearCart,
         sendOrder,
+        updateOrderStatus,
         initializeSession,
       }}
     >

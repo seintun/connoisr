@@ -151,12 +151,40 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                           </div>
                         <div className="space-y-1 pl-2 border-l-2 border-neutral-100">
                            {order.items.map((item) => (
-                             <div key={item.id} className="flex justify-between items-baseline py-1 pr-2">
-                               <div className="flex items-baseline gap-2">
-                                 <span className="text-xs font-medium text-foreground/80">{item.quantity}x</span>
-                                 <span className="text-xs text-foreground/70">{item.name}</span>
+                             <div key={item.id} className="py-1 pr-2">
+                               <div className="flex justify-between items-baseline">
+                                 <div className="flex items-baseline gap-2">
+                                   <span className="text-xs font-medium text-foreground/80">{item.quantity}x</span>
+                                   <span className="text-xs text-foreground/70">{item.name}</span>
+                                 </div>
+                                 <span className="text-xs font-medium text-foreground/50">${(item.price * item.quantity).toFixed(2)}</span>
                                </div>
-                               <span className="text-xs font-medium text-foreground/50">${(item.price * item.quantity).toFixed(2)}</span>
+                               {/* Customization Options */}
+                               {item.options && Object.keys(item.options).length > 0 && (
+                                 <div className="pl-6 pb-2 space-y-0.5">
+                                   {item.options.spiciness && (
+                                     <div className="text-[10px] text-orange-600 flex items-center gap-1">
+                                       <span className="font-semibold">Spiciness:</span> {item.options.spiciness}
+                                     </div>
+                                   )}
+                                   {item.options.removals && (
+                                      <div className="text-[10px] text-red-500/80 flex items-start gap-1">
+                                        <span className="font-semibold shrink-0">No:</span> 
+                                        <span className="line-through opacity-80">{item.options.removals}</span>
+                                      </div>
+                                   )}
+                                   {item.options.allergens && (
+                                     <div className="text-[10px] text-emerald-600 flex items-center gap-1">
+                                       <span className="font-semibold">Dietary:</span> {item.options.allergens}
+                                     </div>
+                                   )}
+                                   {item.options.note && (
+                                     <div className="text-[10px] text-indigo-500/90 flex items-start gap-1 italic">
+                                       <span className="font-semibold not-italic">Note:</span> "{item.options.note}"
+                                     </div>
+                                   )}
+                                 </div>
+                               )}
                              </div>
                            ))}
                         </div>
@@ -194,6 +222,33 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                                 ${(item.price * item.quantity).toFixed(2)}
                               </span>
                             </div>
+                            
+                            {/* Customization Options */}
+                             {item.options && Object.keys(item.options).length > 0 && (
+                               <div className="mb-2 space-y-0.5 bg-neutral-50/50 p-1.5 rounded-lg border border-neutral-100">
+                                 {item.options.spiciness && (
+                                   <div className="text-[10px] text-orange-600 flex items-center gap-1">
+                                     <span className="font-semibold">Spiciness:</span> {item.options.spiciness}
+                                   </div>
+                                 )}
+                                 {item.options.removals && (
+                                    <div className="text-[10px] text-red-500/80 flex items-start gap-1">
+                                      <span className="font-semibold shrink-0">No:</span> 
+                                      <span className="line-through opacity-80">{item.options.removals}</span>
+                                    </div>
+                                 )}
+                                 {item.options.allergens && (
+                                   <div className="text-[10px] text-emerald-600 flex items-center gap-1">
+                                     <span className="font-semibold">Dietary:</span> {item.options.allergens}
+                                   </div>
+                                 )}
+                                 {item.options.note && (
+                                   <div className="text-[10px] text-indigo-500/90 flex items-start gap-1 italic">
+                                     <span className="font-semibold not-italic">Note:</span> "{item.options.note}"
+                                   </div>
+                                 )}
+                               </div>
+                             )}
                             <div className="flex items-center justify-between">
                               <span className="text-[11px] text-muted-foreground/60">
                                 ${item.price.toFixed(2)} ea

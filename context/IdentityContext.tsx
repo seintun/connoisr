@@ -1,9 +1,7 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
-
-const ADJECTIVES = ["Hungry", "Happy", "Crispy", "Golden", "Chilled"];
-const FOODS = ["Taco", "Noodle", "Dumpling", "Brioche", "Espresso"];
+import { generateGuestName } from "@/lib/utils";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 
 interface IdentityState {
   userName: string | null;
@@ -17,13 +15,7 @@ interface IdentityContextType extends IdentityState {
   clearIdentity: () => void;
 }
 
-const IdentityContext = createContext<IdentityContextType | undefined>(undefined);
-
-function generateGuestName(): string {
-  const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
-  const food = FOODS[Math.floor(Math.random() * FOODS.length)];
-  return `${adj} ${food}`;
-}
+const IdentityContext = React.createContext<IdentityContextType | undefined>(undefined);
 
 function getStorageKey(tableId: string) {
   return `tempodine-identity-${tableId}`;

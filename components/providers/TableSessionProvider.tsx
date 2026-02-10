@@ -1,5 +1,6 @@
 "use client";
 
+import { calculateTotal } from "@/lib/utils";
 import { CartItem, Order, TableSession } from "@/types";
 import React, { createContext, useCallback, useContext, useEffect, useReducer } from "react";
 
@@ -68,7 +69,7 @@ const sessionReducer = (state: TableSession | null, action: Action): TableSessio
         items: [...state.cart],
         status: "ordered",
         createdAt: Date.now(),
-        total: state.cart.reduce((acc, item) => acc + item.price * item.quantity, 0),
+        total: calculateTotal(state.cart),
       };
       return {
         ...state,

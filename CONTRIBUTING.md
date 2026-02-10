@@ -57,7 +57,14 @@ We welcome contributions to TempoDine! This document outlines the standards and 
     npm run dev
     ```
 
-4.  **Build for Production**:
+4.  **Testing**:
+    Before pushing any code, ensure all tests pass.
+    ```bash
+    npm test             # Run unit & integration tests
+    npm run test:e2e     # Run E2E tests (Playwright)
+    ```
+
+5.  **Build for Production**:
     To test PWA features (Service Worker, Manifest), you must run a production build.
     ```bash
     # Turbopack is currently incompatible with the PWA plugin
@@ -95,5 +102,6 @@ All diner-facing components must be optimized for mobile devices first.
 
 *   **Branching**: Create feature branches from `develop` (e.g., `feat/add-menu-search`).
 *   **Commits**: Use conventional commits (e.g., `feat: ...`, `fix: ...`, `chore: ...`).
+*   **Pre-Push**: ALWAYS run `npm test` before pushing to ensure the build is stable.
 
 

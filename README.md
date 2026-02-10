@@ -69,6 +69,12 @@ npm run dev
 
 Development uses **Turbopack** (faster builds). Open [http://localhost:3000](http://localhost:3000).
 
+### Running Tests
+```bash
+npm test             # Run components/unit tests (Vitest)
+npm run test:e2e     # Run end-to-end tests (Playwright)
+```
+
 ### PWA Testing (Production Build)
 ```bash
 npm run build  # Uses webpack (PWA compatible)

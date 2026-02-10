@@ -5,7 +5,7 @@ import { MENU_ITEMS, TAG_EMOJIS } from "@/lib/menu";
 import { cn } from "@/lib/utils";
 import { Order } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle2, ChefHat, Clock, Timer } from "lucide-react";
+import { CheckCircle2, ChefHat, Clock, Flame, Timer } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function KitchenPage() {
@@ -92,61 +92,76 @@ export default function KitchenPage() {
                     const isCustom = item.isCustomized || hasOptions || hasNotes;
 
                     return (
-                      <div key={idx} className="space-y-1">
-                        <div className="flex justify-between items-start">
-                          <span className="font-bold text-lg text-neutral-200 flex items-center gap-2">
-                            {item.quantity}x {item.name}
-                            {isCustom && (
-                              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-400 border border-amber-500/30">
-                                Custom
-                              </span>
-                            )}
+                      <div key={idx} className={cn("flex flex-col gap-2 p-3 rounded-xl transition-colors", isCustom ? "bg-white/5 border border-white/5" : "hover:bg-white/5")}>
+                        {/* Main Item Row */}
+                        <div className="flex items-start gap-3">
+                          <span className="shrink-0 flex items-center justify-center w-8 h-8 rounded-lg bg-neutral-200 text-neutral-900 font-bold font-mono text-lg shadow-sm">
+                            {item.quantity}
                           </span>
-                        </div>
-                        
-                        {/* Item Tags (Static) */}
-                        {tags.length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {tags.map(tag => (
-                              <span key={tag} className="text-[10px] px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400 border border-white/5 flex items-center gap-1" title={tag}>
-                                <span className="grayscale">{TAG_EMOJIS[tag]}</span>
-                                <span>{tag}</span>
-                              </span>
-                            ))}
+                          <div className="flex-1 min-w-0">
+                             <div className="flex items-baseline justify-between gap-2">
+                                <span className={cn("font-bold text-xl tracking-tight leading-tight", isCustom ? "text-white" : "text-neutral-200")}>
+                                  {item.name}
+                                </span>
+                             </div>
+                             
+                             {/* Tags */}
+                             {tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1.5 mt-1.5 opacity-80">
+                                  {tags.map(tag => (
+                                    <span key={tag} className="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-400 border border-white/10 flex items-center gap-1">
+                                      <span className="grayscale">{TAG_EMOJIS[tag]}</span>
+                                      <span>{tag}</span>
+                                    </span>
+                                  ))}
+                                </div>
+                             )}
                           </div>
-                        )}
-                        
-                        {/* Customizations */}
+                        </div>
+
+                        {/* Customizations Block */}
                         {(hasOptions || hasNotes) && (
-                          <div className="bg-white/5 rounded-lg p-2 text-sm space-y-1 mt-1">
+                          <div className="ml-11 space-y-1.5">
+                            
+                            {/* Spiciness */}
                             {item.options?.spiciness && (
-                              <div className="text-orange-400 flex items-center gap-1.5">
-                                <span className="text-[10px] uppercase tracking-wider opacity-70">Spiciness</span>
-                                <span className="font-medium">{item.options.spiciness}</span>
+                              <div className="flex items-center gap-2 text-orange-400 font-medium bg-orange-950/30 px-2 py-1.5 rounded-md border border-orange-500/20">
+                                <Flame className="w-3.5 h-3.5 fill-orange-400/20" />
+                                <span className="text-xs uppercase tracking-wider opacity-70">Spice:</span>
+                                <span className="text-sm">{item.options.spiciness}</span>
                               </div>
                             )}
+
+                            {/* Removals */}
                             {item.options?.removals && (
-                               <div className="text-red-400 flex items-start gap-1.5">
-                                  <span className="text-[10px] uppercase tracking-wider opacity-70 shrink-0 mt-0.5">No</span>
-                                  <span className="font-medium line-through decoration-red-400/50">{item.options.removals}</span>
+                               <div className="flex items-start gap-2 text-red-400 font-medium bg-red-950/30 px-2 py-1.5 rounded-md border border-red-500/20">
+                                  <div className="mt-0.5 relative shrink-0">
+                                    <span className="w-3.5 h-3.5 flex items-center justify-center border border-red-400 rounded-full text-[10px] font-bold">✕</span>
+                                  </div>
+                                  <div className="flex flex-col leading-tight">
+                                    <span className="text-[10px] uppercase tracking-wider opacity-70">NO:</span>
+                                    <span className="text-sm">{item.options.removals}</span>
+                                  </div>
                                </div>
                             )}
+
+                            {/* Dietary */}
                             {item.options?.allergens && (
-                              <div className="text-emerald-400 flex items-center gap-1.5">
-                                <span className="text-[10px] uppercase tracking-wider opacity-70">Dietary</span>
-                                <span className="font-medium">{item.options.allergens}</span>
+                              <div className="flex items-center gap-2 text-emerald-400 font-medium bg-emerald-950/30 px-2 py-1.5 rounded-md border border-emerald-500/20">
+                                <span className="text-lg leading-none">🥬</span>
+                                <span className="text-xs uppercase tracking-wider opacity-70">Dietary:</span>
+                                <span className="text-sm">{item.options.allergens}</span>
                               </div>
                             )}
-                            {item.options?.note && (
-                              <div className="text-indigo-400 flex items-start gap-1.5">
-                                <span className="text-[10px] uppercase tracking-wider opacity-70 shrink-0 mt-0.5">Note</span>
-                                <span className="italic font-medium">"{item.options.note}"</span>
-                              </div>
-                            )}
-                             {item.notes && !item.options?.note && (
-                              <div className="text-indigo-400 flex items-start gap-1.5">
-                                <span className="text-[10px] uppercase tracking-wider opacity-70 shrink-0 mt-0.5">Note</span>
-                                <span className="italic font-medium">"{item.notes}"</span>
+
+                            {/* Notes - High Visibility */}
+                            {(item.options?.note || item.notes) && (
+                              <div className="flex items-start gap-2 text-amber-300 font-medium bg-amber-500/10 px-3 py-2 rounded-lg border border-amber-500/30 shadow-sm mt-1">
+                                <span className="text-lg leading-none mt-0.5">📝</span>
+                                <div className="flex flex-col">
+                                   <span className="text-[10px] uppercase tracking-wider text-amber-500 font-bold mb-0.5">Kitchen Note:</span>
+                                   <span className="italic text-base text-amber-200">"{item.options?.note || item.notes}"</span>
+                                </div>
                               </div>
                             )}
                           </div>

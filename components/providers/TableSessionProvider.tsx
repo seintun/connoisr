@@ -1,7 +1,87 @@
 "use client";
 
 import { CartItem, Order, TableSession } from "@/types";
-import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useReducer } from "react";
+
+type Action =
+  | { type: "SET_SESSION"; payload: TableSession }
+  | { type: "ADD_ITEM"; payload: Omit<CartItem, "id"> }
+  | { type: "REMOVE_ITEM"; payload: { itemId: string } }
+  | { type: "UPDATE_QUANTITY"; payload: { itemId: string; quantity: number } }
+  | { type: "CLEAR_CART" }
+  | { type: "SEND_ORDER" }
+  | { type: "UPDATE_ORDER_STATUS"; payload: { orderId: string; status: Order["status"] } };
+
+const sessionReducer = (state: TableSession | null, action: Action): TableSession | null => {
+  if (action.type === "SET_SESSION") return action.payload;
+  if (!state) return null;
+
+  switch (action.type) {
+    case "ADD_ITEM": {
+      const item = action.payload;
+      const existingIdx = item.isCustomized
+        ? -1
+        : state.cart.findIndex((i) => i.menuItemId === item.menuItemId && !i.isCustomized);
+
+      if (existingIdx > -1) {
+        const newCart = [...state.cart];
+        newCart[existingIdx] = {
+          ...newCart[existingIdx],
+          quantity: newCart[existingIdx].quantity + item.quantity,
+        };
+        return { ...state, cart: newCart };
+      }
+
+      return {
+        ...state,
+        cart: [...state.cart, { ...item, id: crypto.randomUUID() }],
+      };
+    }
+    case "REMOVE_ITEM":
+      return {
+        ...state,
+        cart: state.cart.filter((i) => i.id !== action.payload.itemId),
+      };
+    case "UPDATE_QUANTITY": {
+      const { itemId, quantity } = action.payload;
+      if (quantity <= 0) {
+        return { ...state, cart: state.cart.filter((i) => i.id !== itemId) };
+      }
+      return {
+        ...state,
+        cart: state.cart.map((i) => (i.id === itemId ? { ...i, quantity } : i)),
+      };
+    }
+    case "CLEAR_CART":
+      return { ...state, cart: [] };
+    case "SEND_ORDER": {
+      if (state.cart.length === 0) return state;
+      const newOrder: Order = {
+        id: crypto.randomUUID(),
+        tableId: state.tableId,
+        items: [...state.cart],
+        status: "ordered",
+        createdAt: Date.now(),
+        total: state.cart.reduce((acc, item) => acc + item.price * item.quantity, 0),
+      };
+      return {
+        ...state,
+        orders: [...(state.orders || []), newOrder],
+        cart: [],
+        status: "ordering",
+      };
+    }
+    case "UPDATE_ORDER_STATUS":
+      return {
+        ...state,
+        orders: (state.orders || []).map((o) =>
+            o.id === action.payload.orderId ? { ...o, status: action.payload.status } : o
+        ),
+      };
+    default:
+      return state;
+  }
+};
 
 interface TableSessionContextType {
   session: TableSession | null;
@@ -10,186 +90,76 @@ interface TableSessionContextType {
   updateItemQuantity: (itemId: string, quantity: number) => void;
   clearCart: () => void;
   sendOrder: () => void;
-  updateOrderStatus: (orderId: string, status: Order['status']) => void;
+  updateOrderStatus: (orderId: string, status: Order["status"]) => void;
   initializeSession: (tableId: string) => void;
 }
 
-const TableSessionContext = createContext<TableSessionContextType | undefined>(
-  undefined
-);
+const TableSessionContext = createContext<TableSessionContextType | undefined>(undefined);
 
 export function TableSessionProvider({
   children,
+  tableId: initialTableId,
 }: {
   children: React.ReactNode;
+  tableId?: string;
 }) {
-  const [session, setSession] = useState<TableSession | null>(null);
+  const [session, dispatch] = useReducer(sessionReducer, null);
 
-  // ... (keep existing useEffects)
+  const getStorageKey = useCallback((tId: string) => `tempo-dine-session-${tId}`, []);
 
-  // Load session from localStorage on mount
-  useEffect(() => {
-    const savedSession = localStorage.getItem("tempo-dine-session");
-    if (savedSession) {
-      try {
-        setSession(JSON.parse(savedSession));
-      } catch (e) {
-        console.error("Failed to parse session", e);
+  const initializeSession = useCallback((tId: string) => {
+    const key = getStorageKey(tId);
+    try {
+      const saved = localStorage.getItem(key);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.tableId === tId) {
+          dispatch({ type: "SET_SESSION", payload: parsed });
+          return;
+        }
       }
+    } catch (e) {
+      console.error("Session parse error", e);
     }
-  }, []);
+    dispatch({
+      type: "SET_SESSION",
+      payload: { tableId: tId, cart: [], orders: [], status: "browsing" },
+    });
+  }, [getStorageKey]);
 
-  // Save session to localStorage whenever it changes
+  useEffect(() => {
+    if (initialTableId) initializeSession(initialTableId);
+  }, [initialTableId, initializeSession]);
+
   useEffect(() => {
     if (session) {
-      localStorage.setItem("tempo-dine-session", JSON.stringify(session));
+      localStorage.setItem(getStorageKey(session.tableId), JSON.stringify(session));
     }
-  }, [session]);
+  }, [session, getStorageKey]);
 
-  // Sync with other tabs/windows
   useEffect(() => {
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === "tempo-dine-session" && e.newValue) {
+    const handleStorage = (e: StorageEvent) => {
+      if (session && e.key === getStorageKey(session.tableId) && e.newValue) {
         try {
           const newSession = JSON.parse(e.newValue);
-          setSession(prev => {
-            if (JSON.stringify(prev) !== e.newValue) {
-               return newSession;
-            }
-            return prev;
-          });
+          if (JSON.stringify(session) !== e.newValue) {
+             dispatch({ type: "SET_SESSION", payload: newSession });
+          }
         } catch (error) {
-          console.error("Failed to sync session", error);
+           console.error("Sync error", error);
         }
       }
     };
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
+  }, [session, getStorageKey]);
 
-    window.addEventListener("storage", handleStorageChange);
-    return () => window.removeEventListener("storage", handleStorageChange);
-  }, []);
-
-  const initializeSession = useCallback((tableId: string) => {
-    setSession((prev) => {
-      if (!prev || prev.tableId !== tableId) {
-        return {
-          tableId,
-          cart: [],
-          orders: [],
-          status: "browsing",
-        };
-      }
-      return prev;
-    });
-  }, []);
-
-  const addItem = useCallback((item: Omit<CartItem, "id">) => {
-    setSession((prev) => {
-      if (!prev) return null;
-
-      // Customized items always get their own line
-      // Plain items merge if same menuItemId
-      const existingItemIndex = item.isCustomized
-        ? -1
-        : prev.cart.findIndex(
-            (i) => i.menuItemId === item.menuItemId && !i.isCustomized
-          );
-
-      if (existingItemIndex > -1) {
-        const newCart = [...prev.cart];
-        newCart[existingItemIndex] = {
-          ...newCart[existingItemIndex],
-          quantity: newCart[existingItemIndex].quantity + item.quantity,
-        };
-
-        return {
-          ...prev,
-          cart: newCart,
-        };
-      }
-
-      const newItem: CartItem = {
-        ...item,
-        id: crypto.randomUUID(),
-      };
-
-      return {
-        ...prev,
-        cart: [...prev.cart, newItem],
-      };
-    });
-  }, []);
-
-  const removeItem = useCallback((itemId: string) => {
-    setSession((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        cart: prev.cart.filter((i) => i.id !== itemId),
-      };
-    });
-  }, []);
-
-  const updateItemQuantity = useCallback((itemId: string, quantity: number) => {
-    setSession((prev) => {
-      if (!prev) return null;
-      if (quantity <= 0) {
-        return {
-          ...prev,
-          cart: prev.cart.filter((i) => i.id !== itemId),
-        };
-      }
-      return {
-        ...prev,
-        cart: prev.cart.map((i) =>
-          i.id === itemId ? { ...i, quantity } : i
-        ),
-      };
-    });
-  }, []);
-
-  const clearCart = useCallback(() => {
-    setSession((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        cart: [],
-      };
-    });
-  }, []);
-
-  const sendOrder = useCallback(() => {
-    setSession((prev) => {
-      if (!prev || prev.cart.length === 0) return prev;
-
-      const newOrder: Order = {
-        id: crypto.randomUUID(),
-        tableId: prev.tableId,
-        items: [...prev.cart],
-        status: 'ordered',
-        createdAt: Date.now(),
-        total: prev.cart.reduce((acc, item) => acc + item.price * item.quantity, 0),
-      };
-
-      return {
-        ...prev,
-        orders: [...(prev.orders || []), newOrder],
-        cart: [],
-        status: 'ordering',
-      };
-    });
-  }, []);
-
-  const updateOrderStatus = useCallback((orderId: string, status: Order['status']) => {
-    setSession((prev) => {
-        if (!prev) return null;
-        return {
-            ...prev,
-            orders: (prev.orders || []).map(order => 
-                order.id === orderId ? { ...order, status } : order
-            )
-        };
-    });
-  }, []);
+  const addItem = useCallback((item: Omit<CartItem, "id">) => dispatch({ type: "ADD_ITEM", payload: item }), []);
+  const removeItem = useCallback((itemId: string) => dispatch({ type: "REMOVE_ITEM", payload: { itemId } }), []);
+  const updateItemQuantity = useCallback((itemId: string, quantity: number) => dispatch({ type: "UPDATE_QUANTITY", payload: { itemId, quantity } }), []);
+  const clearCart = useCallback(() => dispatch({ type: "CLEAR_CART" }), []);
+  const sendOrder = useCallback(() => dispatch({ type: "SEND_ORDER" }), []);
+  const updateOrderStatus = useCallback((orderId: string, status: Order["status"]) => dispatch({ type: "UPDATE_ORDER_STATUS", payload: { orderId, status } }), []);
 
   return (
     <TableSessionContext.Provider
@@ -211,10 +181,6 @@ export function TableSessionProvider({
 
 export function useTableSession() {
   const context = useContext(TableSessionContext);
-  if (context === undefined) {
-    throw new Error(
-      "useTableSession must be used within a TableSessionProvider"
-    );
-  }
+  if (context === undefined) throw new Error("useTableSession must be used within a TableSessionProvider");
   return context;
 }

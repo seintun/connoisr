@@ -1,6 +1,5 @@
 "use client";
 
-import { TableSessionProvider } from "@/components/providers/TableSessionProvider";
 
 export default function KitchenLayout({
   children,
@@ -8,10 +7,8 @@ export default function KitchenLayout({
   children: React.ReactNode;
 }) {
   return (
-    <TableSessionProvider>
       <div className="min-h-screen bg-neutral-900 text-neutral-50">
         {children}
       </div>
-    </TableSessionProvider>
   );
 }

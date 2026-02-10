@@ -1,18 +1,9 @@
 "use client";
 
-import { TableSessionProvider, useTableSession } from "@/components/providers/TableSessionProvider";
+import { TableSessionProvider } from "@/components/providers/TableSessionProvider";
 import { useParams } from "next/navigation";
-import { useEffect } from "react";
 
-function TableInitializer({ id }: { id: string }) {
-  const { initializeSession } = useTableSession();
 
-  useEffect(() => {
-    initializeSession(id);
-  }, [id, initializeSession]);
-
-  return null;
-}
 
 export default function DinerLayout({
   children,
@@ -23,8 +14,7 @@ export default function DinerLayout({
   const id = params?.id as string;
 
   return (
-    <TableSessionProvider>
-      <TableInitializer id={id} />
+    <TableSessionProvider tableId={id}>
       <div className="min-h-screen bg-background text-foreground pb-24 relative [overflow-x:clip]">
          {/* Ambient Background Glows */}
         <div className="fixed top-[-10%] right-[-10%] w-[50vh] h-[50vh] bg-primary/20 blur-[100px] rounded-full pointer-events-none z-0" />

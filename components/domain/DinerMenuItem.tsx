@@ -3,7 +3,7 @@
 import { TAG_EMOJIS } from "@/lib/menu";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
-import { Minus, Plus, SlidersHorizontal, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -154,68 +154,70 @@ const MenuItemImage = React.memo(function MenuItemImage({ name, imageUrl, quanti
 });
 
 const MenuItemControls = React.memo(function MenuItemControls({ quantity, onAdd, onModify, onUpdateQuantity }: { quantity: number, onAdd: () => void, onModify: () => void, onUpdateQuantity?: (q: number) => void }) {
-  if (quantity > 0 && onUpdateQuantity) {
-    return (
-      <div className="flex items-center gap-1.5 md:gap-2 p-1 rounded-lg md:rounded-xl bg-white shadow-sm border border-neutral-100 mt-auto w-full">
-        <motion.button
-          onClick={(e) => {
-            e.stopPropagation();
-            onUpdateQuantity(quantity - 1);
-          }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="w-7 h-7 md:w-10 md:h-10 rounded-md md:rounded-lg flex items-center justify-center transition-colors bg-neutral-50 text-destructive hover:bg-red-500 hover:text-white cursor-pointer"
-        >
-          {quantity === 1 ? <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <Minus className="w-3.5 h-3.5 md:w-4 md:h-4" />}
-        </motion.button>
-
-        <div className="flex-1 flex items-center justify-center overflow-hidden px-1">
-          <motion.span
-            key={quantity}
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            className="font-bold text-base md:text-xl text-foreground tabular-nums"
+  return (
+    <div className="flex flex-col gap-1.5 mt-auto">
+      {/* Quantity Stepper - shown when items in cart */}
+      {quantity > 0 && onUpdateQuantity && (
+        <div className="flex items-center gap-1.5 md:gap-2 p-1 rounded-lg md:rounded-xl bg-white shadow-sm border border-neutral-100 w-full">
+          <motion.button
+            onClick={(e) => {
+              e.stopPropagation();
+              onUpdateQuantity(quantity - 1);
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-7 h-7 md:w-10 md:h-10 rounded-md md:rounded-lg flex items-center justify-center transition-colors bg-neutral-50 text-destructive hover:bg-red-500 hover:text-white cursor-pointer"
           >
-            {quantity}
-          </motion.span>
-        </div>
+            {quantity === 1 ? <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <Minus className="w-3.5 h-3.5 md:w-4 md:h-4" />}
+          </motion.button>
 
+          <div className="flex-1 flex items-center justify-center overflow-hidden px-1">
+            <motion.span
+              key={quantity}
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -10, opacity: 0 }}
+              className="font-bold text-base md:text-xl text-foreground tabular-nums"
+            >
+              {quantity}
+            </motion.span>
+          </div>
+
+          <motion.button
+            onClick={(e) => {
+              e.stopPropagation();
+              onUpdateQuantity(quantity + 1);
+            }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-7 h-7 md:w-10 md:h-10 rounded-md md:rounded-lg flex items-center justify-center transition-colors bg-neutral-50 text-emerald-600 hover:bg-emerald-600 hover:text-white cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+          </motion.button>
+        </div>
+      )}
+
+      {/* Add + Customize - always visible */}
+      <div className="flex items-center gap-1.5">
         <motion.button
-          onClick={(e) => {
-            e.stopPropagation();
-            onUpdateQuantity(quantity + 1);
-          }}
+          onClick={onAdd}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="flex-1 py-2 md:py-3 bg-foreground text-background font-semibold rounded-lg md:rounded-xl flex items-center justify-center gap-2 hover:bg-primary transition-all duration-300 text-xs md:text-sm group/btn shadow-sm hover:shadow-md cursor-pointer"
+        >
+          <Plus className="w-3.5 h-3.5 transition-transform group-hover/btn:rotate-90" />
+          <span>Add</span>
+        </motion.button>
+        <motion.button
+          onClick={onModify}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="w-7 h-7 md:w-10 md:h-10 rounded-md md:rounded-lg flex items-center justify-center transition-colors bg-neutral-50 text-emerald-600 hover:bg-emerald-600 hover:text-white cursor-pointer"
+          className="py-2 md:py-3 px-2.5 md:px-3 bg-amber-50 text-amber-700 rounded-lg md:rounded-xl flex items-center justify-center gap-1.5 hover:bg-amber-100 transition-all duration-200 cursor-pointer border border-amber-200/60"
+          title="Customize"
         >
-          <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
+          <span className="text-sm md:text-base">🍽️</span>
         </motion.button>
       </div>
-    );
-  }
-
-  return (
-    <div className="flex items-center gap-1.5 mt-auto">
-      <motion.button
-        onClick={onAdd}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="flex-1 py-2 md:py-3 bg-foreground text-background font-semibold rounded-lg md:rounded-xl flex items-center justify-center gap-2 hover:bg-primary transition-all duration-300 text-xs md:text-sm group/btn shadow-sm hover:shadow-md cursor-pointer"
-      >
-        <Plus className="w-3.5 h-3.5 transition-transform group-hover/btn:rotate-90" />
-        <span>Add</span>
-      </motion.button>
-      <motion.button
-        onClick={onModify}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="py-2 md:py-3 px-2.5 md:px-3 bg-neutral-100 text-foreground/70 rounded-lg md:rounded-xl flex items-center justify-center hover:bg-neutral-200 hover:text-foreground transition-all duration-200 cursor-pointer border border-neutral-200/60"
-        title="Customize"
-      >
-        <SlidersHorizontal className="w-3.5 h-3.5 md:w-4 md:h-4" />
-      </motion.button>
     </div>
   );
 });

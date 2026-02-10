@@ -24,6 +24,7 @@ export const viewport: Viewport = {
 };
 
 import { NetworkStatus } from "@/components/domain/NetworkStatus";
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
@@ -47,6 +48,7 @@ export default function RootLayout({
           {children}
           <NetworkStatus />
           {process.env.VERCEL && <SpeedInsights />}
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>

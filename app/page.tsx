@@ -1,35 +1,21 @@
+import { FeatureShowcase } from "@/app/components/landing/FeatureShowcase";
+import { HeroSection } from "@/app/components/landing/HeroSection";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { APP_NAME } from "@/lib/constants";
-import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center bg-background text-foreground transition-colors duration-300">
-      <div className="absolute top-4 right-4">
+    <main className="relative min-h-screen bg-background text-foreground transition-colors duration-300 selection:bg-primary/20">
+      <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
       </div>
-      <div className="text-center space-y-4">
-        <h1 className="text-6xl font-serif font-bold tracking-tight text-primary">
-          {APP_NAME}
-        </h1>
-        <p className="text-xl text-muted-foreground font-sans max-w-md mx-auto">
-          Experience the future of dining. Seamless, elegant, and efficient.
-        </p>
-        <div className="flex gap-4 justify-center mt-8">
-          <Link
-            href="/table/1"
-            className="px-6 py-2 bg-primary text-primary-foreground rounded-sm font-medium hover:opacity-90 transition-opacity"
-          >
-            Diner App
-          </Link>
-          <Link
-            href="/kitchen"
-            className="px-6 py-2 border border-border rounded-sm font-medium hover:bg-muted transition-colors"
-          >
-            Kitchen Display
-          </Link>
-        </div>
-      </div>
+      
+      <HeroSection />
+      <FeatureShowcase />
+      
+      {/* Simple Footer */}
+      <footer className="py-8 text-center text-sm text-muted-foreground border-t border-border/40">
+        <p>&copy; {new Date().getFullYear()} Connoisr. Service as a Material.</p>
+      </footer>
     </main>
   );
 }

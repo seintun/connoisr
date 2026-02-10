@@ -1,0 +1,15 @@
+# GitHub Linguist language statistics configuration
+
+# Exclude generated test reports and build artifacts from language stats
+playwright-report/** linguist-generated=true
+test-results/** linguist-generated=true
+public/sw.js linguist-generated=true
+public/workbox-*.js linguist-generated=true
+public/fallback-*.js linguist-generated=true
+
+# Mark package-lock.json as generated
+package-lock.json linguist-generated=true
+
+# Ensure proper language detection
+*.ts linguist-language=TypeScript
+*.tsx linguist-language=TypeScript

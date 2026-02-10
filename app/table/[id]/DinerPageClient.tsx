@@ -1,6 +1,7 @@
 "use client";
 
 import { DinerMenuItem } from "@/components/domain/DinerMenuItem";
+import { FloatingCart } from "@/components/domain/FloatingCart";
 import { MenuHeader } from "@/components/domain/MenuHeader";
 import { IdentityModal } from "@/components/onboarding/IdentityModal";
 import { useTableSession } from "@/components/providers/TableSessionProvider";
@@ -9,7 +10,6 @@ import { useMenuPrefetch } from "@/hooks/useMenuPrefetch";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 import { CartItem } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
-import { ShoppingBag } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useCallback, useMemo, useState } from "react";
 
@@ -177,53 +177,16 @@ export default function DinerPageClient() {
          ))}
        </main>
 
-       {/* Floating Cart Trigger */}
-       <AnimatePresence>
-         {(itemCount > 0 || (session?.orders?.length ?? 0) > 0) && (
-           <motion.div
-             initial={{ y: 100, opacity: 0 }}
-             animate={{ 
-               y: isOnline ? 0 : -36, // Move up just enough to clear banner (~33px + small gap)
-               opacity: 1 
-             }}
-             // transition={{ type: "spring", stiffness: 260, damping: 20 }}
-             className="fixed bottom-4 right-4 z-50" // Closer to bottom/right edge
-           >
-             <motion.button
-               onClick={() => setIsCartOpen(true)}
-               whileHover={{ scale: 1.05 }}
-               whileTap={{ scale: 0.95 }}
-               className="flex items-center gap-3 bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-2xl shadow-primary/40 hover:shadow-primary/50 transition-all cursor-pointer border border-primary-foreground/10 z-50 backdrop-blur-none"
-             >
-               <div className="relative">
-                 <ShoppingBag className="w-5 h-5" />
-                 {itemCount > 0 && (
-                   <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
-                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                     <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
-                   </span>
-                 )}
-               </div>
-               <div className="flex flex-col items-start leading-none gap-0.5">
-                 <span className="font-bold text-sm">
-                   {itemCount > 0 ? "Review & Send" : `Pay $${((session?.orders || []).reduce((a, o) => a + o.total, 0) * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`}
-                 </span>
-                 <div className="flex items-center gap-1.5 text-[10px] text-primary-foreground/90 font-medium">
-                   {itemCount > 0 ? (
-                     <>
-                       <span>{itemCount} pending</span>
-                       <span className="w-1 h-1 rounded-full bg-primary-foreground/50" />
-                       <span>${cartTotal}</span>
-                     </>
-                   ) : (
-                     <span>{(session?.orders || []).reduce((a, o) => a + o.items.reduce((c, d) => c + d.quantity, 0), 0)} items ordered</span>
-                   )}
-                 </div>
-               </div>
-             </motion.button>
-           </motion.div>
-         )}
-       </AnimatePresence>
+        {/* Floating Cart Trigger */}
+        <FloatingCart
+          itemCount={itemCount}
+          cartTotal={cartTotal}
+          isOnline={isOnline}
+          hasOrders={(session?.orders?.length ?? 0) > 0}
+          orderTotal={((session?.orders || []).reduce((a, o) => a + o.total, 0) * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+          orderedItemCount={(session?.orders || []).reduce((a, o) => a + o.items.reduce((c, d) => c + d.quantity, 0), 0)}
+          onOpen={() => setIsCartOpen(true)}
+        />
 
         <Checkout isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
         

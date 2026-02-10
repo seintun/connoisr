@@ -220,7 +220,7 @@ const MenuItemControls = React.memo(function MenuItemControls({
   onUpdateQuantity?: (q: number) => void;
 }) {
   return (
-    <div className="flex items-center gap-1.5 mt-auto">
+    <div className="flex items-stretch gap-1.5 mt-auto">
       {/* Add button OR Quantity Stepper */}
       {quantity > 0 && onUpdateQuantity ? (
         <div className="flex-1 flex items-center gap-1.5 md:gap-2 p-1 rounded-lg md:rounded-xl bg-card shadow-sm border border-border/50">

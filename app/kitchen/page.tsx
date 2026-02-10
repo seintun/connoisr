@@ -5,7 +5,7 @@ import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Order } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle2, ChefHat, Clock, Flame, Timer } from "lucide-react";
+import { AlertTriangle, CheckCircle2, ChefHat, Clock, Flame, Timer } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function KitchenPage() {
@@ -21,14 +21,20 @@ export default function KitchenPage() {
     .filter((order) => order.status !== "paid" && order.status !== "served")
     .sort((a, b) => a.createdAt - b.createdAt);
 
-  const getStatusColor = (status: Order["status"]) => {
+  const OVERDUE_THRESHOLD_MIN = 10;
+
+  const getStatusColor = (status: Order["status"], timeDiff?: number) => {
+    // Overdue orders get burnt sienna regardless of status
+    if (timeDiff !== undefined && timeDiff >= OVERDUE_THRESHOLD_MIN && status !== "ready") {
+      return "bg-orange-700/20 text-orange-300 border-orange-700/30";
+    }
     switch (status) {
       case "ordered":
-        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
       case "cooking":
         return "bg-orange-500/20 text-orange-400 border-orange-500/30";
       case "ready":
-        return "bg-green-500/20 text-green-400 border-green-500/30";
+        return "bg-sky-500/20 text-sky-400 border-sky-500/30";
       default:
         return "bg-neutral-800 text-neutral-400";
     }
@@ -50,7 +56,9 @@ export default function KitchenPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <AnimatePresence mode="popLayout">
           {activeOrders.map((order) => {
-            const timeDiff = Math.floor((now - order.createdAt) / 60000); // minutes
+            const timeDiff = Math.floor((now - order.createdAt) / 60000);
+            const isOverdue = timeDiff >= OVERDUE_THRESHOLD_MIN && order.status !== "ready";
+            const statusColors = getStatusColor(order.status, timeDiff);
 
             return (
               <motion.div
@@ -61,14 +69,15 @@ export default function KitchenPage() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 className={cn(
                   "rounded-2xl border bg-neutral-900/50 backdrop-blur-sm overflow-hidden flex flex-col shadow-xl",
-                  getStatusColor(order.status).split(" ")[2], // Use border color
+                  statusColors.split(" ")[2],
+                  isOverdue && "animate-pulse",
                 )}
               >
                 {/* Order Header */}
                 <div
                   className={cn(
                     "px-4 py-3 flex justify-between items-center border-b",
-                    getStatusColor(order.status),
+                    statusColors,
                   )}
                 >
                   <div className="flex items-center gap-2">
@@ -80,8 +89,13 @@ export default function KitchenPage() {
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs font-mono font-medium">
+                    {isOverdue && (
+                      <AlertTriangle className="w-3.5 h-3.5 text-orange-400 animate-pulse" />
+                    )}
                     <Timer className="w-3.5 h-3.5" />
-                    <span>{timeDiff}m</span>
+                    <span className={cn(isOverdue && "text-orange-300 font-bold")}>
+                      {timeDiff}m
+                    </span>
                   </div>
                 </div>
 

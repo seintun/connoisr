@@ -1,5 +1,6 @@
 "use client";
 
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
@@ -97,16 +98,21 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
                   TempoDine
                 </h1>
                 <p className="text-xs text-muted-foreground font-medium tracking-wide">
-                  Modern Dining Experience
+                  A new lifestyle to dine
                 </p>
               </div>
             </div>
 
-            {tableId && (
-              <div className="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-xs font-bold uppercase tracking-wider border border-secondary/20 backdrop-blur-sm">
-                Table {tableId}
-              </div>
-            )}
+            {/* Right Side Actions */}
+            <div className="flex items-center gap-2">
+               {tableId && (
+                <div className="flex px-2.5 py-1 bg-secondary/10 text-secondary-foreground/80 rounded-full text-[10px] font-bold uppercase tracking-wider border border-secondary/20 items-center gap-1.5 whitespace-nowrap">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shrink-0" />
+                  Table {tableId}
+                </div>
+              )}
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </div>

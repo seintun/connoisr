@@ -233,7 +233,15 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                         </div>
                         <span className="text-[11px] font-semibold text-amber-800 dark:text-amber-300 uppercase tracking-wider">Pending</span>
                       </div>
-                      <span className="text-[10px] text-amber-600/80 dark:text-amber-400/60 font-medium">Not sent to kitchen</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] text-amber-600/80 dark:text-amber-400/60 font-medium">Not sent to kitchen</span>
+                        <button
+                          onClick={clearCart}
+                          className="text-[10px] text-red-500/70 hover:text-red-600 dark:text-red-400/60 dark:hover:text-red-400 font-medium underline underline-offset-2 transition-colors"
+                        >
+                          Clear all
+                        </button>
+                      </div>
                     </div>
 
                     {/* Idle timer nudge */}

@@ -268,110 +268,111 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                           {items.map((item) => (
                             <div 
                               key={item.id} 
-                              className="py-2 px-2.5 rounded-lg bg-card border border-dashed border-amber-300/60 dark:border-amber-500/30 hover:border-amber-400/80 dark:hover:border-amber-500/50 transition-colors"
+                              className="p-2 rounded-xl bg-card border border-amber-200/50 dark:border-amber-500/20 shadow-sm relative overflow-hidden group"
                             >
-                            <div className="flex items-baseline justify-between gap-3 mb-1.5">
-                              <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 flex-1 min-w-0 flex items-center gap-1.5">
-                                {item.name}
-                                {item.orderedByName && (
-                                  <span className="text-[9px] text-muted-foreground/60 font-medium shrink-0">· {item.orderedByName}</span>
-                                )}
-                                {item.isCustomized && (
-                                  <span className="shrink-0 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-md border border-amber-200/60">🍽️ Custom</span>
-                                )}
-                              </span>
-                              <span className="font-semibold text-[13px] text-foreground tabular-nums shrink-0">
-                                ${(item.price * item.quantity).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                              </span>
-                            </div>
-                            
+                              {/* Background dash pattern for "draft" feel */}
+                              <div className="absolute inset-0 border-2 border-dashed border-amber-300/40 dark:border-amber-500/20 rounded-xl pointer-events-none" />
 
-
-                            {/* Tags (Static) */}
-                            {(() => {
-                              const menuDef = MENU_ITEMS.find(i => i.id === item.menuItemId);
-                              const tags = menuDef?.tags || item.tags || [];
-                              if (tags.length === 0) return null;
-                              
-                              return (
-                                <div className="flex flex-wrap gap-1 mb-2 ml-1">
-                                  {tags.map(tag => {
-                                     // Dynamic colors for tags
-                                    let colorClass = "bg-secondary text-secondary-foreground border-border/50";
-                                    
-                                    if (["Spicy"].includes(tag)) colorClass = "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20";
-                                    else if (["Vegetarian", "Vegan"].includes(tag)) colorClass = "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20";
-                                    else if (["GF", "Gluten Free"].includes(tag)) colorClass = "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20";
-                                    else if (["Seafood", "Shellfish"].includes(tag)) colorClass = "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20";
-                                    else if (["Sweet"].includes(tag)) colorClass = "bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-500/10 dark:text-pink-400 dark:border-pink-500/20";
-                                    else if (["Alcohol"].includes(tag)) colorClass = "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20";
-                                    else if (["Nuts", "Nut Free"].includes(tag)) colorClass = "bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-500/10 dark:text-stone-400 dark:border-stone-500/20";
-
-                                    return (
-                                      <span key={tag} className={cn("text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1 font-medium", colorClass)}>
-                                        <span className="opacity-80 scale-90">{TAG_EMOJIS[tag]}</span>
-                                        <span>{tag}</span>
-                                      </span>
-                                    )
-                                  })}
+                              <div className="relative">
+                                {/* Row 1: Name & Total Price */}
+                                <div className="flex justify-between items-start mb-1 gap-2">
+                                  <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 break-all">
+                                    {item.name}
+                                  </span>
+                                  <span className="font-bold text-[13px] text-foreground tabular-nums shrink-0">
+                                    ${(item.price * item.quantity).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                  </span>
                                 </div>
-                              );
-                            })()}
-                            
-                            {/* Customization Options */}
-                             {item.options && Object.keys(item.options).length > 0 && (
-                               <div className="mb-2 space-y-0.5 bg-muted/40 p-2 rounded-lg border border-border/50">
-                                 {item.options.spiciness && (
-                                   <div className="text-[10px] text-orange-600 dark:text-orange-400 flex items-center gap-1">
-                                     <span className="font-semibold text-foreground/80">Spiciness:</span> {item.options.spiciness}
+
+                                {/* Row 2: Tags & Unit Price */}
+                                <div className="flex justify-between items-center mb-1.5 min-h-[16px]">
+                                   <div className="flex flex-wrap gap-1">
+                                      {/* Reusing existing tag logic */}
+                                      {(() => {
+                                        const menuDef = MENU_ITEMS.find(i => i.id === item.menuItemId);
+                                        const tags = menuDef?.tags || item.tags || [];
+                                        
+                                        return tags.map(tag => {
+                                          let colorClass = "bg-secondary text-secondary-foreground border-border/50";
+                                          if (["Spicy"].includes(tag)) colorClass = "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20";
+                                          else if (["Vegetarian", "Vegan"].includes(tag)) colorClass = "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20";
+                                          else if (["GF", "Gluten Free"].includes(tag)) colorClass = "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20";
+                                          else if (["Seafood", "Shellfish"].includes(tag)) colorClass = "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20";
+                                          else if (["Sweet"].includes(tag)) colorClass = "bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-500/10 dark:text-pink-400 dark:border-pink-500/20";
+                                          else if (["Alcohol"].includes(tag)) colorClass = "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20";
+                                          else if (["Nuts", "Nut Free"].includes(tag)) colorClass = "bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-500/10 dark:text-stone-400 dark:border-stone-500/20";
+
+                                          const emoji = TAG_EMOJIS[tag];
+
+                                          return (
+                                            <span key={tag} className={cn("text-[9px] px-1.5 py-0.5 rounded border flex items-center gap-0.5 font-medium leading-none", colorClass)}>
+                                              {emoji && <span className="opacity-80 scale-75">{emoji}</span>}
+                                              <span>{tag}</span>
+                                            </span>
+                                          )
+                                        })
+                                      })()}
                                    </div>
-                                 )}
-                                 {item.options.removals && (
-                                    <div className="text-[10px] text-red-600 dark:text-red-400 flex items-start gap-1">
-                                      <span className="font-semibold shrink-0 text-foreground/80">No:</span> 
-                                      <span className="line-through opacity-80">{item.options.removals}</span>
+                                   
+                                   <span className="text-[10px] text-muted-foreground/70 font-medium tabular-nums">
+                                     ${item.price.toLocaleString('en-US', {minimumFractionDigits: 2})} ea
+                                   </span>
+                                </div>
+
+                                {/* Customization Options Display */}
+                                {item.options && Object.keys(item.options).length > 0 && (
+                                   <div className="mb-1.5 space-y-0.5 bg-muted/40 p-2 rounded-lg border border-border/50 text-[10px]">
+                                     {item.options.spiciness && <div className="text-orange-600 dark:text-orange-400"><span className="font-semibold text-foreground/70">Spiciness:</span> {item.options.spiciness}</div>}
+                                     {item.options.removals && <div className="text-red-600 dark:text-red-400"><span className="font-semibold text-foreground/70">No:</span> {item.options.removals}</div>}
+                                     {item.options.allergens && <div className="text-emerald-600 dark:text-emerald-400"><span className="font-semibold text-foreground/70">Dietary:</span> {item.options.allergens}</div>}
+                                     {item.options.note && <div className="text-indigo-600 dark:text-indigo-400 italic">"{item.options.note}"</div>}
+                                   </div>
+                                )}
+
+                                {/* Row 3: User Badge, Custom Badge & Controls */}
+                                <div className="flex justify-between items-end">
+                                   <div className="flex items-center gap-1.5 pb-0.5">
+                                      {item.orderedByName && (
+                                        <span className="text-[10px] font-medium text-amber-900/40 dark:text-amber-100/40 bg-amber-100/50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-md">
+                                          {item.orderedByName}
+                                        </span>
+                                      )}
+                                      
+                                      {item.isCustomized ? (
+                                        <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-md border border-amber-200/60 w-fit">
+                                          🍽️ Custom
+                                        </span>
+                                      ) : null}
+                                   </div>
+
+                                   {/* Controls */}
+                                    <div className="flex items-center gap-0.5 bg-muted/60 rounded-lg p-0.5 ml-auto">
+                                      <button 
+                                        onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
+                                        className={cn(
+                                          "w-7 h-7 rounded-md flex items-center justify-center transition-all active:scale-95 shadow-sm",
+                                          item.quantity === 1
+                                            ? "bg-white dark:bg-zinc-800 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                            : "bg-white dark:bg-zinc-800 text-muted-foreground hover:text-foreground"
+                                        )}
+                                      >
+                                        {item.quantity === 1 ? <Trash2 className="w-3.5 h-3.5" /> : <Minus className="w-3.5 h-3.5" />}
+                                      </button>
+                                      
+                                      <span className="font-mono font-bold text-xs w-6 text-center text-foreground tabular-nums">
+                                        {item.quantity}
+                                      </span>
+
+                                      <button 
+                                        onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                                        className="w-7 h-7 rounded-md bg-foreground text-background flex items-center justify-center hover:opacity-90 transition-all active:scale-95 shadow-sm"
+                                      >
+                                        <Plus className="w-3.5 h-3.5" />
+                                      </button>
                                     </div>
-                                 )}
-                                 {item.options.allergens && (
-                                   <div className="text-[10px] text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                                     <span className="font-semibold text-foreground/80">Dietary:</span> {item.options.allergens}
-                                   </div>
-                                 )}
-                                 {item.options.note && (
-                                   <div className="text-[10px] text-indigo-600 dark:text-indigo-400 flex items-start gap-1 italic">
-                                     <span className="font-semibold not-italic text-foreground/80">Note:</span> "{item.options.note}"
-                                   </div>
-                                 )}
-                               </div>
-                             )}
-                            <div className="flex items-center justify-between">
-                              <span className="text-[11px] text-muted-foreground">
-                                ${item.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} ea
-                              </span>
-                              <div className="flex items-center gap-0.5 bg-muted rounded-lg p-0.5">
-                                <button
-                                  onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
-                                  className={cn(
-                                    "w-8 h-8 rounded-md flex items-center justify-center transition-all active:scale-90",
-                                    item.quantity === 1
-                                      ? "bg-white text-red-400 hover:text-red-500 shadow-sm"
-                                      : "bg-white text-foreground/70 hover:text-foreground shadow-sm"
-                                  )}
-                                >
-                                  {item.quantity === 1 ? <Trash2 className="w-3.5 h-3.5" /> : <Minus className="w-3.5 h-3.5" />}
-                                </button>
-                                <span className="font-mono font-bold text-xs w-7 text-center text-foreground">
-                                  {item.quantity}
-                                </span>
-                                <button
-                                  onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
-                                  className="w-8 h-8 rounded-md bg-foreground text-background flex items-center justify-center hover:opacity-90 transition-all active:scale-90 shadow-sm"
-                                >
-                                  <Plus className="w-3.5 h-3.5" />
-                                </button>
+                                </div>
                               </div>
                             </div>
-                          </div>
                         ))}
                       </div>
                     </div>

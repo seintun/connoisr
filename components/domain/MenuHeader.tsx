@@ -4,6 +4,8 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { cn } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
+import { useIdentity } from "@/context/IdentityContext";
+
 interface MenuHeaderProps {
   categories: string[];
   tableId?: string;
@@ -11,6 +13,7 @@ interface MenuHeaderProps {
 }
 
 export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderProps) {
+  const { userName } = useIdentity();
   const [activeCategory, setActiveCategory] = useState(categories[0]);
   const navRef = useRef<HTMLDivElement>(null);
   const isProgrammaticScroll = useRef(false);
@@ -89,16 +92,16 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
       <div className="bg-background w-full">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex justify-between items-center h-14">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3.5">
               <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center text-white font-serif font-bold text-xl shadow-lg shadow-primary/30 transform -rotate-3">
                 T
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col gap-0.5">
                 <h1 className="text-2xl font-serif font-bold text-foreground tracking-tight leading-none">
                   TempoDine
                 </h1>
                 <p className="text-xs text-muted-foreground font-medium tracking-wide">
-                  A new lifestyle to dine
+                  {userName} is ordering
                 </p>
               </div>
             </div>

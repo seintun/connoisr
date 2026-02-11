@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @plugin "tailwindcss-animate";
 
@@ -21,21 +21,21 @@
 
   @keyframes accordion-down {
     from {
-      height: 0
+      height: 0;
     }
 
     to {
-      height: var(--radix-accordion-content-height)
+      height: var(--radix-accordion-content-height);
     }
   }
 
   @keyframes accordion-up {
     from {
-      height: var(--radix-accordion-content-height)
+      height: var(--radix-accordion-content-height);
     }
 
     to {
-      height: 0
+      height: 0;
     }
   }
 }
@@ -46,7 +46,6 @@
   correct during your upgrade.
 */
 @layer base {
-
   *,
   ::after,
   ::before,
@@ -186,8 +185,15 @@
 }
 
 @keyframes pulse-ring {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.4); }
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.4);
+  }
 }
 
 @utility shadow-glow {
@@ -201,5 +207,21 @@
 
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* Prevent accidental text highlight on touch targets while preserving text inputs. */
+  :where(button, a[href], [role='button'], summary, label, [data-touchable='true']) {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  :where(input, textarea, [contenteditable='true']) {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
   }
 }

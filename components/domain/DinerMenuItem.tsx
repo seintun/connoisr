@@ -168,9 +168,10 @@ const MenuItemImage = React.memo(function MenuItemImage({
     <>
       <div
         className={cn(
-          'w-1/3 min-w-[100px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 cursor-zoom-in group',
+          'w-1/3 min-w-[100px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 cursor-zoom-in group select-none touch-manipulation',
           isImageOpen && 'z-[100]',
         )}
+        data-touchable="true"
         data-testid={`menu-item-image-trigger-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
         onClick={() => setIsImageOpen(true)}
       >

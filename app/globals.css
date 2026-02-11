@@ -106,9 +106,9 @@
     --popover: 220 15% 10%;
     --popover-foreground: 220 10% 96%;
 
-    /* Primary: Muted Amber/Cognac -> sophisticated, not neon yellow */
-    --primary: 35 60% 55%;
-    --primary-foreground: 0 0% 100%;
+    /* Dark mode primary tuned for WCAG contrast on small button text */
+    --primary: 35 70% 38%;
+    --primary-foreground: 0 0% 98%;
 
     /* Secondary: Gunmetal */
     --secondary: 215 15% 20%;

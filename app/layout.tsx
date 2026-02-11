@@ -35,8 +35,6 @@ export const viewport: Viewport = {
   ],
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false, // App-like feel, prevents zooming
 };
 
 import { NetworkStatus } from '@/components/domain/NetworkStatus';

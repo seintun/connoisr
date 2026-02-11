@@ -48,6 +48,15 @@
      - `components/ui/ThemeToggle.tsx`
      - `components/domain/NetworkStatus.tsx`
    - This further reduces script parse/evaluation cost for first load.
+8. Accessibility fixes from Lighthouse audits.
+   - Removed viewport zoom restrictions in `app/layout.tsx` by dropping `userScalable: false` and `maximumScale: 1`.
+   - Increased dark-mode contrast for primary UI text by updating `--primary-foreground` in `app/globals.css`.
+   - Targets failing elements reported for category pill and add-button text contrast.
+9. Contrast follow-up pass for persistent dark-mode button failures.
+   - Tuned dark-mode primary palette in `app/globals.css`:
+     - `--primary: 35 70% 38%`
+     - `--primary-foreground: 0 0% 98%`
+   - This specifically raises contrast for `bg-primary` + `text-primary-foreground` controls (`Starters`, `Add`).
 
 ## Validation
 

@@ -13,6 +13,16 @@ Connoisr is built with **Next.js 16+**, **TypeScript**, and **Tailwind CSS v4**.
 - **Kitchen Display System (KDS)**: A real-time dashboard where **Color = Priority**. Functional color theory helps staff manage orders without reading fine print.
   - _Route:_ `/kitchen`
 
+### Repo Architecture
+
+- `app/`: Next.js App Router routes and page-level shells (`/table/[id]`, `/kitchen`, landing).
+- `components/domain/`: Feature-critical UI (menu cards, checkout sheet, customization drawer, KDS ticket).
+- `components/providers/` + `context/`: session and identity state boundaries.
+- `hooks/`: sync and timer logic (`useKitchenOrders`, `useOrderTimer`, `useOnlineStatus`).
+- `lib/`: menu data/constants/utils.
+- `tests/e2e/`: Playwright cross-flow coverage (diner <-> kitchen synchronization, modify edge cases).
+- `__tests__/`: Vitest unit/component coverage for reducers/hooks/components.
+
 ## Aesthetics: Modern Fine Dining 🥂
 
 We've pivoted to a premium "Modern Fine Dining" aesthetic, featuring materials found in physical luxury spaces: **Stone, Gold, Slate, and Crisp Linen**.
@@ -78,9 +88,25 @@ Development uses **Turbopack** (faster builds). Open [http://localhost:3000](htt
 ### Running Tests
 
 ```bash
-npm test             # Run components/unit tests (Vitest)
-npm run test:e2e     # Run end-to-end tests (Playwright)
+npm run test:unit            # Run components/unit tests (Vitest)
+npm run test:e2e:smoke       # Fast critical-path e2e on Chromium (@smoke only)
+npm run test:e2e:chromium    # Full e2e on Chromium
+npm run test:e2e:full        # Full e2e matrix (includes mobile emulation)
 ```
+
+Recommended workflow:
+- Local commit: unit tests (handled by `pre-commit`)
+- Local push: unit + e2e smoke only when UI/e2e files changed (handled by `pre-push`)
+- PR CI: full Chromium e2e when UI paths change
+- Nightly CI: full matrix regression run
+
+### CI / QA Pipeline
+
+- GitHub Actions workflow: `.github/workflows/ci.yml`
+- Pipeline design + conventions: `docs/qa/CI_TESTING_PIPELINE.md`
+- Vercel integration:
+  - Set required status checks from `CI` in GitHub branch protection.
+  - In Vercel, enable "Wait for checks to pass" before production promotion.
 
 ### PWA Testing (Production Build)
 

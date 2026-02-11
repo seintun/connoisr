@@ -1,1 +1,13 @@
-npm test
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+npm run test:unit
+
+CHANGED_FILES="$(git diff --name-only @{upstream}...HEAD 2>/dev/null || git diff --name-only HEAD~1...HEAD 2>/dev/null || true)"
+
+if echo "$CHANGED_FILES" | rg -q '^(app/|components/|context/|hooks/|lib/|tests/e2e/|playwright\.config\.ts|package\.json|package-lock\.json)'; then
+  echo "Running Playwright smoke tests for UI-related changes..."
+  npm run test:e2e:smoke
+else
+  echo "Skipping Playwright smoke tests: no UI/e2e relevant changes detected."
+fi

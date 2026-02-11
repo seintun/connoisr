@@ -12,8 +12,12 @@
     "lint": "eslint",
     "type-check": "tsc --noEmit",
     "test": "vitest run",
+    "test:unit": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:chromium": "playwright test --project=chromium",
+    "test:e2e:smoke": "playwright test --project=chromium --grep @smoke --max-failures=1",
+    "test:e2e:full": "PW_MOBILE=1 playwright test",
     "test:ui": "playwright test --ui",
     "prepare": "husky"
   },

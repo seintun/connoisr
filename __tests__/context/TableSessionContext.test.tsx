@@ -281,4 +281,62 @@ describe('TableSessionContext', () => {
            note: 'No pickles'
        });
    });
+
+    it('persists sweetness and spiciness options correctly', async () => {
+        render(
+           <TableSessionProvider tableId="t1">
+               <TestComponent />
+           </TableSessionProvider>
+        );
+
+        await act(async () => {
+             screen.getByText('Add Sweet & Spicy Burger').click();
+        });
+        
+        expect(screen.getByTestId('cart-items-length').textContent).toBe('1');
+        
+        const items = JSON.parse(screen.getByTestId('cart-json').textContent!);
+        const item = items[0];
+        
+        expect(item.isCustomized).toBe(true);
+        expect(item.options).toEqual({
+            spiciness: 'Extra',
+            sweetness: 'Light',
+            note: 'No onions'
+        });
+   });
+
+   it('creates new instance when adding modified version of existing item', async () => {
+        render(
+           <TableSessionProvider tableId="t1">
+               <TestComponent />
+           </TableSessionProvider>
+        );
+
+        // 1. Add Standard Burger
+        await act(async () => {
+             screen.getByText('Add Burger').click();
+        });
+        expect(screen.getByTestId('cart-items-length').textContent).toBe('1');
+
+        // 2. Add Modified Version
+        await act(async () => {
+             screen.getByText('Add Sweet & Spicy Burger').click();
+        });
+
+        // Should be 2 separate items
+        expect(screen.getByTestId('cart-items-length').textContent).toBe('2');
+        
+        const items = JSON.parse(screen.getByTestId('cart-json').textContent!);
+        
+        // Find standard
+        const standard = items.find((i: any) => !i.isCustomized);
+        expect(standard).toBeDefined();
+        expect(standard.quantity).toBe(1);
+
+        // Find custom
+        const custom = items.find((i: any) => i.isCustomized);
+        expect(custom).toBeDefined();
+        expect(custom.options.sweetness).toBe('Light');
+   });
 });

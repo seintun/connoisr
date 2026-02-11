@@ -5,20 +5,13 @@ import { useEffect, useState } from "react";
 
 export type UrgencyLevel = "new" | "process" | "delayed" | "ready" | "served";
 
-interface OrderTimerState {
-  elapsed: number; // seconds
-  urgency: UrgencyLevel;
-  formattedTime: string;
-}
-
 export function useOrderTimer(createdAt: number, status: Order["status"]): { elapsed: number; urgency: UrgencyLevel; formattedTime: string } {
-  const [elapsed, setElapsed] = useState(0);
+  const [elapsed, setElapsed] = useState(
+    () => Math.floor((Date.now() - createdAt) / 1000),
+  );
 
   useEffect(() => {
-    // Initial calculation
     const start = createdAt;
-    setElapsed(Math.floor((Date.now() - start) / 1000));
-
     const timer = setInterval(() => {
       setElapsed(Math.floor((Date.now() - start) / 1000));
     }, 1000);

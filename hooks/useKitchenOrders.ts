@@ -2,28 +2,40 @@ import { STORAGE_PREFIX } from "@/lib/constants";
 import { Order } from "@/types";
 import { useCallback, useEffect, useState } from "react";
 
-export function useKitchenOrders() {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [lastSynced, setLastSynced] = useState(Date.now());
+function collectOrdersFromStorage(): Order[] {
+  if (typeof window === "undefined") {
+    return [];
+  }
 
-  const syncOrders = useCallback(() => {
-    const allOrders: Order[] = [];
-    try {
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith(`${STORAGE_PREFIX}-session-`)) {
-          const sessionStr = localStorage.getItem(key);
-          if (sessionStr) {
-            const session = JSON.parse(sessionStr);
-            if (session.orders && Array.isArray(session.orders)) {
-              allOrders.push(...session.orders);
-            }
+  const allOrders: Order[] = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith(`${STORAGE_PREFIX}-session-`)) {
+        const sessionStr = localStorage.getItem(key);
+        if (sessionStr) {
+          const session = JSON.parse(sessionStr);
+          if (session.orders && Array.isArray(session.orders)) {
+            allOrders.push(...session.orders);
           }
         }
       }
-    } catch (e) {
-      console.error("Failed to sync orders", e);
     }
+  } catch (e) {
+    console.error("Failed to sync orders", e);
+  }
+
+  return allOrders;
+}
+
+const INITIAL_LAST_SYNCED = Date.now();
+
+export function useKitchenOrders() {
+  const [orders, setOrders] = useState<Order[]>(() => collectOrdersFromStorage());
+  const [lastSynced, setLastSynced] = useState(INITIAL_LAST_SYNCED);
+
+  const syncOrders = useCallback(() => {
+    const allOrders = collectOrdersFromStorage();
 
     setOrders((prev) => {
       if (JSON.stringify(prev) !== JSON.stringify(allOrders)) {
@@ -70,7 +82,6 @@ export function useKitchenOrders() {
   );
 
   useEffect(() => {
-    syncOrders();
     // Poll every 2 seconds
     const pollInterval = setInterval(syncOrders, 2000);
 

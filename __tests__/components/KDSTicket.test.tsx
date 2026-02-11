@@ -16,8 +16,8 @@ describe('KDSTicket', () => {
         id: 'order-123',
         tableId: '5',
         items: [
-            { id: 'i1', name: 'Burger', price: 10, quantity: 2, menuItemId: 'm1', category: 'Main' },
-            { id: 'i2', name: 'Fries', price: 5, quantity: 1, menuItemId: 'm2', category: 'Sides', options: { note: 'No salt' } }
+            { instanceId: 'i1', name: 'Burger', price: 10, quantity: 2, menuItemId: 'm1', category: 'Main', status: 'SENT' },
+            { instanceId: 'i2', name: 'Fries', price: 5, quantity: 1, menuItemId: 'm2', category: 'Sides', options: { note: 'No salt' }, status: 'SENT' }
         ],
         status: 'ordered',
         createdAt: Date.now(),

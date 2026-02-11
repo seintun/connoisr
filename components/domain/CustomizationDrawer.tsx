@@ -28,14 +28,6 @@ interface CustomizationDrawerProps {
   maxQuantity?: number;
 }
 
-const SPICINESS_LEVELS = [
-  { value: 1, label: "1", color: "bg-emerald-500" },
-  { value: 2, label: "2", color: "bg-yellow-500" },
-  { value: 3, label: "3", color: "bg-orange-500" },
-  { value: 4, label: "4", color: "bg-orange-600" },
-  { value: 5, label: "5", color: "bg-red-600" },
-];
-
 const INTENSITY_PRESETS = [
   { value: 0, label: "None" },
   { value: 50, label: "Light" },
@@ -53,25 +45,28 @@ export function CustomizationDrawer({
   maxQuantity,
 }: CustomizationDrawerProps) {
   // Parse initial intensity from "100%" string if present
-  const initialIntensity = initialOptions?.intensity 
-    ? parseInt(initialOptions.intensity.replace('%', '')) 
+  const initialIntensity = initialOptions?.intensity
+    ? parseInt(initialOptions.intensity.replace("%", ""), 10)
     : 100;
 
   const [intensity, setIntensity] = useState(initialIntensity);
   const [chefNote, setChefNote] = useState(initialOptions?.note || "");
   const [quantity, setQuantity] = useState(1);
 
-  // Reset state when item changes or drawer opens/closes (handled somewhat by key or mounting, but let's be safe if we reuse)
-  // Actually, useState initial value only runs once. If we recycle the drawer, we need useEffect.
   useEffect(() => {
-    if (isOpen) {
-        const initInt = initialOptions?.intensity 
-            ? parseInt(initialOptions.intensity.replace('%', '')) 
-            : 100;
-        setIntensity(initInt);
-        setChefNote(initialOptions?.note || "");
-        setQuantity(1);
-    }
+    if (!isOpen) return;
+
+    const initInt = initialOptions?.intensity
+      ? parseInt(initialOptions.intensity.replace("%", ""), 10)
+      : 100;
+
+    const timer = setTimeout(() => {
+      setIntensity(initInt);
+      setChefNote(initialOptions?.note || "");
+      setQuantity(1);
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, [isOpen, initialOptions]);
 
   const handleAddToCart = () => {

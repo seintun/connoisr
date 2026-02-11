@@ -8,9 +8,11 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle, CheckCircle2, ChefHat, Clock, Flame, Timer } from "lucide-react";
 import { useEffect, useState } from "react";
 
+const INITIAL_NOW = Date.now();
+
 export default function KitchenPage() {
   const { orders, updateOrderStatus } = useKitchenOrders();
-  const [now, setNow] = useState(Date.now());
+  const [now, setNow] = useState(INITIAL_NOW);
 
   useEffect(() => {
     const interval = setInterval(() => setNow(Date.now()), 10000); // 10s for time display
@@ -248,7 +250,7 @@ export default function KitchenPage() {
                                   Kitchen Note
                                 </div>
                                 <p className="text-yellow-100 font-medium italic text-base leading-snug">
-                                  "{item.options?.note || item.notes}"
+                                  &quot;{item.options?.note || item.notes}&quot;
                                 </p>
                               </div>
                             )}

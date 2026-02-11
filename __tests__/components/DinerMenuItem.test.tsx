@@ -1,9 +1,12 @@
 import { DinerMenuItem } from '@/components/domain/DinerMenuItem';
 import { fireEvent, render, screen } from '@testing-library/react';
+import type { ComponentPropsWithoutRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/image', () => ({
-  default: ({ fill, priority, ...props }: any) => <img {...props} alt={props.alt} />,
+  default: ({ alt }: ComponentPropsWithoutRef<'img'>) => (
+    <div aria-label={alt ?? ''} />
+  ),
 }));
 
 vi.mock('next/dynamic', () => ({

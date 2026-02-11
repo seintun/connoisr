@@ -32,7 +32,7 @@ export function HeroSection() {
                 .
               </h1>
               <p className="text-lg sm:text-2xl text-muted-foreground font-sans max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                Experience the <strong>"3-Tap Rule"</strong>. From scan to order in seconds. No friction, just flow.
+                Experience the <strong>&quot;3-Tap Rule&quot;</strong>. From scan to order in seconds. No friction, just flow.
               </p>
             </div>
 

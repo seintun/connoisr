@@ -35,7 +35,7 @@ export function MenuHeader({
 
     const timer = setInterval(() => {
       if (i < targetText.length) {
-        setDisplayText((prev) => targetText.slice(0, i + 1));
+        setDisplayText(targetText.slice(0, i + 1));
         i++;
       } else {
         clearInterval(timer);

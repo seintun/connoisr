@@ -24,6 +24,22 @@ function getStorageKey(tableId: string) {
   return IDENTITY_STORAGE_KEY(tableId);
 }
 
+function getInitialIdentityState(tableId: string): IdentityState {
+  try {
+    const saved = sessionStorage.getItem(getStorageKey(tableId));
+    if (saved) {
+      const parsed = JSON.parse(saved) as IdentityState;
+      if (parsed.userName) {
+        return parsed;
+      }
+    }
+  } catch {
+    // noop
+  }
+
+  return { userName: null, userId: crypto.randomUUID(), isGuest: false };
+}
+
 export function IdentityProvider({
   children,
   tableId,
@@ -31,30 +47,9 @@ export function IdentityProvider({
   children: React.ReactNode;
   tableId: string;
 }) {
-  const [state, setState] = useState<IdentityState>({
-    userName: null,
-    userId: "",
-    isGuest: false,
-  });
-
-  // Hydrate from sessionStorage on mount
-  useEffect(() => {
-    try {
-      const key = getStorageKey(tableId);
-      const saved = sessionStorage.getItem(key);
-      if (saved) {
-        const parsed = JSON.parse(saved) as IdentityState;
-        if (parsed.userName) {
-          setState(parsed);
-          return;
-        }
-      }
-    } catch {
-      // noop
-    }
-    // Generate a userId for this session
-    setState((prev) => ({ ...prev, userId: crypto.randomUUID() }));
-  }, [tableId]);
+  const [state, setState] = useState<IdentityState>(() =>
+    getInitialIdentityState(tableId),
+  );
 
   // Persist to sessionStorage on change
   useEffect(() => {

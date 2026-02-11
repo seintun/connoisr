@@ -3,7 +3,7 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 describe('useOnlineStatus', () => {
-  let onlineGetter: any;
+  let onlineGetter: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     // Mock navigator.onLine

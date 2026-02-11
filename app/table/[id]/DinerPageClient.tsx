@@ -26,7 +26,7 @@ const CustomizationDrawer = dynamic(
 import { MENU_ITEMS } from "@/lib/menu";
 
 export default function DinerPageClient() {
-  const { session, addItem, updateItemQuantity, removeItem } = useTableSession();
+  const { session, addItem, updateItemQuantity } = useTableSession();
   const { userName } = useIdentity();
   const { isReady } = useMenuPrefetch(session?.tableId || "1");
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -84,7 +84,7 @@ export default function DinerPageClient() {
              updateItemQuantity(instance.instanceId, newQuantity);
         }
     }
-  }, [session?.cart, addItem, removeItem, updateItemQuantity, userName, getItemQuantity]);
+  }, [session?.cart, addItem, updateItemQuantity, userName, getItemQuantity]);
 
   // Memoize derived values
   const itemCount = useMemo(
@@ -160,10 +160,23 @@ export default function DinerPageClient() {
       }
 
       if (customizedItem.menuItemId) {
-          addItem({ 
-              ...customizedItem, 
-              orderedByName: userName || undefined
-           } as any);
+          if (
+            customizedItem.name &&
+            customizedItem.category &&
+            typeof customizedItem.price === "number"
+          ) {
+            addItem({
+              menuItemId: customizedItem.menuItemId,
+              name: customizedItem.name,
+              category: customizedItem.category,
+              price: customizedItem.price,
+              tags: customizedItem.tags,
+              quantity: quantityToAdd,
+              options: customizedItem.options,
+              isCustomized: customizedItem.isCustomized,
+              orderedByName: userName || undefined,
+            });
+          }
       }
       setSelectedItemForCustomization(null);
       setEditingCartItem(null);

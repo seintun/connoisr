@@ -1,4 +1,5 @@
 import { TableSessionProvider, useTableSession } from '@/components/providers/TableSessionProvider';
+import type { CartItem } from '@/types';
 import { act, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -257,8 +258,8 @@ describe('TableSessionContext', () => {
        
        // Verify we have 1 standard and 1 custom
        const items = JSON.parse(screen.getByTestId('cart-json').textContent!);
-       const customCount = items.filter((i: any) => i.isCustomized).length;
-       const standardCount = items.filter((i: any) => !i.isCustomized).length;
+       const customCount = items.filter((i: CartItem) => i.isCustomized).length;
+       const standardCount = items.filter((i: CartItem) => !i.isCustomized).length;
        
        expect(customCount).toBe(1);
        expect(standardCount).toBe(1);
@@ -335,12 +336,12 @@ describe('TableSessionContext', () => {
         const items = JSON.parse(screen.getByTestId('cart-json').textContent!);
         
         // Find standard
-        const standard = items.find((i: any) => !i.isCustomized);
+        const standard = items.find((i: CartItem) => !i.isCustomized);
         expect(standard).toBeDefined();
         expect(standard.quantity).toBe(1);
 
         // Find custom
-        const custom = items.find((i: any) => i.isCustomized);
+        const custom = items.find((i: CartItem) => i.isCustomized);
         expect(custom).toBeDefined();
         expect(custom.options.sweetness).toBe('Light');
    });
@@ -402,8 +403,8 @@ describe('TableSessionContext', () => {
         
         // Verify Breakdown
         const items = JSON.parse(screen.getByTestId('cart-json').textContent!);
-        const standardCount = items.filter((i: any) => !i.isCustomized).length;
-        const customCount = items.filter((i: any) => i.isCustomized).length;
+        const standardCount = items.filter((i: CartItem) => !i.isCustomized).length;
+        const customCount = items.filter((i: CartItem) => i.isCustomized).length;
         
         expect(standardCount).toBe(3);
         expect(customCount).toBe(2);
@@ -436,8 +437,8 @@ describe('TableSessionContext', () => {
         expect(screen.getByTestId('cart-count').textContent).toBe('3');
         
         const items = JSON.parse(screen.getByTestId('cart-json').textContent!);
-        const standard = items.filter((i: any) => !i.isCustomized);
-        const custom = items.filter((i: any) => i.isCustomized && i.options?.spiciness === 'extra-hot');
+        const standard = items.filter((i: CartItem) => !i.isCustomized);
+        const custom = items.filter((i: CartItem) => i.isCustomized && i.options?.spiciness === 'extra-hot');
         
         expect(standard.length).toBe(0);
         expect(custom.length).toBe(3);

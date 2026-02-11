@@ -15,7 +15,7 @@ interface CheckoutProps {
 }
 
 export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
-  const { session, clearCart, updateItemQuantity, sendOrder, removeItem, addItem } = useTableSession();
+  const { session, clearCart, sendOrder, removeItem, addItem } = useTableSession();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [idleMinutes, setIdleMinutes] = useState(0);
@@ -36,7 +36,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
       setIdleMinutes(0);
       if (cartTimerRef.current) clearInterval(cartTimerRef.current);
     }
-  }, [session?.cart.length]);
+  }, [session]);
 
   if (!session) return null;
 
@@ -47,7 +47,6 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
   
   const ordersTotal = (session.orders || []).reduce((acc, order) => acc + order.total, 0);
   const grandSubtotal = cartSubtotal + ordersTotal;
-  const tax = grandSubtotal * 0.08;
 
   const hasCartItems = session.cart.length > 0;
   const hasOrders = (session.orders || []).length > 0;
@@ -251,7 +250,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                                    )}
                                    {item.options.note && (
                                      <div className="text-[10px] text-indigo-500/90 flex items-start gap-1 italic">
-                                       <span className="font-semibold not-italic">Note:</span> "{item.options.note}"
+                                       <span className="font-semibold not-italic">Note:</span> &quot;{item.options.note}&quot;
                                      </div>
                                    )}
                                  </div>
@@ -394,7 +393,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                                      {item.options.sweetness && <div className="text-pink-600 dark:text-pink-400"><span className="font-semibold text-foreground/70">Sweetness:</span> {item.options.sweetness}</div>}
                                      {item.options.removals && <div className="text-red-600 dark:text-red-400"><span className="font-semibold text-foreground/70">No:</span> {item.options.removals}</div>}
                                      {item.options.allergens && <div className="text-emerald-600 dark:text-emerald-400"><span className="font-semibold text-foreground/70">Dietary:</span> {item.options.allergens}</div>}
-                                     {item.options.note && <div className="text-indigo-600 dark:text-indigo-400 italic">"{item.options.note}"</div>}
+                                     {item.options.note && <div className="text-indigo-600 dark:text-indigo-400 italic">&quot;{item.options.note}&quot;</div>}
                                    </div>
                                 )}
 

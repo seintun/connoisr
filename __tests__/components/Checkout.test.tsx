@@ -43,7 +43,7 @@ describe('Checkout', () => {
 
     it('renders cart items when present', () => {
         mockSession.cart = [
-            { id: 'c1', name: 'Burger', price: 10, quantity: 1, menuItemId: 'm1', category: 'Main' } as CartItem
+            { instanceId: 'c1', name: 'Burger', price: 10, quantity: 1, menuItemId: 'm1', category: 'Main', status: 'PENDING' }
         ];
 
         render(<Checkout isOpen={true} onClose={() => {}} />);

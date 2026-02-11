@@ -7,10 +7,15 @@ import { useEffect, useState } from "react"
 
 export function ThemeToggle({ className }: { className?: string }) {
   const { setTheme, resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
+  const [mounted, setMounted] = useState(
+    () => process.env.NODE_ENV === "test",
+  )
 
   // Avoid hydration mismatch
-  useEffect(() => setMounted(true), [])
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => setMounted(true))
+    return () => cancelAnimationFrame(frame)
+  }, [])
 
   if (!mounted) {
     return (

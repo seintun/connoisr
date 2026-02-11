@@ -12,6 +12,7 @@ interface FloatingCartProps {
   orderTotal: string;
   orderedItemCount: number;
   onOpen: () => void;
+  'data-testid'?: string;
 }
 
 export const FloatingCart = React.memo(function FloatingCart({
@@ -22,6 +23,7 @@ export const FloatingCart = React.memo(function FloatingCart({
   orderTotal,
   orderedItemCount,
   onOpen,
+  'data-testid': testId,
 }: FloatingCartProps) {
   const isVisible = itemCount > 0 || hasOrders;
 
@@ -34,10 +36,12 @@ export const FloatingCart = React.memo(function FloatingCart({
             y: isOnline ? 0 : -36,
             opacity: 1,
           }}
+          data-testid="floating-cart-container"
           className="fixed bottom-4 right-4 z-50"
         >
           <motion.button
             onClick={onOpen}
+            data-testid={testId || "floating-cart-trigger"}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-3 bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-2xl shadow-primary/40 hover:shadow-primary/50 transition-all cursor-pointer border border-primary-foreground/10 z-50 backdrop-blur-none"

@@ -62,8 +62,8 @@ export default function KitchenPage() {
   };
 
   return (
-    <div className="p-6">
-      <header className="flex items-center justify-between mb-8">
+    <div className="p-6" data-testid="kitchen-page">
+      <header className="flex items-center justify-between mb-8" data-testid="kitchen-header">
         <div className="flex items-center gap-3">
           <ChefHat className="w-8 h-8 text-primary" />
           <h1 className="text-2xl font-bold tracking-tight">{APP_NAME} KDS</h1>
@@ -74,7 +74,7 @@ export default function KitchenPage() {
         </div>
       </header>
  
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" data-testid="kitchen-orders-grid">
         <AnimatePresence mode="popLayout">
           {activeOrders.map((order) => {
             const timeDiff = Math.floor((now - order.createdAt) / 60000);
@@ -89,6 +89,7 @@ export default function KitchenPage() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
+                data-testid={`kitchen-order-card-${order.id}`}
                 className={cn(
                   "rounded-2xl border bg-neutral-900/50 backdrop-blur-sm overflow-hidden flex flex-col shadow-xl",
                   statusColors.split(" ")[2],
@@ -263,6 +264,7 @@ export default function KitchenPage() {
                   {order.status === "ordered" && (
                     <button
                       onClick={() => updateOrderStatus(order.id, "cooking")}
+                      data-testid={`kitchen-start-cooking-${order.id}`}
                       className="w-full py-3 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold transition-colors flex items-center justify-center gap-2"
                     >
                       <ChefHat className="w-5 h-5" /> Start Cooking
@@ -271,6 +273,7 @@ export default function KitchenPage() {
                   {order.status === "cooking" && (
                     <button
                       onClick={() => updateOrderStatus(order.id, "ready")}
+                      data-testid={`kitchen-mark-ready-${order.id}`}
                       className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold transition-colors flex items-center justify-center gap-2"
                     >
                       <CheckCircle2 className="w-5 h-5" /> Mark Ready
@@ -279,6 +282,7 @@ export default function KitchenPage() {
                   {order.status === "ready" && (
                     <button
                       onClick={() => updateOrderStatus(order.id, "served")}
+                      data-testid={`kitchen-mark-served-${order.id}`}
                       className="w-full py-3 rounded-xl bg-neutral-700 hover:bg-neutral-600 text-white font-bold transition-colors flex items-center justify-center gap-2"
                     >
                       Mark Served
@@ -291,7 +295,7 @@ export default function KitchenPage() {
         </AnimatePresence>
 
         {activeOrders.length === 0 && (
-          <div className="col-span-full flex flex-col items-center justify-center py-20 text-neutral-600">
+          <div className="col-span-full flex flex-col items-center justify-center py-20 text-neutral-600" data-testid="kitchen-empty-state">
             <Clock className="w-16 h-16 mb-4 opacity-20" />
             <h2 className="text-xl font-medium">No active orders</h2>
             <p>Waiting for new orders...</p>

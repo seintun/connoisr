@@ -31,6 +31,7 @@ export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
 
   return (
     <div
+      data-testid={`kds-ticket-${order.id}`}
       className={clsx(
         "flex flex-col rounded-2xl border-2 p-5 transition-all duration-300 transform",
         getUrgencyStyles(urgency)
@@ -76,6 +77,7 @@ export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
         {order.status === "ordered" && (
           <button
             onClick={() => onStatusUpdate(order.id, "cooking")}
+            data-testid={`kds-action-cooking-${order.id}`}
             className="col-span-2 py-3 bg-primary text-primary-foreground font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/25"
           >
             Start Cooking
@@ -84,6 +86,7 @@ export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
         {order.status === "cooking" && (
           <button
             onClick={() => onStatusUpdate(order.id, "ready")}
+            data-testid={`kds-action-ready-${order.id}`}
             className="col-span-2 py-3 bg-success text-success-foreground font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-success/25"
           >
             Mark Ready
@@ -92,6 +95,7 @@ export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
         {order.status === "ready" && (
           <button
             onClick={() => onStatusUpdate(order.id, "served")}
+            data-testid={`kds-action-served-${order.id}`}
             className="col-span-2 py-3 bg-secondary text-secondary-foreground font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-secondary/25"
           >
             Complete Order

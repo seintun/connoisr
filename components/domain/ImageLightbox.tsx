@@ -23,6 +23,7 @@ export function ImageLightbox({ imageUrl, name, description, onClose }: ImageLig
         onClose();
       }}
       className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 md:p-10 cursor-zoom-out"
+      data-testid="image-lightbox"
     >
       <div
         className="relative w-full h-full flex items-center justify-center"
@@ -33,6 +34,7 @@ export function ImageLightbox({ imageUrl, name, description, onClose }: ImageLig
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.5 }}
           onClick={onClose}
+          data-testid="image-lightbox-close"
           className="absolute top-4 right-4 md:top-8 md:right-8 z-50 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full backdrop-blur-md transition-colors cursor-pointer"
         >
           <X className="w-6 h-6" />

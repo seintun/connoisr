@@ -41,6 +41,7 @@ export function IdentityModal({ tableId, prefetchProgress }: IdentityModalProps)
       exit={{ opacity: 0, y: -30, scale: 0.95 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       className="fixed inset-0 z-[100] flex items-center justify-center select-none"
+      data-testid="identity-modal"
       style={{ WebkitTapHighlightColor: "transparent" }}
     >
       {/* Glassmorphism backdrop */}
@@ -74,7 +75,7 @@ export function IdentityModal({ tableId, prefetchProgress }: IdentityModalProps)
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" data-testid="identity-form">
             <input
               ref={inputRef}
               type="text"
@@ -91,12 +92,14 @@ export function IdentityModal({ tableId, prefetchProgress }: IdentityModalProps)
                 "placeholder:text-neutral-400 dark:placeholder:text-neutral-500",
                 "text-foreground transition-colors duration-200"
               )}
+              data-testid="identity-name-input"
             />
 
             {/* Start Dining CTA */}
             <button
               type="submit"
               disabled={name.trim().length === 0}
+              data-testid="identity-start-btn"
               className={cn(
                 "w-full h-14 rounded-2xl font-bold text-base text-white",
                 "bg-[#FF6B4A] hover:bg-[#FF5533]",
@@ -121,6 +124,7 @@ export function IdentityModal({ tableId, prefetchProgress }: IdentityModalProps)
           {/* Guest button */}
           <button
             onClick={handleGuest}
+            data-testid="identity-guest-btn"
             className={cn(
               "w-full h-12 rounded-2xl font-semibold text-sm",
               "bg-transparent border-2 border-[#6366F1]/30 hover:border-[#6366F1]/60",

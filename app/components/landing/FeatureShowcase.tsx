@@ -36,12 +36,13 @@ const features = [
 
 export function FeatureShowcase() {
   return (
-    <section id="features" className="py-24 relative bg-background">
+    <section id="features" className="py-24 relative bg-background" data-testid="feature-showcase">
       <div className="container max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col gap-8 pb-24">
           {features.map((feature, index) => (
             <div
               key={index}
+              data-testid={`feature-card-${index}`}
               className="sticky transition-all duration-500 will-change-transform"
               style={{
                 top: `calc(10vh + ${index * 1.5}rem)`,

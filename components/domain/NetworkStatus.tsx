@@ -31,6 +31,7 @@ export function NetworkStatus() {
           initial={{ height: 0, opacity: 0 }}
           animate={{ height: "auto", opacity: 1 }}
           exit={{ height: 0, opacity: 0 }}
+          data-testid="network-status-offline-banner"
           className="fixed bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md text-white border-t border-white/10"
         >
           <div className="flex items-center justify-center gap-2 py-2 px-4 text-xs font-medium safe-area-bottom">

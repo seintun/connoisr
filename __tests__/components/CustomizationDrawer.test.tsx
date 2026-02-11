@@ -146,4 +146,29 @@ describe('CustomizationDrawer', () => {
         })
     }));
   });
+
+  it('respects maxQuantity prop', () => {
+    render(
+      <CustomizationDrawer
+        isOpen={true}
+        onClose={mockOnClose}
+        item={defaultItem}
+        onAddToCart={mockOnAddToCart}
+        maxQuantity={3}
+      />
+    );
+
+    const incrementBtn = screen.getByText('+');
+    const quantityDisplay = screen.getByText('1');
+
+    // Increment to 3
+    fireEvent.click(incrementBtn); // 2
+    fireEvent.click(incrementBtn); // 3
+    expect(quantityDisplay.textContent).toBe('3');
+
+    // Try to increment past 3
+    fireEvent.click(incrementBtn);
+    expect(quantityDisplay.textContent).toBe('3'); // Should stay at 3
+    expect(incrementBtn).toBeDisabled();
+  });
 });

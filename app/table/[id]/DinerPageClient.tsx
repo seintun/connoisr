@@ -189,6 +189,7 @@ export default function DinerPageClient() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
+          data-testid="diner-menu-page"
           className="min-h-screen bg-background pb-32"
         >
        <MenuHeader 
@@ -197,9 +198,12 @@ export default function DinerPageClient() {
           onCategoryClick={handleCategoryClick}
        />
 
-       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8">
+       <main
+         className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-8"
+         data-testid="diner-menu-sections"
+       >
          {categories.map((category) => (
-           <section key={category} id={category} className="scroll-mt-28 transition-all duration-500">
+           <section key={category} id={category} data-testid={`category-section-${category}`} className="scroll-mt-28 transition-all duration-500">
              <div className="flex items-center gap-3 mb-4">
                <h2 className="text-xl font-serif font-bold text-foreground/90 tracking-tight">{category}</h2>
                <div className="h-px flex-1 bg-gradient-to-r from-border/40 to-transparent" />
@@ -230,6 +234,7 @@ export default function DinerPageClient() {
           orderTotal={((session?.orders || []).reduce((a, o) => a + o.total, 0) * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
           orderedItemCount={(session?.orders || []).reduce((a, o) => a + o.items.reduce((c, d) => c + d.quantity, 0), 0)}
           onOpen={() => setIsCartOpen(true)}
+          data-testid="cart-trigger-btn"
         />
 
         <Checkout 

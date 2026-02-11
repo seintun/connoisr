@@ -6,7 +6,10 @@ import Link from "next/link";
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-[90dvh] flex items-center justify-center overflow-hidden px-4 sm:px-6 lg:px-8 bg-background">
+    <section
+      className="relative min-h-[90dvh] flex items-center justify-center overflow-hidden px-4 sm:px-6 lg:px-8 bg-background"
+      data-testid="hero-section"
+    >
       {/* Abstract Background */}
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background" />
       <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-secondary/20 via-background to-background opacity-50" />
@@ -38,6 +41,7 @@ export function HeroSection() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  data-testid="hero-try-demo-btn"
                   className="w-full sm:w-auto px-8 py-4 bg-primary text-primary-foreground rounded-full font-medium text-lg shadow-lg shadow-primary/20 flex items-center justify-center gap-2 select-none touch-manipulation"
                 >
                   <Smartphone className="w-5 h-5" />
@@ -48,6 +52,7 @@ export function HeroSection() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  data-testid="hero-learn-more-btn"
                   className="w-full sm:w-auto px-8 py-4 bg-secondary/50 text-secondary-foreground rounded-full font-medium text-lg backdrop-blur-sm border border-white/10 flex items-center justify-center gap-2 hover:bg-secondary/70 transition-colors select-none touch-manipulation"
                 >
                   Learn More

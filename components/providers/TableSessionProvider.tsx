@@ -65,10 +65,6 @@ const sessionReducer = (
     case "UPDATE_QUANTITY": {
       const { itemId, quantity } = action.payload;
       
-      // If setting to 0, remove the specific instance
-      if (quantity <= 0) {
-        return { ...state, cart: state.cart.filter((i) => i.instanceId !== itemId) };
-      }
       
       // For quantity > 0, we adjust the count of identical instances
       // 1. Find the target instance to get its metadata

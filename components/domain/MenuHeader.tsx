@@ -116,10 +116,13 @@ export function MenuHeader({
     }, 1000);
   };
 
+  const toTestIdFragment = (value: string) =>
+    value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
   return (
     <>
       {/* Brand Bar - Scrolls away naturally */}
-      <div className="bg-background w-full">
+      <div className="bg-background w-full" data-testid="menu-header-brand-bar">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex justify-between items-center h-14">
             <div className="flex items-center gap-3.5">
@@ -146,7 +149,10 @@ export function MenuHeader({
             {/* Right Side Actions */}
             <div className="flex items-center gap-2">
               {tableId && (
-                <div className="flex px-2.5 py-1 bg-secondary/10 text-secondary-foreground/80 rounded-full text-[10px] font-bold uppercase tracking-wider border border-secondary/20 items-center gap-1.5 whitespace-nowrap">
+                <div
+                  data-testid="menu-header-table-badge"
+                  className="flex px-2.5 py-1 bg-secondary/10 text-secondary-foreground/80 rounded-full text-[10px] font-bold uppercase tracking-wider border border-secondary/20 items-center gap-1.5 whitespace-nowrap"
+                >
                   <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shrink-0" />
                   Table {tableId}
                 </div>
@@ -158,7 +164,10 @@ export function MenuHeader({
       </div>
 
       {/* Sticky Category Navigation */}
-      <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm transition-all duration-300">
+      <div
+        className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm transition-all duration-300"
+        data-testid="menu-header-category-nav"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div
             ref={navRef}
@@ -169,6 +178,7 @@ export function MenuHeader({
                 key={category}
                 id={`nav-${category}`}
                 onClick={() => handleCategoryClick(category)}
+                data-testid={`menu-category-tab-${toTestIdFragment(category)}`}
                 className={cn(
                   "whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 snap-start flex-shrink-0 border-2",
                   activeCategory === category

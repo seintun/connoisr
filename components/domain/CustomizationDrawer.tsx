@@ -136,6 +136,7 @@ export function CustomizationDrawer({
             exit={{ y: "100%", opacity: 0 }}
             transition={{ type: "spring", damping: 28, stiffness: 300 }}
             className="fixed bottom-0 left-0 right-0 bg-background rounded-t-3xl z-[70] max-h-[92vh] overflow-y-auto shadow-2xl border-t border-border/40"
+            data-testid="customization-drawer"
           >
             {/* Handle Bar */}
             <div className="w-8 h-1 bg-border/60 rounded-full mx-auto mt-3 mb-4" />
@@ -144,7 +145,10 @@ export function CustomizationDrawer({
             <div className="px-6 pb-4 pt-0">
               <div className="flex justify-between items-start gap-4">
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-xl font-semibold text-foreground truncate leading-snug">
+                  <h2 
+                    data-testid="drawer-title"
+                    className="text-xl font-semibold text-foreground truncate leading-snug"
+                  >
                     {item.name}
                   </h2>
                   <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
@@ -155,6 +159,7 @@ export function CustomizationDrawer({
                   onClick={onClose}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  data-testid="customization-drawer-close-btn"
                   className="flex-shrink-0 w-8 h-8 rounded-lg bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
                 >
                   <X className="w-4 h-4 text-foreground/60" />
@@ -193,6 +198,7 @@ export function CustomizationDrawer({
                         onClick={() => setIntensity(preset.value)}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
+                        data-testid={`customization-intensity-${preset.value}`}
                         className={cn(
                           "py-2 px-1 rounded-lg text-xs font-semibold transition-colors duration-200",
                           intensity === preset.value
@@ -219,6 +225,7 @@ export function CustomizationDrawer({
                   <textarea
                     value={chefNote}
                     onChange={(e) => setChefNote(e.target.value.slice(0, 100))}
+                    data-testid="customization-chef-note"
                     className="w-full bg-muted/60 border border-border/40 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all resize-none h-20"
                     placeholder="Extra crispy? Sauce on side?"
                   />
@@ -238,17 +245,22 @@ export function CustomizationDrawer({
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.9 }}
+                    data-testid="customization-qty-decrement"
                     className="w-8 h-8 rounded-lg bg-background shadow-xs flex items-center justify-center text-foreground hover:bg-background/80 transition-colors text-sm font-bold"
                   >
                     −
                   </motion.button>
-                  <span className="font-bold text-sm w-5 text-center tabular-nums text-foreground">
+                  <span 
+                    className="font-bold text-sm w-5 text-center tabular-nums text-foreground"
+                    data-testid="drawer-quantity"
+                  >
                     {quantity}
                   </span>
                   <motion.button
                     onClick={() => setQuantity(prev => maxQuantity ? Math.min(maxQuantity, prev + 1) : prev + 1)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.9 }}
+                    data-testid="customization-qty-increment"
                     className={cn(
                       "w-8 h-8 rounded-lg bg-background shadow-xs flex items-center justify-center text-foreground transition-colors text-sm font-bold",
                       maxQuantity && quantity >= maxQuantity 
@@ -266,6 +278,7 @@ export function CustomizationDrawer({
                   onClick={handleAddToCart}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
+                  data-testid="customization-add-to-order-btn"
                   className="flex-1 h-11 bg-primary text-primary-foreground rounded-xl font-semibold flex items-center justify-center gap-2 shadow-lg hover:bg-primary/95 transition-colors duration-200"
                 >
                   <span className="text-sm">Add to Order</span>

@@ -4,7 +4,10 @@ import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen bg-background text-foreground transition-colors duration-300 selection:bg-primary/20">
+    <main
+      className="relative min-h-screen bg-background text-foreground transition-colors duration-300 selection:bg-primary/20"
+      data-testid="home-page"
+    >
       <div className="absolute top-6 right-6 z-50">
         <ThemeToggle />
       </div>

@@ -172,6 +172,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
             exit={{ y: "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className="fixed bottom-0 left-0 right-0 sm:bottom-4 sm:left-4 sm:right-4 z-50 bg-card/95 backdrop-blur-2xl rounded-t-[1.75rem] sm:rounded-[2rem] shadow-[0_-8px_40px_-10px_rgba(0,0,0,0.5)] max-h-[92vh] flex flex-col border border-border/50 overflow-hidden ring-1 ring-black/5"
+            data-testid="checkout-sheet"
           >
             {/* Header */}
             <div className="pt-2 pb-0 shrink-0">
@@ -180,6 +181,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                 <h2 className="text-base font-serif font-bold text-foreground">Your Table</h2>
                 <button 
                   onClick={onClose}
+                  data-testid="checkout-close-btn"
                   className="w-9 h-9 flex items-center justify-center hover:bg-secondary rounded-full transition-all active:scale-95 -mr-1"
                 >
                   <X className="w-4 h-4 text-muted-foreground" />
@@ -287,6 +289,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                         <span className="text-[10px] text-amber-600/80 dark:text-amber-400/60 font-medium">Not sent to kitchen</span>
                         <button
                           onClick={clearCart}
+                          data-testid="checkout-clear-all-btn"
                           className="text-[10px] text-red-500/70 hover:text-red-600 dark:text-red-400/60 dark:hover:text-red-400 font-medium underline underline-offset-2 transition-colors"
                         >
                           Clear all
@@ -317,6 +320,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                              return (
                             <div 
                               key={`${item.menuItemId}-${JSON.stringify(item.options)}`}
+                              data-testid={`cart-group-${item.name}`}
                               className="p-2 rounded-xl bg-card border border-amber-200/50 dark:border-amber-500/20 shadow-sm relative overflow-hidden group"
                             >
                               {/* Background dash pattern for "draft" feel */}
@@ -333,6 +337,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                                           {onEditItem && (
                                               <button 
                                                 onClick={() => onEditItem(group.instances[0])}
+                                                data-testid="modify-item-btn"
                                                 className="h-5 px-1.5 flex items-center justify-center rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors active:scale-95 flex-shrink-0 gap-1"
                                                 title={group.count > 1 ? "Modify one of these items" : "Edit item details"}
                                               >
@@ -414,6 +419,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                                     <div className="flex items-center gap-0.5 bg-muted/60 rounded-lg p-0.5 ml-auto">
                                       <button 
                                         onClick={() => handleDecrement(group)}
+                                        data-testid={`checkout-item-decrement-${item.menuItemId}`}
                                         className={cn(
                                           "w-7 h-7 rounded-md flex items-center justify-center transition-all active:scale-95 shadow-sm",
                                           group.count === 1
@@ -424,12 +430,16 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                                         {group.count === 1 ? <Trash2 className="w-3.5 h-3.5" /> : <Minus className="w-3.5 h-3.5" />}
                                       </button>
                                       
-                                      <span className="font-mono font-bold text-xs w-6 text-center text-foreground tabular-nums">
+                                      <span 
+                                        className="font-mono font-bold text-xs w-6 text-center text-foreground tabular-nums"
+                                        data-testid="item-quantity"
+                                      >
                                         {group.count}
                                       </span>
 
                                       <button 
                                         onClick={() => handleIncrement(group)}
+                                        data-testid={`checkout-item-increment-${item.menuItemId}`}
                                         className="w-7 h-7 rounded-md bg-foreground text-background flex items-center justify-center hover:opacity-90 transition-all active:scale-95 shadow-sm"
                                       >
                                         <Plus className="w-3.5 h-3.5" />
@@ -446,6 +456,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                 </div>
               )}
             </div>
+            {/* Added testid to footer container, but actually let's add it to the main motion div */}
 
             {/* Footer */}
             <div className="px-3 pt-2 pb-3 border-t border-border/40 bg-card/95 shrink-0">
@@ -485,6 +496,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                    <button
                     onClick={handlePayment}
                     disabled={isProcessing}
+                    data-testid="pay-bill-btn"
                     className={cn(
                       "flex-1 h-10 border border-border/50 bg-secondary/50 text-foreground font-semibold rounded-xl text-xs",
                       "active:scale-[0.98] transition-all duration-200 hover:bg-secondary/80",
@@ -502,6 +514,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                   <button
                     onClick={handleSendToKitchen}
                     disabled={isProcessing}
+                    data-testid="send-order-btn"
                     className={cn(
                       "flex-[2] h-10 bg-foreground text-background font-semibold rounded-xl text-sm",
                       "shadow-md hover:shadow-lg",

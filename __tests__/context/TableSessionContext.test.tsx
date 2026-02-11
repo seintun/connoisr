@@ -96,6 +96,11 @@ const TestComponent = () => {
                  const item = session.cart[0];
                  if (item) updateItemQuantity(item.instanceId, 5);
             }}>Set First Item Qty 5</button>
+
+            <button onClick={() => {
+                 const item = session.cart[0];
+                 if (item) updateItemQuantity(item.instanceId, 0);
+            }}>Set First Item Qty 0</button>
              
              <button onClick={() => clearCart()}>Clear Cart</button>
         </div>
@@ -338,5 +343,103 @@ describe('TableSessionContext', () => {
         const custom = items.find((i: any) => i.isCustomized);
         expect(custom).toBeDefined();
         expect(custom.options.sweetness).toBe('Light');
+   });
+
+   it('removes entire group when updateItemQuantity is set to 0', async () => {
+        render(
+           <TableSessionProvider tableId="t1">
+               <TestComponent />
+           </TableSessionProvider>
+        );
+
+        // Add 3 identical items
+        await act(async () => {
+             screen.getByText('Add Burger').click();
+             screen.getByText('Add Burger').click();
+             screen.getByText('Add Burger').click();
+        });
+        expect(screen.getByTestId('cart-count').textContent).toBe('3');
+
+        // Set quantity to 0 for the first item (should remove all 3)
+        await act(async () => {
+             screen.getByText('Set First Item Qty 0').click();
+        });
+        
+        expect(screen.getByTestId('cart-count').textContent).toBe('0');
+        expect(screen.getByTestId('cart-items-length').textContent).toBe('0');
+   });
+
+   it('handles partial split correctly (5 items -> 2 custom, 3 standard)', async () => {
+        render(
+           <TableSessionProvider tableId="t1">
+               <TestComponent />
+           </TableSessionProvider>
+        );
+
+        // 1. Add 5 Burgers
+        await act(async () => {
+             for(let i=0; i<5; i++) screen.getByText('Add Burger').click();
+        });
+        expect(screen.getByTestId('cart-count').textContent).toBe('5');
+
+        // 2. Remove 2 Standard Items (simulating "Edit 2 of 5")
+        await act(async () => {
+             screen.getByText('Remove First Item').click();
+        });
+        
+        await act(async () => {
+             screen.getByText('Remove First Item').click();
+        });
+        
+        expect(screen.getByTestId('cart-count').textContent).toBe('3');
+
+        // 3. Add 2 Custom Items
+        await act(async () => {
+             screen.getByText('Add Custom Burger').click();
+             screen.getByText('Add Custom Burger').click();
+        });
+        expect(screen.getByTestId('cart-count').textContent).toBe('5');
+        
+        // Verify Breakdown
+        const items = JSON.parse(screen.getByTestId('cart-json').textContent!);
+        const standardCount = items.filter((i: any) => !i.isCustomized).length;
+        const customCount = items.filter((i: any) => i.isCustomized).length;
+        
+        expect(standardCount).toBe(3);
+        expect(customCount).toBe(2);
+   });
+
+   it('handles full split of remaining items', async () => {
+        render(
+           <TableSessionProvider tableId="t1">
+               <TestComponent />
+           </TableSessionProvider>
+        );
+
+        // 1. Add 3 Burgers
+        await act(async () => {
+             for(let i=0; i<3; i++) screen.getByText('Add Burger').click();
+        });
+
+        // 2. Remove all 3 (simulating "Edit All" or setting qty to 0)
+        await act(async () => {
+             // We can use the "Set First Item Qty 0" button which triggers the bulk remove logic we fixed
+             screen.getByText('Set First Item Qty 0').click();
+        });
+        expect(screen.getByTestId('cart-count').textContent).toBe('0');
+
+        // 3. Add 3 Custom Items types
+        await act(async () => {
+             for(let i=0; i<3; i++) screen.getByText('Add Spicy Burger with Note').click();
+        });
+        
+        expect(screen.getByTestId('cart-count').textContent).toBe('3');
+        
+        const items = JSON.parse(screen.getByTestId('cart-json').textContent!);
+        const standard = items.filter((i: any) => !i.isCustomized);
+        const custom = items.filter((i: any) => i.isCustomized && i.options?.spiciness === 'extra-hot');
+        
+        expect(standard.length).toBe(0);
+        expect(custom.length).toBe(3);
    });
 });

@@ -45,6 +45,7 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
+      data-testid={`menu-item-card-${id}`}
       className={cn(
         "group relative overflow-hidden rounded-2xl bg-card transition-all duration-300 h-full",
         "flex flex-row md:flex-col",
@@ -131,6 +132,7 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
           quantity={quantity}
           onAdd={onAdd}
           onUpdateQuantity={onUpdateQuantity}
+          id={id}
         />
       </div>
     </motion.div>
@@ -169,6 +171,7 @@ const MenuItemImage = React.memo(function MenuItemImage({
           "w-1/3 min-w-[100px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 cursor-zoom-in group",
           isImageOpen && "z-[100]",
         )}
+        data-testid={`menu-item-image-trigger-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
         onClick={() => setIsImageOpen(true)}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
@@ -210,10 +213,12 @@ const MenuItemControls = React.memo(function MenuItemControls({
   quantity,
   onAdd,
   onUpdateQuantity,
+  id,
 }: {
   quantity: number;
   onAdd: () => void;
   onUpdateQuantity?: (q: number) => void;
+  id?: string;
 }) {
   return (
     <div className="flex items-stretch gap-1.5 md:gap-2 mt-auto">
@@ -228,6 +233,7 @@ const MenuItemControls = React.memo(function MenuItemControls({
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.9 }}
             className="w-6 h-6 md:w-8 md:h-8 rounded-md flex items-center justify-center transition-colors bg-background text-destructive hover:bg-destructive/10 cursor-pointer"
+            data-testid={`decrement-item-${id}`}
           >
             {quantity === 1 ? (
               <Trash2 className="w-3 h-3 md:w-3.5 md:h-3.5" />
@@ -243,6 +249,7 @@ const MenuItemControls = React.memo(function MenuItemControls({
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -10, opacity: 0 }}
               className="font-bold text-sm md:text-base text-foreground tabular-nums"
+              data-testid={`item-quantity-${id}`}
             >
               {quantity}
             </motion.span>
@@ -255,6 +262,7 @@ const MenuItemControls = React.memo(function MenuItemControls({
             }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.9 }}
+            data-testid={`increment-item-${id}`}
             className="w-6 h-6 md:w-8 md:h-8 rounded-md flex items-center justify-center transition-colors bg-background text-success hover:bg-success/10 cursor-pointer"
           >
             <Plus className="w-3 h-3 md:w-3.5 md:h-3.5" />
@@ -265,6 +273,7 @@ const MenuItemControls = React.memo(function MenuItemControls({
           onClick={onAdd}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          data-testid={`add-item-${id}`}
           className="flex-1 py-2 md:py-2.5 bg-primary text-primary-foreground font-semibold rounded-lg md:rounded-lg flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-all duration-300 text-xs md:text-sm group/btn shadow-sm hover:shadow-md cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform group-hover/btn:rotate-90" />

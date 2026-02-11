@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { IDENTITY_STORAGE_KEY } from "@/lib/constants";
-import { generateGuestName } from "@/lib/utils";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { IDENTITY_STORAGE_KEY } from '@/lib/constants';
+import { generateGuestName } from '@/lib/utils';
+import React, { useCallback, useContext, useEffect, useState, useSyncExternalStore } from 'react';
 
 interface IdentityState {
   userName: string | null;
@@ -11,20 +11,23 @@ interface IdentityState {
 }
 
 interface IdentityContextType extends IdentityState {
+  isHydrated: boolean;
   setIdentity: (name: string) => void;
   joinAsGuest: () => void;
   clearIdentity: () => void;
 }
 
-const IdentityContext = React.createContext<IdentityContextType | undefined>(
-  undefined,
-);
+const IdentityContext = React.createContext<IdentityContextType | undefined>(undefined);
 
 function getStorageKey(tableId: string) {
   return IDENTITY_STORAGE_KEY(tableId);
 }
 
 function getInitialIdentityState(tableId: string): IdentityState {
+  if (typeof window === 'undefined') {
+    return { userName: null, userId: '', isGuest: false };
+  }
+
   try {
     const saved = sessionStorage.getItem(getStorageKey(tableId));
     if (saved) {
@@ -47,8 +50,11 @@ export function IdentityProvider({
   children: React.ReactNode;
   tableId: string;
 }) {
-  const [state, setState] = useState<IdentityState>(() =>
-    getInitialIdentityState(tableId),
+  const [state, setState] = useState<IdentityState>(() => getInitialIdentityState(tableId));
+  const isHydrated = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
   );
 
   // Persist to sessionStorage on change
@@ -91,7 +97,7 @@ export function IdentityProvider({
 
   return (
     <IdentityContext.Provider
-      value={{ ...state, setIdentity, joinAsGuest, clearIdentity }}
+      value={{ ...state, isHydrated, setIdentity, joinAsGuest, clearIdentity }}
     >
       {children}
     </IdentityContext.Provider>
@@ -100,7 +106,6 @@ export function IdentityProvider({
 
 export function useIdentity() {
   const context = useContext(IdentityContext);
-  if (!context)
-    throw new Error("useIdentity must be used within IdentityProvider");
+  if (!context) throw new Error('useIdentity must be used within IdentityProvider');
   return context;
 }

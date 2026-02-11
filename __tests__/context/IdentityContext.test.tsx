@@ -1,7 +1,7 @@
-import { IdentityProvider, useIdentity } from "@/context/IdentityContext";
-import { IDENTITY_STORAGE_KEY } from "@/lib/constants";
-import { act, render, screen } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { IdentityProvider, useIdentity } from '@/context/IdentityContext';
+import { IDENTITY_STORAGE_KEY } from '@/lib/constants';
+import { act, render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock sessionStorage
 const sessionStorageMock = (() => {
@@ -20,19 +20,19 @@ const sessionStorageMock = (() => {
   };
 })();
 
-Object.defineProperty(window, "sessionStorage", {
+Object.defineProperty(window, 'sessionStorage', {
   value: sessionStorageMock,
 });
 
 // Crypto mock
-Object.defineProperty(global, "crypto", {
+Object.defineProperty(global, 'crypto', {
   value: {
-    randomUUID: () => "mock-uuid",
+    randomUUID: () => 'mock-uuid',
   },
 });
 
-describe("IdentityContext", () => {
-  const tableId = "table-1";
+describe('IdentityContext', () => {
+  const tableId = 'table-1';
   const storageKey = IDENTITY_STORAGE_KEY(tableId);
 
   beforeEach(() => {
@@ -40,10 +40,10 @@ describe("IdentityContext", () => {
     sessionStorageMock.clear();
   });
 
-  it("persists changes to sessionStorage", async () => {
+  it('persists changes to sessionStorage', async () => {
     const TestComponent = () => {
       const { setIdentity } = useIdentity();
-      return <button onClick={() => setIdentity("John Doe")}>Set Name</button>;
+      return <button onClick={() => setIdentity('John Doe')}>Set Name</button>;
     };
 
     render(
@@ -52,7 +52,7 @@ describe("IdentityContext", () => {
       </IdentityProvider>,
     );
 
-    const button = screen.getByText("Set Name");
+    const button = screen.getByText('Set Name');
     await act(async () => {
       button.click();
     });
@@ -63,11 +63,11 @@ describe("IdentityContext", () => {
     );
   });
 
-  it("hydrates from sessionStorage on mount", () => {
+  it('hydrates from sessionStorage on mount', () => {
     // Setup existing session
     const existingState = {
-      userName: "Jane Doe",
-      userId: "existing-uuid",
+      userName: 'Jane Doe',
+      userId: 'existing-uuid',
       isGuest: false,
     };
     sessionStorageMock.getItem.mockReturnValue(JSON.stringify(existingState));
@@ -83,6 +83,21 @@ describe("IdentityContext", () => {
       </IdentityProvider>,
     );
 
-    expect(screen.getByText("User: Jane Doe")).toBeInTheDocument();
+    expect(screen.getByText('User: Jane Doe')).toBeInTheDocument();
+  });
+
+  it('exposes isHydrated after mount', () => {
+    const TestComponent = () => {
+      const { isHydrated } = useIdentity();
+      return <div>Hydrated: {String(isHydrated)}</div>;
+    };
+
+    render(
+      <IdentityProvider tableId={tableId}>
+        <TestComponent />
+      </IdentityProvider>,
+    );
+
+    expect(screen.getByText('Hydrated: true')).toBeInTheDocument();
   });
 });

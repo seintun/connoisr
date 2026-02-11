@@ -1,6 +1,7 @@
 'use client';
 
 import { useTableSession } from '@/components/providers/TableSessionProvider';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { MENU_ITEMS, TAG_EMOJIS } from '@/lib/menu';
 import { cn } from '@/lib/utils';
 import { CartItem } from '@/types';
@@ -15,9 +16,10 @@ import {
   SlidersHorizontal,
   Trash2,
   User,
+  WifiOff,
   X,
 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 interface CheckoutProps {
   isOpen: boolean;
@@ -27,29 +29,9 @@ interface CheckoutProps {
 
 export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
   const { session, clearCart, sendOrder, removeItem, addItem } = useTableSession();
+  const isOnline = useOnlineStatus();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [idleMinutes, setIdleMinutes] = useState(0);
-  const cartTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const cartAddedAtRef = useRef<number | null>(null);
-
-  // Track how long items have been sitting in the cart
-  useEffect(() => {
-    if (session && session.cart.length > 0) {
-      if (!cartAddedAtRef.current) cartAddedAtRef.current = Date.now();
-      cartTimerRef.current = setInterval(() => {
-        const elapsed = Math.floor((Date.now() - (cartAddedAtRef.current || Date.now())) / 60000);
-        setIdleMinutes(elapsed);
-      }, 30000); // Update every 30s
-      return () => {
-        if (cartTimerRef.current) clearInterval(cartTimerRef.current);
-      };
-    } else {
-      cartAddedAtRef.current = null;
-      setIdleMinutes(0);
-      if (cartTimerRef.current) clearInterval(cartTimerRef.current);
-    }
-  }, [session]);
 
   if (!session) return null;
 
@@ -63,6 +45,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
 
   const hasCartItems = session.cart.length > 0;
   const hasOrders = (session.orders || []).length > 0;
+  const sortedOrders = [...(session.orders || [])].sort((a, b) => b.createdAt - a.createdAt);
 
   if (!hasCartItems && !hasOrders) {
     return null;
@@ -211,10 +194,11 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
             </div>
 
             {/* Content - Scrollable */}
-            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-6 overscroll-contain">
+            <div className="flex-1 overflow-y-auto px-4 py-3 space-y-6 overscroll-contain flex flex-col">
               {/* Previous Orders */}
               {hasOrders && (
-                <div className="space-y-3">
+                <div className="space-y-3 order-2">
+                  {hasCartItems && <div className="h-px bg-border/40 my-2" />}
                   <div className="flex items-center gap-2 px-1">
                     <Clock className="w-3.5 h-3.5 text-muted-foreground" />
                     <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
@@ -223,7 +207,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                   </div>
 
                   <div className="space-y-4">
-                    {(session.orders || []).map((order) => (
+                    {sortedOrders.map((order) => (
                       <div key={order.id} className="opacity-80 grayscale-[0.3]">
                         <div className="flex items-center gap-2 mb-2 px-1">
                           <CheckCircle2
@@ -260,8 +244,8 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                             const displayNote = item.notes || item.options?.note;
                             return (
                               <div key={group.key} className="py-1 pr-2">
-                                <div className="flex justify-between items-baseline gap-2">
-                                  <div className="min-w-0">
+                                <div className="flex justify-between items-start gap-2">
+                                  <div className="min-w-0 space-y-1">
                                     <div className="flex items-baseline gap-2 min-w-0">
                                       <span className="text-xs font-medium text-foreground/80">
                                         {group.count}x
@@ -270,26 +254,14 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                                         {item.name}
                                       </span>
                                       {item.orderedByName && (
-                                        <span className="text-[9px] text-muted-foreground/60 font-medium truncate">
-                                          · {item.orderedByName}
+                                        <span className="text-[10px] font-medium text-amber-900/40 dark:text-amber-100/40 bg-amber-100/50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-md flex items-center gap-1 shrink-0">
+                                          <User className="w-3 h-3 opacity-70" />
+                                          {item.orderedByName}
                                         </span>
                                       )}
                                     </div>
-                                    <div className="text-[10px] text-muted-foreground/70 tabular-nums">
-                                      ${formatCurrency(item.price)} ea
-                                    </div>
-                                  </div>
-                                  <span className="text-xs font-medium text-foreground/50 tabular-nums shrink-0">
-                                    ${formatCurrency(item.price * group.count)}
-                                  </span>
-                                </div>
 
-                                {(tags.length > 0 ||
-                                  item.isCustomized ||
-                                  item.options ||
-                                  displayNote) && (
-                                  <div className="pl-6 pt-1 space-y-1">
-                                    {tags.length > 0 && (
+                                    <div className="flex items-center justify-between gap-2">
                                       <div className="flex flex-wrap gap-1">
                                         {tags.map((tag) => (
                                           <span
@@ -301,8 +273,18 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                                           </span>
                                         ))}
                                       </div>
-                                    )}
+                                      <span className="text-[10px] text-muted-foreground/70 tabular-nums shrink-0">
+                                        ${formatCurrency(item.price)} ea
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <span className="text-xs font-medium text-foreground/50 tabular-nums shrink-0">
+                                    ${formatCurrency(item.price * group.count)}
+                                  </span>
+                                </div>
 
+                                {(item.isCustomized || item.options || displayNote) && (
+                                  <div className="pl-6 pt-1 space-y-1">
                                     {item.options?.spiciness && (
                                       <div className="text-[10px] text-orange-600 flex items-center gap-1">
                                         <span className="font-semibold">Spiciness:</span>{' '}
@@ -349,8 +331,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
 
               {/* Current Cart */}
               {hasCartItems && (
-                <div className="space-y-2">
-                  {hasOrders && <div className="h-px bg-border/40 my-4" />}
+                <div className="space-y-2 order-1">
                   {/* Amber-tinted pending section */}
                   <div className="rounded-lg bg-amber-50/60 dark:bg-amber-500/5 border border-amber-200/40 dark:border-amber-500/10 p-2 space-y-1.5">
                     {/* Combined header + inline hint */}
@@ -380,20 +361,6 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                         </button>
                       </div>
                     </div>
-
-                    {/* Idle timer nudge */}
-                    {idleMinutes >= 2 && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -3 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-orange-100/80 dark:bg-orange-500/10 border border-orange-300/40 dark:border-orange-500/20"
-                      >
-                        <Clock className="w-3 h-3 text-orange-600 dark:text-orange-400 shrink-0" />
-                        <span className="text-[10px] text-orange-700 dark:text-orange-300 font-medium">
-                          Waiting {idleMinutes} min — ready to send?
-                        </span>
-                      </motion.div>
-                    )}
 
                     {categoryGroups.map(([category, groups]) => (
                       <div key={category} className="space-y-1">
@@ -609,7 +576,12 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
             {/* Added testid to footer container, but actually let's add it to the main motion div */}
 
             {/* Footer */}
-            <div className="px-3 pt-2 pb-3 border-t border-border/40 bg-card/95 shrink-0">
+            <div
+              className={cn(
+                'px-3 pt-2 pb-3 border-t border-border/40 bg-card/95 shrink-0 transition-transform duration-200',
+                !isOnline && '-translate-y-6',
+              )}
+            >
               <div className="flex justify-between items-end">
                 {/* Left Side: Breakdown */}
                 <div className="flex flex-col text-[10px] text-muted-foreground leading-tight space-y-0.5 w-1/2">
@@ -680,22 +652,24 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                 {hasOrders && (
                   <button
                     onClick={handlePayment}
-                    disabled={isProcessing}
+                    disabled={isProcessing || !isOnline}
                     data-testid="pay-bill-btn"
                     className={cn(
                       'flex-1 h-10 border border-border/50 bg-secondary/50 text-foreground font-semibold rounded-xl text-xs',
                       'active:scale-[0.98] transition-all duration-200 hover:bg-secondary/80',
                       'flex items-center justify-center gap-1.5 whitespace-nowrap px-3',
-                      isProcessing && 'opacity-60 cursor-not-allowed',
+                      'disabled:pointer-events-none disabled:cursor-not-allowed',
+                      (isProcessing || !isOnline) && 'opacity-60 cursor-not-allowed',
                     )}
                   >
                     <CreditCard className="w-3.5 h-3.5 shrink-0" />
                     <span>
-                      Pay $
-                      {(ordersTotal * 1.08).toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      {!isOnline
+                        ? 'Pay (Offline)'
+                        : `Pay $${(ordersTotal * 1.08).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}`}
                     </span>
                   </button>
                 )}
@@ -704,14 +678,15 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                 {hasCartItems ? (
                   <button
                     onClick={handleSendToKitchen}
-                    disabled={isProcessing}
+                    disabled={isProcessing || !isOnline}
                     data-testid="send-order-btn"
                     className={cn(
                       'flex-[2] h-10 bg-foreground text-background font-semibold rounded-xl text-sm',
                       'shadow-md hover:shadow-lg',
                       'active:scale-[0.98] transition-all duration-200',
                       'flex items-center justify-center gap-2',
-                      isProcessing && 'opacity-60 cursor-not-allowed',
+                      'disabled:pointer-events-none disabled:cursor-not-allowed',
+                      (isProcessing || !isOnline) && 'opacity-60 cursor-not-allowed',
                     )}
                   >
                     {isProcessing ? (
@@ -721,8 +696,17 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                       </div>
                     ) : (
                       <>
-                        <ChefHat className="w-4 h-4 opacity-70" />
-                        <span>Send Order</span>
+                        {!isOnline ? (
+                          <>
+                            <WifiOff className="w-4 h-4 opacity-70" />
+                            <span>Send Disabled</span>
+                          </>
+                        ) : (
+                          <>
+                            <ChefHat className="w-4 h-4 opacity-70" />
+                            <span>Send Order</span>
+                          </>
+                        )}
                       </>
                     )}
                   </button>
@@ -734,6 +718,12 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                   )
                 )}
               </div>
+
+              {!isOnline && (
+                <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium text-center mt-1">
+                  Send and Pay are unavailable offline.
+                </p>
+              )}
 
               {/* If no cart items, make Pay full width */}
               {!hasCartItems && hasOrders && (

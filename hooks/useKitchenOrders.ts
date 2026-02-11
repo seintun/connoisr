@@ -1,31 +1,16 @@
-import { STORAGE_PREFIX } from "@/lib/constants";
-import { Order } from "@/types";
-import { useCallback, useEffect, useState } from "react";
+import {
+  collectOrdersFromStorage,
+  updateOrderStatusInStorage,
+} from '@/features/session/services/sessionStorage';
+import {
+  notifySessionUpdated,
+  subscribeToSessionUpdates,
+} from '@/features/session/services/sessionSync';
+import { Order } from '@/types';
+import { useCallback, useEffect, useState } from 'react';
 
-function collectOrdersFromStorage(): Order[] {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  const allOrders: Order[] = [];
-  try {
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith(`${STORAGE_PREFIX}-session-`)) {
-        const sessionStr = localStorage.getItem(key);
-        if (sessionStr) {
-          const session = JSON.parse(sessionStr);
-          if (session.orders && Array.isArray(session.orders)) {
-            allOrders.push(...session.orders);
-          }
-        }
-      }
-    }
-  } catch (e) {
-    console.error("Failed to sync orders", e);
-  }
-
-  return allOrders;
+function buildOrdersSignature(orders: Order[]): string {
+  return orders.map((order) => `${order.id}:${order.status}:${order.createdAt}`).join('|');
 }
 
 const INITIAL_LAST_SYNCED = Date.now();
@@ -38,7 +23,7 @@ export function useKitchenOrders() {
     const allOrders = collectOrdersFromStorage();
 
     setOrders((prev) => {
-      if (JSON.stringify(prev) !== JSON.stringify(allOrders)) {
+      if (buildOrdersSignature(prev) !== buildOrdersSignature(allOrders)) {
         return allOrders;
       }
       return prev;
@@ -47,34 +32,10 @@ export function useKitchenOrders() {
   }, []);
 
   const updateOrderStatus = useCallback(
-    (orderId: string, status: Order["status"]) => {
-      let found = false;
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith(`${STORAGE_PREFIX}-session-`)) {
-          try {
-            const sessionStr = localStorage.getItem(key);
-            if (sessionStr) {
-              const session = JSON.parse(sessionStr);
-              if (session.orders && Array.isArray(session.orders)) {
-                const orderIndex = session.orders.findIndex(
-                  (o: Order) => o.id === orderId,
-                );
-                if (orderIndex > -1) {
-                  session.orders[orderIndex].status = status;
-                  localStorage.setItem(key, JSON.stringify(session));
-                  found = true;
-                  break;
-                }
-              }
-            }
-          } catch (e) {
-            console.error("Error updating order", e);
-          }
-        }
-      }
-
-      if (found) {
+    (orderId: string, status: Order['status']) => {
+      const tableId = updateOrderStatusInStorage(orderId, status);
+      if (tableId) {
+        notifySessionUpdated(tableId);
         syncOrders();
       }
     },
@@ -82,19 +43,12 @@ export function useKitchenOrders() {
   );
 
   useEffect(() => {
-    // Poll every 2 seconds
-    const pollInterval = setInterval(syncOrders, 2000);
+    const unsubscribe = subscribeToSessionUpdates(() => syncOrders());
+    const pollInterval = setInterval(syncOrders, 15000);
 
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key && e.key.startsWith(`${STORAGE_PREFIX}-session-`)) {
-        syncOrders();
-      }
-    };
-
-    window.addEventListener("storage", handleStorage);
     return () => {
+      unsubscribe();
       clearInterval(pollInterval);
-      window.removeEventListener("storage", handleStorage);
     };
   }, [syncOrders]);
 

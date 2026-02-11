@@ -49,7 +49,7 @@ describe('useKitchenOrders', () => {
   });
 
   const setupStorage = (orders: ReturnType<typeof buildOrder>[]) => {
-    const session = { orders };
+    const session = { tableId: 't1', orders };
     localStorageMock.setItem(SESSION_STORAGE_KEY('t1'), JSON.stringify(session));
   };
 
@@ -76,7 +76,19 @@ describe('useKitchenOrders', () => {
     expect(result.current.orders[0].status).toBe('cooking');
   });
 
-  it('polls for changes', () => {
+  it('syncs on storage event changes', () => {
+    const listeners: Array<(event: Event) => void> = [];
+    const addEventListenerSpy = vi
+      .spyOn(window, 'addEventListener')
+      .mockImplementation((type, listener) => {
+        if (type === 'storage') {
+          listeners.push(listener as (event: Event) => void);
+        }
+      });
+    const removeEventListenerSpy = vi
+      .spyOn(window, 'removeEventListener')
+      .mockImplementation(() => {});
+
     setupStorage([]);
     const { result } = renderHook(() => useKitchenOrders());
     expect(result.current.orders).toHaveLength(0);
@@ -85,9 +97,11 @@ describe('useKitchenOrders', () => {
     setupStorage([mockOrder]);
 
     act(() => {
-      vi.advanceTimersByTime(2000);
+      listeners[0](new StorageEvent('storage', { key: SESSION_STORAGE_KEY('t1') }));
     });
 
     expect(result.current.orders).toHaveLength(1);
+    addEventListenerSpy.mockRestore();
+    removeEventListenerSpy.mockRestore();
   });
 });

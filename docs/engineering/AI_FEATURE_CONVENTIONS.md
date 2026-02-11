@@ -6,6 +6,8 @@ This guide defines implementation conventions for AI agents and contributors.
 
 - **Root entrypoint for agents**: `AGENTS.md`
 - **Detailed engineering guide**: `docs/engineering/AI_FEATURE_CONVENTIONS.md`
+- **Current architecture snapshot**: `docs/engineering/REPO_ARCHITECTURE.md`
+- **Architecture history**: `docs/engineering/ARCHITECTURE_CHANGELOG.md`
 - **Contributor-facing setup and workflow**: `CONTRIBUTING.md`
 
 ## 1. Component Naming and Debuggability
@@ -160,11 +162,21 @@ When implementing planned phases/refactors:
    - validation commands
    - follow-up
 
-## 8. Pull Request Readiness Checklist
+## 8. Documentation Convention For Architecture Changes
+
+For any architecture-impacting change (module boundaries, ownership, data flow, storage/sync, repository contracts):
+
+1. Update `docs/engineering/REPO_ARCHITECTURE.md` to reflect current-state structure.
+2. Add a dated entry in `docs/engineering/ARCHITECTURE_CHANGELOG.md`.
+3. Update relevant `docs/refactor/phase-*.md` when change is part of a phase plan.
+4. Keep these updates in the same PR/commit set as code changes.
+
+## 9. Pull Request Readiness Checklist
 
 Before finalizing:
 
 1. Conventions followed (`displayName`, targeted test IDs, a11y basics).
 2. Tests added/updated.
 3. Validation commands pass.
-4. Docs updated when conventions or architecture changed.
+4. `REPO_ARCHITECTURE.md` and `ARCHITECTURE_CHANGELOG.md` updated for architecture-impacting changes.
+5. Docs updated when conventions changed.

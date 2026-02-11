@@ -103,6 +103,8 @@ We welcome contributions to Connoisr! This document outlines the standards and s
 ## Engineering Conventions
 
 - AI + feature implementation conventions: `docs/engineering/AI_FEATURE_CONVENTIONS.md`
+- Current repo architecture: `docs/engineering/REPO_ARCHITECTURE.md`
+- Architecture changelog: `docs/engineering/ARCHITECTURE_CHANGELOG.md`
 - Agent entrypoint: `AGENTS.md`
 
 ## Aesthetic Guidelines (Vibrant Modernism)

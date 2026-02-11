@@ -84,12 +84,28 @@ Default shortcuts:
 - `U`: undo last status change (5s)
 - `?`: keyboard help overlay
 
+### 7. Sticky status rail (mobile-first)
+
+- Header remains sticky at top while scrolling ticket cards.
+- Mobile portrait target: header occupies at most ~25% of viewport height.
+- Time, input mode, and sound controls use consistent height and contrast for quick scan.
+- KPI chips collapse into a single horizontal row on mobile (no two-row metric stack).
+
+### 8. Focus visibility guarantees
+
+- Keyboard focus changes must keep the focused ticket fully visible in the safe viewport band.
+- Safe viewport band is constrained by:
+  - top sticky header height + spacing
+  - bottom input hint bar height + spacing
+- If a focused card is taller than the available safe band, align its top edge under the sticky header.
+
 ## Benefits
 
 1. Supports mixed hardware in real restaurants (touch and non-touch stations).
 2. Improves modifier miss-rate by making changes visually dominant.
 3. Reduces action latency with one-key progression for high-volume service.
 4. Keeps training simpler: one KDS UI regardless of station hardware.
+5. Prevents keyboard focus loss behind sticky chrome during rush navigation.
 
 ## Architecture Notes
 

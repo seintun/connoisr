@@ -12,6 +12,8 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 
 const NOW_REFRESH_MS = 1_000;
 const OVERDUE_CHIME_INTERVAL_MS = 120_000;
+const FOCUS_SCROLL_TOP_GAP_PX = 12;
+const FOCUS_SCROLL_BOTTOM_GAP_PX = 12;
 
 function playKDSChime(frequency = 880, durationMs = 120) {
   if (typeof window === 'undefined' || typeof window.AudioContext === 'undefined') {
@@ -85,12 +87,39 @@ export default function KitchenPage() {
     const focusedCard = document.querySelector<HTMLElement>(
       `[data-testid="kitchen-order-card-${focusedId}"]`,
     );
+    if (!focusedCard) {
+      return;
+    }
 
-    focusedCard?.scrollIntoView({
-      block: 'nearest',
-      inline: 'nearest',
-      behavior: 'smooth',
+    const frame = window.requestAnimationFrame(() => {
+      const header = document.querySelector<HTMLElement>('[data-testid="kitchen-header"]');
+      const hintBar = document.querySelector<HTMLElement>('[data-testid="kds-input-hint-bar"]');
+      const headerHeight = header?.getBoundingClientRect().height ?? 0;
+      const hintBarHeight = hintBar?.getBoundingClientRect().height ?? 0;
+      const topSafeOffset = headerHeight + FOCUS_SCROLL_TOP_GAP_PX;
+      const bottomSafeOffset = hintBarHeight + FOCUS_SCROLL_BOTTOM_GAP_PX;
+      const rect = focusedCard.getBoundingClientRect();
+      const viewportBottom = window.innerHeight - bottomSafeOffset;
+      const visibleBandHeight = viewportBottom - topSafeOffset;
+      let scrollTopDelta = 0;
+
+      if (rect.height > visibleBandHeight) {
+        scrollTopDelta = rect.top - topSafeOffset;
+      } else if (rect.top < topSafeOffset) {
+        scrollTopDelta = rect.top - topSafeOffset;
+      } else if (rect.bottom > viewportBottom) {
+        scrollTopDelta = rect.bottom - viewportBottom;
+      }
+
+      if (Math.abs(scrollTopDelta) > 1) {
+        window.scrollBy({
+          top: scrollTopDelta,
+          behavior: 'auto',
+        });
+      }
     });
+
+    return () => window.cancelAnimationFrame(frame);
   }, [inputController.focusedOrderId, inputController.inputMode]);
 
   useEffect(() => {

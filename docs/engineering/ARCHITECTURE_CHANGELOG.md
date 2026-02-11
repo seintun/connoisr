@@ -77,3 +77,11 @@ Keep entries concise and always include affected files.
     - `CONTRIBUTING.md`
     - `docs/engineering/AI_FEATURE_CONVENTIONS.md`
     - `docs/qa/CI_TESTING_PIPELINE.md`
+- Summary: Refined KDS sticky header density and keyboard focus scrolling so focused tickets stay visible between top and bottom sticky rails.
+  - Why: Prevent focus/context loss on mobile and keyboard-only operation while preserving glanceable status context.
+  - Impact: `/kitchen` now computes focus scroll against dynamic sticky header/hint-bar offsets; mobile header uses a tighter, single-row metric rail.
+  - Affected files:
+    - `app/kitchen/page.tsx`
+    - `components/domain/kitchen/KDSHeader.tsx`
+    - `docs/engineering/KDS_HYBRID_INPUT_DESIGN.md`
+    - `docs/engineering/ARCHITECTURE_CHANGELOG.md`

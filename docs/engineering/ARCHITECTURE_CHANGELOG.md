@@ -102,3 +102,11 @@ Keep entries concise and always include affected files.
     - `components/domain/kitchen/KDSOrderCard.tsx`
     - `docs/engineering/KDS_HYBRID_INPUT_DESIGN.md`
     - `docs/engineering/ARCHITECTURE_CHANGELOG.md`
+- Summary: Added portrait-specific focused ticket layout rules for modified vs unmodified items and tightened badge row behavior.
+  - Why: Improve readability on narrow screens by preventing overcrowded 3-column item grids and reducing badge wrap noise.
+  - Impact: Focused mobile tickets now render max 2 columns with full-width modified items; badge groups are optimized to stay single-row when possible.
+  - Affected files:
+    - `components/domain/kitchen/KDSOrderCard.tsx`
+    - `__tests__/components/KDSOrderCard.test.tsx`
+    - `docs/engineering/KDS_HYBRID_INPUT_DESIGN.md`
+    - `docs/engineering/ARCHITECTURE_CHANGELOG.md`

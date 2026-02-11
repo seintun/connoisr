@@ -5,6 +5,7 @@ import { KDSStatusAction } from '@/components/domain/kitchen/KDSStatusAction';
 import type { KDSOrderViewModel } from '@/features/kitchen/domain/kdsSelectors';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Clock3 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface KDSOrderCardProps {
   viewModel: KDSOrderViewModel;
@@ -50,12 +51,15 @@ function statusClass(status: KDSOrderViewModel['order']['status']): string {
 }
 
 export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: KDSOrderCardProps) {
+  const [isDesktopLayout, setIsDesktopLayout] = useState(false);
   const { order, groupedItems } = viewModel;
   const collapsedPreviewCount = 3;
   const visibleItems = isFocused ? groupedItems : groupedItems.slice(0, collapsedPreviewCount);
   const hiddenItemsCount = Math.max(groupedItems.length - visibleItems.length, 0);
   const focusedColumnCount = isFocused ? getFocusedColumnCount(groupedItems) : 1;
   const focusedColumns = isFocused ? splitIntoColumns(visibleItems, focusedColumnCount) : [];
+  const focusedModifiedItems = isFocused ? visibleItems.filter((item) => item.isModified) : [];
+  const focusedStandardItems = isFocused ? visibleItems.filter((item) => !item.isModified) : [];
   const shouldSpanBoardWidth = isFocused && focusedColumnCount >= 3;
   const compactFocusedItems = isFocused && groupedItems.length >= 7;
   const modifiedItemCount = groupedItems.reduce(
@@ -66,6 +70,19 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
     (sum, item) => sum + (!item.isModified ? item.count : 0),
     0,
   );
+
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+      return;
+    }
+
+    const query = window.matchMedia('(min-width: 768px)');
+    const syncLayout = () => setIsDesktopLayout(query.matches);
+    syncLayout();
+    query.addEventListener('change', syncLayout);
+    return () => query.removeEventListener('change', syncLayout);
+  }, []);
+
   const renderItem = (item: (typeof visibleItems)[number]) => {
     const placeModifierRight = isFocused && item.isModified;
 
@@ -149,32 +166,36 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
     >
       <header className="border-b border-neutral-700 bg-black/30 px-2.5 py-2 sm:px-4 sm:py-2.5">
         <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0 flex flex-wrap items-center gap-1.5">
-            <h2 className="truncate text-[2.05rem] font-black leading-none tracking-tight text-white sm:text-[30px]">
-              Table {order.tableId}
-            </h2>
-            {viewModel.isModified && (
-              <span
-                className="rounded-md border border-amber-300 bg-amber-400/20 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest text-amber-100 sm:text-[10px]"
-                data-testid={`kds-ticket-mod-badge-${order.id}`}
-              >
-                MOD
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5">
+              <h2 className="truncate text-[1.8rem] font-black leading-none tracking-tight text-white sm:text-[30px]">
+                Table {order.tableId}
+              </h2>
+              {viewModel.isModified && (
+                <span
+                  className="rounded-md border border-amber-300 bg-amber-400/20 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest text-amber-100 sm:text-[10px]"
+                  data-testid={`kds-ticket-mod-badge-${order.id}`}
+                >
+                  MOD
+                </span>
+              )}
+              {viewModel.isNew && (
+                <span className="rounded-md border border-emerald-300 bg-emerald-300/20 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest text-emerald-100 sm:text-[10px]">
+                  NEW
+                </span>
+              )}
+            </div>
+            <div className="mt-1 flex items-center gap-1 overflow-x-auto whitespace-nowrap pb-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <span className="rounded-md border border-amber-300/70 bg-amber-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-100 sm:text-[10px]">
+                Modified {modifiedItemCount}
               </span>
-            )}
-            {viewModel.isNew && (
-              <span className="rounded-md border border-emerald-300 bg-emerald-300/20 px-2 py-0.5 text-[9px] font-extrabold uppercase tracking-widest text-emerald-100 sm:text-[10px]">
-                NEW
+              <span className="rounded-md border border-emerald-300/70 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-100 sm:text-[10px]">
+                Standard {standardItemCount}
               </span>
-            )}
-            <span className="rounded-md border border-amber-300/70 bg-amber-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-100 sm:text-[10px]">
-              Modified {modifiedItemCount}
-            </span>
-            <span className="rounded-md border border-emerald-300/70 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-100 sm:text-[10px]">
-              Standard {standardItemCount}
-            </span>
+            </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-1.5 sm:justify-end sm:gap-2">
+          <div className="flex items-center gap-1.5 overflow-x-auto whitespace-nowrap pb-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden sm:justify-end sm:gap-2 sm:overflow-visible sm:whitespace-normal sm:pb-0">
             <span
               className={cn(
                 'inline-flex h-6 items-center rounded-md border px-2 text-[10px] font-extrabold uppercase tracking-wider sm:h-7 sm:text-[11px]',
@@ -213,20 +234,38 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
 
       <div className="flex-1 overflow-hidden p-2.5 sm:p-3">
         {isFocused ? (
-          <div
-            className="flex items-start gap-2"
-            data-testid={`kds-focused-item-columns-${order.id}`}
-          >
-            {focusedColumns.map((column, idx) => (
-              <div
-                key={`${order.id}-col-${idx}`}
-                className="min-w-0 flex-1 space-y-2"
-                data-testid={`kds-focused-item-column-${order.id}-${idx + 1}`}
-              >
-                {column.map((item) => renderItem(item))}
-              </div>
-            ))}
-          </div>
+          isDesktopLayout ? (
+            <div
+              className="flex items-start gap-2"
+              data-testid={`kds-focused-item-columns-${order.id}`}
+            >
+              {focusedColumns.map((column, idx) => (
+                <div
+                  key={`${order.id}-col-${idx}`}
+                  className="min-w-0 flex-1 space-y-2"
+                  data-testid={`kds-focused-item-column-${order.id}-${idx + 1}`}
+                >
+                  {column.map((item) => renderItem(item))}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div
+              className="grid grid-cols-2 gap-2"
+              data-testid={`kds-focused-mobile-grid-${order.id}`}
+            >
+              {focusedModifiedItems.map((item) => (
+                <div key={`mobile-mod-${item.key}`} className="col-span-2">
+                  {renderItem(item)}
+                </div>
+              ))}
+              {focusedStandardItems.map((item) => (
+                <div key={`mobile-standard-${item.key}`} className="min-w-0">
+                  {renderItem(item)}
+                </div>
+              ))}
+            </div>
+          )
         ) : (
           <div className="space-y-2.5 sm:space-y-3">
             {visibleItems.map((item) => renderItem(item))}

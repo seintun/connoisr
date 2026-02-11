@@ -100,6 +100,9 @@ Default shortcuts:
 - Ticket header typography is reduced on small phones to keep one-ticket cards concise.
 - Quantity pill, item title text, and card paddings use smaller mobile defaults while preserving contrast.
 - Primary action remains a large touch target for fast status progression.
+- Focused item layout is capped at `2` columns on portrait.
+- Modified/customized items span full width (`1` column treatment), while unmodified items flow in `2` columns.
+- Ticket badges should remain on one row where possible, using compact tokens and overflow handling.
 
 ### 9. Focus visibility guarantees
 

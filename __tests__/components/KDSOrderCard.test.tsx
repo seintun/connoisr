@@ -36,8 +36,8 @@ describe('KDSOrderCard', () => {
 
     expect(screen.getByTestId('kds-ticket-mod-badge-kds-1')).toBeInTheDocument();
     expect(screen.getByTestId('kds-overdue-indicator-kds-1')).toBeInTheDocument();
-    expect(screen.getByTestId('kds-focused-item-column-kds-1-1')).toBeInTheDocument();
-    expect(screen.queryByTestId('kds-focused-item-column-kds-1-2')).not.toBeInTheDocument();
+    expect(screen.getByTestId('kds-focused-mobile-grid-kds-1')).toBeInTheDocument();
+    expect(screen.queryByTestId('kds-focused-item-column-kds-1-1')).not.toBeInTheDocument();
 
     const action = screen.getByTestId('kitchen-start-cooking-kds-1');
     fireEvent.click(action);
@@ -115,7 +115,9 @@ describe('KDSOrderCard', () => {
       />,
     );
 
+    const focusedGrid = screen.getByTestId('kds-focused-mobile-grid-kds-2');
     expect(screen.queryByText('+2 more items (focus to expand)')).not.toBeInTheDocument();
+    expect(focusedGrid.children[0]).toHaveClass('col-span-2');
     expect(screen.getByText('Three')).toBeInTheDocument();
     expect(screen.getByText('Two')).toBeInTheDocument();
     expect(screen.getByText('Four')).toBeInTheDocument();

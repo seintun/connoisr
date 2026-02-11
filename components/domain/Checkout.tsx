@@ -5,7 +5,7 @@ import { MENU_ITEMS, TAG_EMOJIS } from "@/lib/menu";
 import { cn } from "@/lib/utils";
 import { CartItem } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle2, ChefHat, Clock, CreditCard, Minus, Pencil, Plus, Trash2, X } from "lucide-react";
+import { CheckCircle2, ChefHat, Clock, CreditCard, Minus, Plus, SlidersHorizontal, Trash2, User, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface CheckoutProps {
@@ -326,19 +326,21 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                                 {/* Row 1: Name & Total Price & Edit Button */}
                                 <div className="flex justify-between items-start mb-1 gap-2">
                                   <div className="flex flex-col gap-0.5 min-w-0">
-                                      <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 break-all">
-                                        {item.name}
-                                      </span>
-                                      {/* Edit Button for Split Logic */}
-                                      {onEditItem && (
-                                          <button 
-                                            onClick={() => onEditItem(group.instances[0])}
-                                            className="text-[10px] text-primary hover:text-primary/80 font-medium flex items-center gap-1 w-fit"
-                                          >
-                                            <Pencil className="w-3 h-3" />
-                                            {group.count > 1 ? "Modify one" : "Edit Details"}
-                                          </button>
-                                      )}
+                                      <div className="flex items-center gap-2">
+                                          <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 break-all">
+                                            {item.name}
+                                          </span>
+                                          {onEditItem && (
+                                              <button 
+                                                onClick={() => onEditItem(group.instances[0])}
+                                                className="h-5 px-1.5 flex items-center justify-center rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors active:scale-95 flex-shrink-0 gap-1"
+                                                title={group.count > 1 ? "Modify one of these items" : "Edit item details"}
+                                              >
+                                                <SlidersHorizontal className="w-3 h-3" />
+                                                <span className="text-[9px] font-medium leading-none pb-px">{group.count > 1 ? "Modify one" : "Modify"}</span>
+                                              </button>
+                                          )}
+                                      </div>
                                   </div>
                                   <span className="font-bold text-[13px] text-foreground tabular-nums shrink-0">
                                     ${(item.price * group.count).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
@@ -384,6 +386,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                                 {item.options && Object.keys(item.options).length > 0 && (
                                    <div className="mb-1.5 space-y-0.5 bg-muted/40 p-2 rounded-lg border border-border/50 text-[10px]">
                                      {item.options.spiciness && <div className="text-orange-600 dark:text-orange-400"><span className="font-semibold text-foreground/70">Spiciness:</span> {item.options.spiciness}</div>}
+                                     {item.options.sweetness && <div className="text-pink-600 dark:text-pink-400"><span className="font-semibold text-foreground/70">Sweetness:</span> {item.options.sweetness}</div>}
                                      {item.options.removals && <div className="text-red-600 dark:text-red-400"><span className="font-semibold text-foreground/70">No:</span> {item.options.removals}</div>}
                                      {item.options.allergens && <div className="text-emerald-600 dark:text-emerald-400"><span className="font-semibold text-foreground/70">Dietary:</span> {item.options.allergens}</div>}
                                      {item.options.note && <div className="text-indigo-600 dark:text-indigo-400 italic">"{item.options.note}"</div>}
@@ -394,7 +397,8 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                                 <div className="flex justify-between items-end">
                                    <div className="flex items-center gap-1.5 pb-0.5">
                                       {item.orderedByName && (
-                                        <span className="text-[10px] font-medium text-amber-900/40 dark:text-amber-100/40 bg-amber-100/50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-md">
+                                        <span className="text-[10px] font-medium text-amber-900/40 dark:text-amber-100/40 bg-amber-100/50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                                          <User className="w-3 h-3 opacity-70" />
                                           {item.orderedByName}
                                         </span>
                                       )}

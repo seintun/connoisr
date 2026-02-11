@@ -76,7 +76,21 @@ export function CustomizationDrawer({
     if (!item) return;
 
     const options: Record<string, string> = {};
-    if (intensity !== 100) options.intensity = `${intensity}%`;
+    
+    if (intensity !== 100) {
+      // Convert intensity to readable label if it matches a preset, else use percentage
+      const preset = INTENSITY_PRESETS.find(p => p.value === intensity);
+      const label = preset ? preset.label : `${intensity}%`; // e.g. "Extra", "Light", or "125%"
+
+      if (item.tags?.includes("Spicy")) {
+         options.spiciness = label; 
+      } else if (item.tags?.includes("Sweet")) {
+         options.sweetness = label;
+      } else {
+         options.intensity = label;
+      }
+    }
+
     if (chefNote.trim()) options.note = chefNote.trim();
 
     onAddToCart({

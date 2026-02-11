@@ -73,6 +73,20 @@ const TestComponent = () => {
                 }
             })}>Add Spicy Burger with Note</button>
 
+            <button onClick={() => addItem({
+                menuItemId: 'm1',
+                name: 'Burger',
+                category: 'Main',
+                price: 10,
+                quantity: 1,
+                isCustomized: true,
+                options: {
+                    spiciness: 'Extra',
+                    sweetness: 'Light',
+                    note: 'No onions'
+                }
+            })}>Add Sweet & Spicy Burger</button>
+
             <button onClick={() => {
                 const item = session.cart[0];
                 if (item) removeItem(item.instanceId);

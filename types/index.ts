@@ -8,6 +8,7 @@ export interface CartItem {
   notes?: string;
   options?: {
     spiciness?: string;
+    sweetness?: string;
     allergens?: string;
     removals?: string;
     note?: string;

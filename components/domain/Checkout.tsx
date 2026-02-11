@@ -1,6 +1,18 @@
 'use client';
 
 import { useTableSession } from '@/components/providers/TableSessionProvider';
+import {
+  type GroupedCartItem,
+  groupCartItems,
+  groupItemsByUser,
+} from '@/features/cart/domain/grouping';
+import {
+  computeGrandTotal,
+  computeOrdersSubtotal,
+  computeSubtotal,
+  computeTax,
+  formatCurrency,
+} from '@/features/cart/domain/money';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { cn } from '@/lib/utils';
 import { CartItem } from '@/types';
@@ -18,7 +30,7 @@ import {
   WifiOff,
   X,
 } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 interface CheckoutProps {
   isOpen: boolean;
@@ -34,15 +46,8 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
   const cartItems = useMemo(() => session?.cart ?? [], [session?.cart]);
   const orders = useMemo(() => session?.orders ?? [], [session?.orders]);
 
-  const cartSubtotal = useMemo(
-    () =>
-      cartItems.reduce(
-        (acc, item) => acc + item.price, // Quantity is always 1 per instance
-        0,
-      ),
-    [cartItems],
-  );
-  const ordersTotal = useMemo(() => orders.reduce((acc, order) => acc + order.total, 0), [orders]);
+  const cartSubtotal = useMemo(() => computeSubtotal(cartItems), [cartItems]);
+  const ordersTotal = useMemo(() => computeOrdersSubtotal(orders), [orders]);
   const grandSubtotal = cartSubtotal + ordersTotal;
 
   const hasCartItems = cartItems.length > 0;
@@ -87,86 +92,32 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
     }
   };
 
-  type GroupedItem = { key: string; item: CartItem; count: number; instances: CartItem[] };
-  type UserGroupedItems = {
-    key: string;
-    label: string;
-    groups: GroupedItem[];
-    totalQuantity: number;
-  };
-
-  const formatCurrency = (value: number) =>
-    value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const toTestIdFragment = (value: string) =>
     value
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/^-+|-+$/g, '') || 'unassigned';
 
-  // Group instances by display identity
-  const groupInstances = useCallback((items: CartItem[]): GroupedItem[] => {
-    const groups: Record<string, GroupedItem> = {};
-
-    items.forEach((item) => {
-      const optionsKey = JSON.stringify(item.options || {});
-      const notesKey = item.notes || '';
-      const key = `${item.menuItemId}|${optionsKey}|${notesKey}|${item.orderedByName || ''}|${item.isCustomized ? 'custom' : 'standard'}`;
-
-      if (!groups[key]) {
-        groups[key] = { key, item, count: 0, instances: [] };
-      }
-      groups[key].count++;
-      groups[key].instances.push(item);
-    });
-
-    return Object.values(groups);
-  }, []);
-
-  const groupByUser = useCallback((groups: GroupedItem[]): UserGroupedItems[] => {
-    const byUser = new Map<string, UserGroupedItems>();
-
-    groups.forEach((group) => {
-      const rawName = group.item.orderedByName?.trim() || '';
-      const key = rawName || '__unassigned__';
-      const label = rawName || 'Unassigned';
-
-      const existing = byUser.get(key);
-      if (existing) {
-        existing.groups.push(group);
-        existing.totalQuantity += group.count;
-      } else {
-        byUser.set(key, {
-          key,
-          label,
-          groups: [group],
-          totalQuantity: group.count,
-        });
-      }
-    });
-
-    return Array.from(byUser.values());
-  }, []);
-
-  const groupedCartItems = useMemo(() => groupInstances(cartItems), [cartItems, groupInstances]);
+  const groupedCartItems = useMemo(() => groupCartItems(cartItems), [cartItems]);
   const groupedPendingByUser = useMemo(
-    () => groupByUser(groupedCartItems),
-    [groupByUser, groupedCartItems],
+    () => groupItemsByUser(groupedCartItems),
+    [groupedCartItems],
   );
 
   const groupedKitchenOrders = useMemo(
     () =>
       sortedOrders.map((order) => {
-        const groups = groupInstances(order.items);
-        return { order, userGroups: groupByUser(groups) };
+        const groups = groupCartItems(order.items);
+        return { order, userGroups: groupItemsByUser(groups) };
       }),
-    [sortedOrders, groupInstances, groupByUser],
+    [sortedOrders],
   );
 
   if (!hasCartItems && !hasOrders) {
     return null;
   }
 
-  const handleIncrement = (group: { item: CartItem; count: number; instances: CartItem[] }) => {
+  const handleIncrement = (group: GroupedCartItem) => {
     // To increment, we just add a duplicate of one of the instances
     const template = group.instances[0];
     addItem({
@@ -182,7 +133,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
     });
   };
 
-  const handleDecrement = (group: { item: CartItem; count: number; instances: CartItem[] }) => {
+  const handleDecrement = (group: GroupedCartItem) => {
     // Remove the last instance in the group
     const instanceToRemove = group.instances[group.instances.length - 1];
     if (instanceToRemove) {
@@ -569,23 +520,11 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                 <div className="flex flex-col text-[10px] text-muted-foreground leading-tight space-y-0.5 w-1/2">
                   <div className="flex justify-between gap-2">
                     <span>Subtotal</span>
-                    <span>
-                      $
-                      {ordersTotal.toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
+                    <span>${formatCurrency(ordersTotal)}</span>
                   </div>
                   <div className="flex justify-between gap-2">
                     <span>Tax (8%)</span>
-                    <span>
-                      $
-                      {(ordersTotal * 0.08).toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    </span>
+                    <span>${formatCurrency(computeTax(ordersTotal))}</span>
                   </div>
                 </div>
 
@@ -595,11 +534,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                     Total Due
                   </span>
                   <span className="font-bold text-red-500 text-sm">
-                    $
-                    {(ordersTotal * 1.08).toLocaleString('en-US', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                    ${formatCurrency(computeGrandTotal(ordersTotal))}
                   </span>
                 </div>
               </div>
@@ -608,22 +543,12 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                 <div className="mt-2 pt-2 border-t border-dashed border-border/40 flex justify-between items-center text-[10px]">
                   <span className="text-muted-foreground font-medium">
                     + {cartItems.length} pending ($
-                    {cartItems
-                      .reduce((a, b) => a + b.price, 0)
-                      .toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
-                    )
+                    {formatCurrency(cartSubtotal)})
                   </span>
                   <div className="flex gap-1 items-baseline">
                     <span className="font-medium text-muted-foreground">Grand Total:</span>
                     <span className="font-bold text-foreground text-xs">
-                      $
-                      {(grandSubtotal * 1.08).toLocaleString('en-US', {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      })}
+                      ${formatCurrency(computeGrandTotal(grandSubtotal))}
                     </span>
                   </div>
                 </div>
@@ -648,10 +573,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                     <span>
                       {!isOnline
                         ? 'Pay (Offline)'
-                        : `Pay $${(ordersTotal * 1.08).toLocaleString('en-US', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}`}
+                        : `Pay $${formatCurrency(computeGrandTotal(ordersTotal))}`}
                     </span>
                   </button>
                 )}

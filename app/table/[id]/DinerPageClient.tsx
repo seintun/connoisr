@@ -6,6 +6,13 @@ import { MenuHeader } from '@/components/domain/MenuHeader';
 import { IdentityModal } from '@/components/onboarding/IdentityModal';
 import { useTableSession } from '@/components/providers/TableSessionProvider';
 import { useIdentity } from '@/context/IdentityContext';
+import { areCartItemsEquivalent } from '@/features/cart/domain/grouping';
+import {
+  computeGrandTotal,
+  computeOrdersSubtotal,
+  computeSubtotal,
+  formatCurrency,
+} from '@/features/cart/domain/money';
 import { useMenuPrefetch } from '@/hooks/useMenuPrefetch';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { CartItem } from '@/types';
@@ -102,11 +109,7 @@ export default function DinerPageClient() {
   );
 
   const cartTotal = useMemo(
-    () =>
-      (session?.cart.reduce((acc, item) => acc + item.price, 0) || 0).toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }),
+    () => formatCurrency(computeSubtotal(session?.cart ?? [])),
     [session?.cart],
   );
 
@@ -146,10 +149,9 @@ export default function DinerPageClient() {
       return (
         session?.cart.filter(
           (i) =>
-            i.menuItemId === cartItem.menuItemId &&
-            i.orderedByName === cartItem.orderedByName &&
-            JSON.stringify(i.options) === JSON.stringify(cartItem.options) &&
-            i.status === 'PENDING',
+            areCartItemsEquivalent(i, cartItem, {
+              includeStatus: false,
+            }) && i.status === 'PENDING',
         ).length || 0
       );
     },
@@ -274,9 +276,9 @@ export default function DinerPageClient() {
             cartTotal={cartTotal}
             isOnline={isOnline}
             hasOrders={(session?.orders?.length ?? 0) > 0}
-            orderTotal={(
-              (session?.orders || []).reduce((a, o) => a + o.total, 0) * 1.08
-            ).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            orderTotal={formatCurrency(
+              computeGrandTotal(computeOrdersSubtotal(session?.orders ?? [])),
+            )}
             orderedItemCount={(session?.orders || []).reduce(
               (a, o) => a + o.items.reduce((c, d) => c + d.quantity, 0),
               0,

@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
-import { useKitchenOrders } from "@/hooks/useKitchenOrders";
-import { APP_NAME } from "@/lib/constants";
-import { cn } from "@/lib/utils";
-import { CartItem, Order } from "@/types";
-import { AnimatePresence, motion } from "framer-motion";
-import { AlertTriangle, CheckCircle2, ChefHat, Clock, Flame, Timer } from "lucide-react";
-import { useEffect, useState } from "react";
+import { groupCartItems } from '@/features/cart/domain/grouping';
+import { useKitchenOrders } from '@/hooks/useKitchenOrders';
+import { APP_NAME } from '@/lib/constants';
+import { cn } from '@/lib/utils';
+import { Order } from '@/types';
+import { AnimatePresence, motion } from 'framer-motion';
+import { AlertTriangle, CheckCircle2, ChefHat, Clock, Flame, Timer } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 const INITIAL_NOW = Date.now();
 
@@ -20,47 +21,26 @@ export default function KitchenPage() {
   }, []);
 
   const activeOrders = orders
-    .filter((order) => order.status !== "paid" && order.status !== "served")
+    .filter((order) => order.status !== 'paid' && order.status !== 'served')
     .sort((a, b) => a.createdAt - b.createdAt);
 
   const OVERDUE_THRESHOLD_MIN = 10;
 
-  const getStatusColor = (status: Order["status"], timeDiff?: number) => {
+  const getStatusColor = (status: Order['status'], timeDiff?: number) => {
     // Overdue orders get burnt sienna regardless of status
-    if (timeDiff !== undefined && timeDiff >= OVERDUE_THRESHOLD_MIN && status !== "ready") {
-      return "bg-orange-700/20 text-orange-300 border-orange-700/30";
+    if (timeDiff !== undefined && timeDiff >= OVERDUE_THRESHOLD_MIN && status !== 'ready') {
+      return 'bg-orange-700/20 text-orange-300 border-orange-700/30';
     }
     switch (status) {
-      case "ordered":
-        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
-      case "cooking":
-        return "bg-orange-500/20 text-orange-400 border-orange-500/30";
-      case "ready":
-        return "bg-sky-500/20 text-sky-400 border-sky-500/30";
+      case 'ordered':
+        return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+      case 'cooking':
+        return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
+      case 'ready':
+        return 'bg-sky-500/20 text-sky-400 border-sky-500/30';
       default:
-        return "bg-neutral-800 text-neutral-400";
+        return 'bg-neutral-800 text-neutral-400';
     }
-  };
-
-  // Helper to group identical items for KDS display
-  const groupOrderItems = (items: CartItem[]) => {
-      const groups: Record<string, { item: CartItem; count: number; instances: CartItem[] }> = {};
-      
-      items.forEach(item => {
-         // Identity key for Kitchen: MenuItemID + Options + Notes + OrderedBy
-         // We include notes in grouping
-         const optionsKey = JSON.stringify(item.options || {});
-         const notesKey = item.notes || '';
-         const key = `${item.menuItemId}|${optionsKey}|${notesKey}|${item.orderedByName || ''}`;
-         
-         if (!groups[key]) {
-             groups[key] = { item, count: 0, instances: [] };
-         }
-         groups[key].count++;
-         groups[key].instances.push(item);
-      });
-      
-      return Object.values(groups);
   };
 
   return (
@@ -75,14 +55,17 @@ export default function KitchenPage() {
           <span>{new Date(now).toLocaleTimeString()}</span>
         </div>
       </header>
- 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" data-testid="kitchen-orders-grid">
+
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        data-testid="kitchen-orders-grid"
+      >
         <AnimatePresence mode="popLayout">
           {activeOrders.map((order) => {
             const timeDiff = Math.floor((now - order.createdAt) / 60000);
-            const isOverdue = timeDiff >= OVERDUE_THRESHOLD_MIN && order.status !== "ready";
+            const isOverdue = timeDiff >= OVERDUE_THRESHOLD_MIN && order.status !== 'ready';
             const statusColors = getStatusColor(order.status, timeDiff);
-            const groupedItems = groupOrderItems(order.items);
+            const groupedItems = groupCartItems(order.items);
 
             return (
               <motion.div
@@ -93,22 +76,20 @@ export default function KitchenPage() {
                 exit={{ opacity: 0, scale: 0.9 }}
                 data-testid={`kitchen-order-card-${order.id}`}
                 className={cn(
-                  "rounded-2xl border bg-neutral-900/50 backdrop-blur-sm overflow-hidden flex flex-col shadow-xl",
-                  statusColors.split(" ")[2],
-                  isOverdue && "animate-pulse",
+                  'rounded-2xl border bg-neutral-900/50 backdrop-blur-sm overflow-hidden flex flex-col shadow-xl',
+                  statusColors.split(' ')[2],
+                  isOverdue && 'animate-pulse',
                 )}
               >
                 {/* Order Header */}
                 <div
                   className={cn(
-                    "px-4 py-3 flex justify-between items-center border-b",
+                    'px-4 py-3 flex justify-between items-center border-b',
                     statusColors,
                   )}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-lg">
-                      Table {order.tableId}
-                    </span>
+                    <span className="font-bold text-lg">Table {order.tableId}</span>
                     <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/20">
                       {order.status}
                     </span>
@@ -118,7 +99,7 @@ export default function KitchenPage() {
                       <AlertTriangle className="w-3.5 h-3.5 text-orange-400 animate-pulse" />
                     )}
                     <Timer className="w-3.5 h-3.5" />
-                    <span className={cn(isOverdue && "text-orange-300 font-bold")}>
+                    <span className={cn(isOverdue && 'text-orange-300 font-bold')}>
                       {timeDiff}m
                     </span>
                   </div>
@@ -128,40 +109,36 @@ export default function KitchenPage() {
                 <div className="p-4 space-y-4 flex-1">
                   {groupedItems.map((group, idx) => {
                     const item = group.item;
-                    const hasOptions =
-                      item.options && Object.keys(item.options).length > 0;
+                    const hasOptions = item.options && Object.keys(item.options).length > 0;
                     const hasNotes = !!item.notes;
-                    const isCustom =
-                      item.isCustomized || hasOptions || hasNotes;
+                    const isCustom = item.isCustomized || hasOptions || hasNotes;
 
                     // Functional Color Theory
                     // Standard: Emerald (Calm, Standard)
                     // Custom: Amber (Caution, Attention)
-                    const itemContainerClass = isCustom 
-                        ? "bg-amber-500/10 border border-amber-500/30" // Amber for custom
-                        : "bg-emerald-500/5 border border-emerald-500/10"; // Emerald for standard
+                    const itemContainerClass = isCustom
+                      ? 'bg-amber-500/10 border border-amber-500/30' // Amber for custom
+                      : 'bg-emerald-500/5 border border-emerald-500/10'; // Emerald for standard
 
                     const quantityBadgeClass = isCustom
-                        ? "bg-amber-500 text-amber-950" 
-                        : "bg-emerald-500/20 text-emerald-400";
+                      ? 'bg-amber-500 text-amber-950'
+                      : 'bg-emerald-500/20 text-emerald-400';
 
-                    const itemNameClass = isCustom
-                        ? "text-amber-200"
-                        : "text-neutral-200";
+                    const itemNameClass = isCustom ? 'text-amber-200' : 'text-neutral-200';
 
                     // Helper for Spiciness Color
                     const getSpicinessColor = (level: string) => {
                       switch (level) {
-                        case "Extra Hot":
-                          return "bg-red-500/20 text-red-300 border-red-500/30";
-                        case "Hot":
-                          return "bg-orange-500/20 text-orange-300 border-orange-500/30";
-                        case "Medium":
-                          return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
-                        case "Mild":
-                          return "bg-emerald-500/20 text-emerald-300 border-emerald-500/30";
+                        case 'Extra Hot':
+                          return 'bg-red-500/20 text-red-300 border-red-500/30';
+                        case 'Hot':
+                          return 'bg-orange-500/20 text-orange-300 border-orange-500/30';
+                        case 'Medium':
+                          return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
+                        case 'Mild':
+                          return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
                         default:
-                          return "bg-neutral-800 text-neutral-400";
+                          return 'bg-neutral-800 text-neutral-400';
                       }
                     };
 
@@ -169,25 +146,24 @@ export default function KitchenPage() {
                       <div
                         key={idx}
                         className={cn(
-                          "flex flex-col gap-3 p-3 rounded-xl transition-colors",
-                          itemContainerClass
+                          'flex flex-col gap-3 p-3 rounded-xl transition-colors',
+                          itemContainerClass,
                         )}
                       >
                         {/* Main Item Row */}
                         <div className="flex items-start gap-4">
-                          <span className={cn(
-                              "shrink-0 flex items-center justify-center w-10 h-10 rounded-lg font-bold font-mono text-xl shadow-sm",
-                              quantityBadgeClass
-                          )}>
+                          <span
+                            className={cn(
+                              'shrink-0 flex items-center justify-center w-10 h-10 rounded-lg font-bold font-mono text-xl shadow-sm',
+                              quantityBadgeClass,
+                            )}
+                          >
                             {group.count}
                           </span>
                           <div className="flex-1 min-w-0 pt-1">
                             <div className="flex items-baseline justify-between gap-2">
                               <span
-                                className={cn(
-                                  "font-bold text-lg leading-tight",
-                                  itemNameClass
-                                )}
+                                className={cn('font-bold text-lg leading-tight', itemNameClass)}
                               >
                                 {item.name}
                               </span>
@@ -207,7 +183,7 @@ export default function KitchenPage() {
                             {item.options?.spiciness && (
                               <div
                                 className={cn(
-                                  "flex items-center gap-2 px-3 py-1.5 rounded-lg border w-fit",
+                                  'flex items-center gap-2 px-3 py-1.5 rounded-lg border w-fit',
                                   getSpicinessColor(item.options.spiciness),
                                 )}
                               >
@@ -226,9 +202,7 @@ export default function KitchenPage() {
                                     ✕
                                   </span>
                                 </div>
-                                <span className="text-sm">
-                                  NO {item.options.removals}
-                                </span>
+                                <span className="text-sm">NO {item.options.removals}</span>
                               </div>
                             )}
 
@@ -236,9 +210,7 @@ export default function KitchenPage() {
                             {item.options?.allergens && (
                               <div className="flex items-center gap-2 text-emerald-400 font-medium bg-emerald-950/20 px-3 py-2 rounded-lg border border-emerald-500/20">
                                 <span className="text-lg leading-none">🥬</span>
-                                <span className="text-sm">
-                                  {item.options.allergens}
-                                </span>
+                                <span className="text-sm">{item.options.allergens}</span>
                               </div>
                             )}
 
@@ -263,27 +235,27 @@ export default function KitchenPage() {
 
                 {/* Actions */}
                 <div className="p-3 border-t border-white/10 bg-white/5 flex gap-2">
-                  {order.status === "ordered" && (
+                  {order.status === 'ordered' && (
                     <button
-                      onClick={() => updateOrderStatus(order.id, "cooking")}
+                      onClick={() => updateOrderStatus(order.id, 'cooking')}
                       data-testid={`kitchen-start-cooking-${order.id}`}
                       className="w-full py-3 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold transition-colors flex items-center justify-center gap-2"
                     >
                       <ChefHat className="w-5 h-5" /> Start Cooking
                     </button>
                   )}
-                  {order.status === "cooking" && (
+                  {order.status === 'cooking' && (
                     <button
-                      onClick={() => updateOrderStatus(order.id, "ready")}
+                      onClick={() => updateOrderStatus(order.id, 'ready')}
                       data-testid={`kitchen-mark-ready-${order.id}`}
                       className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold transition-colors flex items-center justify-center gap-2"
                     >
                       <CheckCircle2 className="w-5 h-5" /> Mark Ready
                     </button>
                   )}
-                  {order.status === "ready" && (
+                  {order.status === 'ready' && (
                     <button
-                      onClick={() => updateOrderStatus(order.id, "served")}
+                      onClick={() => updateOrderStatus(order.id, 'served')}
                       data-testid={`kitchen-mark-served-${order.id}`}
                       className="w-full py-3 rounded-xl bg-neutral-700 hover:bg-neutral-600 text-white font-bold transition-colors flex items-center justify-center gap-2"
                     >
@@ -297,7 +269,10 @@ export default function KitchenPage() {
         </AnimatePresence>
 
         {activeOrders.length === 0 && (
-          <div className="col-span-full flex flex-col items-center justify-center py-20 text-neutral-600" data-testid="kitchen-empty-state">
+          <div
+            className="col-span-full flex flex-col items-center justify-center py-20 text-neutral-600"
+            data-testid="kitchen-empty-state"
+          >
             <Clock className="w-16 h-16 mb-4 opacity-20" />
             <h2 className="text-xl font-medium">No active orders</h2>
             <p>Waiting for new orders...</p>

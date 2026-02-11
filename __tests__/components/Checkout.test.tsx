@@ -1,5 +1,5 @@
 import { Checkout } from '@/components/domain/Checkout';
-import { CartItem, TableSession } from '@/types';
+import { buildCartItem, buildOrder, buildSession } from '@/__tests__/fixtures/builders';
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -7,13 +7,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 // We can wrap with TableSessionProvider or mock the context hook.
 // Mocking the hook is often cleaner for component testing to control state.
 
-const mockSession: TableSession = {
+const mockSession = buildSession({
   tableId: '1',
   orders: [],
-  cart: [] as CartItem[],
+  cart: [],
   status: 'ordering',
   guestName: 'Test',
-};
+});
 
 const mockUpdateItemQuantity = vi.fn();
 const mockRemoveItem = vi.fn();
@@ -54,7 +54,7 @@ describe('Checkout', () => {
 
   it('renders cart items when present', () => {
     mockSession.cart = [
-      {
+      buildCartItem({
         instanceId: 'c1',
         name: 'Burger',
         price: 10,
@@ -62,7 +62,7 @@ describe('Checkout', () => {
         menuItemId: 'm1',
         category: 'Main',
         status: 'PENDING',
-      },
+      }),
     ];
 
     render(<Checkout isOpen={true} onClose={() => {}} />);
@@ -74,14 +74,14 @@ describe('Checkout', () => {
 
   it('groups identical kitchen order items and keeps different customizations separate', () => {
     mockSession.orders = [
-      {
+      buildOrder({
         id: 'o1',
         tableId: '1',
         status: 'ordered',
         createdAt: Date.now(),
         total: 44,
         items: [
-          {
+          buildCartItem({
             instanceId: 'i1',
             name: 'Avocado Toast',
             price: 18,
@@ -92,8 +92,8 @@ describe('Checkout', () => {
             options: { removals: 'onion' },
             orderedByName: 'Alex',
             isCustomized: true,
-          },
-          {
+          }),
+          buildCartItem({
             instanceId: 'i2',
             name: 'Avocado Toast',
             price: 18,
@@ -104,8 +104,8 @@ describe('Checkout', () => {
             options: { removals: 'onion' },
             orderedByName: 'Alex',
             isCustomized: true,
-          },
-          {
+          }),
+          buildCartItem({
             instanceId: 'i3',
             name: 'Avocado Toast',
             price: 18,
@@ -116,9 +116,9 @@ describe('Checkout', () => {
             options: { removals: 'tomato' },
             orderedByName: 'Alex',
             isCustomized: true,
-          },
+          }),
         ],
-      },
+      }),
     ];
 
     render(<Checkout isOpen={true} onClose={() => {}} />);

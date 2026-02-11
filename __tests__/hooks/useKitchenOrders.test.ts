@@ -1,8 +1,8 @@
-import { useKitchenOrders } from "@/hooks/useKitchenOrders";
-import { SESSION_STORAGE_KEY } from "@/lib/constants";
-import { Order } from "@/types";
-import { act, renderHook } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { useKitchenOrders } from '@/hooks/useKitchenOrders';
+import { SESSION_STORAGE_KEY } from '@/lib/constants';
+import { buildOrder } from '@/__tests__/fixtures/builders';
+import { act, renderHook } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -25,11 +25,11 @@ const localStorageMock = (() => {
   };
 })();
 
-Object.defineProperty(window, "localStorage", {
+Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
 
-describe("useKitchenOrders", () => {
+describe('useKitchenOrders', () => {
   beforeEach(() => {
     localStorageMock.clear();
     vi.useFakeTimers();
@@ -39,49 +39,44 @@ describe("useKitchenOrders", () => {
     vi.useRealTimers();
   });
 
-  const mockOrder: Order = {
-    id: "o1",
-    tableId: "t1",
+  const mockOrder = buildOrder({
+    id: 'o1',
+    tableId: 't1',
     items: [],
-    status: "ordered",
+    status: 'ordered',
     createdAt: Date.now(),
     total: 10,
-  };
+  });
 
-  const setupStorage = (orders: Order[]) => {
+  const setupStorage = (orders: ReturnType<typeof buildOrder>[]) => {
     const session = { orders };
-    localStorageMock.setItem(
-      SESSION_STORAGE_KEY("t1"),
-      JSON.stringify(session),
-    );
+    localStorageMock.setItem(SESSION_STORAGE_KEY('t1'), JSON.stringify(session));
   };
 
-  it("syncs orders from localStorage initially", () => {
+  it('syncs orders from localStorage initially', () => {
     setupStorage([mockOrder]);
     const { result } = renderHook(() => useKitchenOrders());
 
     expect(result.current.orders).toHaveLength(1);
-    expect(result.current.orders[0].id).toBe("o1");
+    expect(result.current.orders[0].id).toBe('o1');
   });
 
-  it("updates status of an order", () => {
+  it('updates status of an order', () => {
     setupStorage([mockOrder]);
     const { result } = renderHook(() => useKitchenOrders());
 
     act(() => {
-      result.current.updateOrderStatus("o1", "cooking");
+      result.current.updateOrderStatus('o1', 'cooking');
     });
 
-    const stored = JSON.parse(
-      localStorageMock.getItem(SESSION_STORAGE_KEY("t1"))!,
-    );
-    expect(stored.orders[0].status).toBe("cooking");
+    const stored = JSON.parse(localStorageMock.getItem(SESSION_STORAGE_KEY('t1'))!);
+    expect(stored.orders[0].status).toBe('cooking');
 
     // Should also update local state
-    expect(result.current.orders[0].status).toBe("cooking");
+    expect(result.current.orders[0].status).toBe('cooking');
   });
 
-  it("polls for changes", () => {
+  it('polls for changes', () => {
     setupStorage([]);
     const { result } = renderHook(() => useKitchenOrders());
     expect(result.current.orders).toHaveLength(0);

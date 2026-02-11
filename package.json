@@ -17,6 +17,7 @@
     "type-check": "tsc --noEmit",
     "test": "vitest run",
     "test:unit": "vitest run",
+    "test:architecture": "node scripts/architecture-guards.mjs",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:e2e": "playwright test",

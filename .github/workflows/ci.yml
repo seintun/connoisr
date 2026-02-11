@@ -57,6 +57,8 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
+      - run: npm run lint
+      - run: npm run type-check
       - run: npm run test:unit
 
   e2e_pr_chromium:

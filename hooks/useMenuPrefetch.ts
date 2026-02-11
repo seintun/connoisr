@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import { MENU_ITEMS } from "@/lib/menu";
-import { useQuery } from "@tanstack/react-query";
+import { menuRepository } from '@/features/menu/repositories/menuRepository';
+import { MENU_ITEMS } from '@/lib/menu';
+import { useQuery } from '@tanstack/react-query';
 
 /**
  * Prefetches menu data the moment the app mounts.
@@ -12,13 +13,8 @@ import { useQuery } from "@tanstack/react-query";
  */
 export function useMenuPrefetch(tableId: string) {
   const { data, isSuccess } = useQuery({
-    queryKey: ["menu", tableId],
-    queryFn: async () => {
-      // Simulate network latency for realistic prefetch behavior.
-      // Replace with `fetch('/api/menu?table=${tableId}')` when backend is ready.
-      await new Promise((resolve) => setTimeout(resolve, 200));
-      return MENU_ITEMS;
-    },
+    queryKey: ['menu', tableId],
+    queryFn: () => menuRepository.getMenu(tableId),
     staleTime: 5 * 60 * 1000,
   });
 

@@ -1,7 +1,4 @@
-import {
-  collectOrdersFromStorage,
-  updateOrderStatusInStorage,
-} from '@/features/session/services/sessionStorage';
+import { orderRepository } from '@/features/order/repositories/orderRepository';
 import {
   notifySessionUpdated,
   subscribeToSessionUpdates,
@@ -16,11 +13,11 @@ function buildOrdersSignature(orders: Order[]): string {
 const INITIAL_LAST_SYNCED = Date.now();
 
 export function useKitchenOrders() {
-  const [orders, setOrders] = useState<Order[]>(() => collectOrdersFromStorage());
+  const [orders, setOrders] = useState<Order[]>(() => orderRepository.listOrders());
   const [lastSynced, setLastSynced] = useState(INITIAL_LAST_SYNCED);
 
   const syncOrders = useCallback(() => {
-    const allOrders = collectOrdersFromStorage();
+    const allOrders = orderRepository.listOrders();
 
     setOrders((prev) => {
       if (buildOrdersSignature(prev) !== buildOrdersSignature(allOrders)) {
@@ -33,7 +30,7 @@ export function useKitchenOrders() {
 
   const updateOrderStatus = useCallback(
     (orderId: string, status: Order['status']) => {
-      const tableId = updateOrderStatusInStorage(orderId, status);
+      const tableId = orderRepository.updateStatus(orderId, status);
       if (tableId) {
         notifySessionUpdated(tableId);
         syncOrders();

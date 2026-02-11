@@ -1,7 +1,7 @@
 'use client';
 
 import { createInitialSession, sessionReducer } from '@/features/session/domain/sessionReducer';
-import { readSession, writeSession } from '@/features/session/services/sessionStorage';
+import { sessionRepository } from '@/features/session/repositories/sessionRepository';
 import {
   notifySessionUpdated,
   subscribeToSessionUpdates,
@@ -34,7 +34,7 @@ export function TableSessionProvider({
 
   const initializeSession = useCallback((tId: string) => {
     try {
-      const existing = readSession(tId);
+      const existing = sessionRepository.get(tId);
       if (existing) {
         dispatch({ type: 'SET_SESSION', payload: existing });
         return;
@@ -51,7 +51,7 @@ export function TableSessionProvider({
 
   useEffect(() => {
     if (session) {
-      writeSession(session);
+      sessionRepository.set(session);
       notifySessionUpdated(session.tableId);
     }
   }, [session]);
@@ -63,7 +63,7 @@ export function TableSessionProvider({
     return subscribeToSessionUpdates((updatedTableId) => {
       if (updatedTableId && updatedTableId !== session.tableId) return;
       try {
-        const nextSession = readSession(session.tableId);
+        const nextSession = sessionRepository.get(session.tableId);
         if (!nextSession) return;
         if (JSON.stringify(nextSession) === currentSignature) return;
         dispatch({ type: 'SET_SESSION', payload: nextSession });

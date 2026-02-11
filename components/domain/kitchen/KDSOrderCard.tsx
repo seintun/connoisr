@@ -31,11 +31,13 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
   const collapsedPreviewCount = 3;
   const visibleItems = isFocused ? groupedItems : groupedItems.slice(0, collapsedPreviewCount);
   const hiddenItemsCount = Math.max(groupedItems.length - visibleItems.length, 0);
+  const focusedColumnCount = isFocused ? (groupedItems.length >= 18 ? 3 : 2) : 1;
   const focusedColumnsClass = isFocused
-    ? groupedItems.length >= 18
+    ? focusedColumnCount >= 3
       ? 'grid grid-cols-3 gap-2 content-start'
       : 'grid grid-cols-2 gap-2 content-start'
     : 'space-y-3';
+  const shouldSpanBoardWidth = isFocused && focusedColumnCount >= 3;
   const compactFocusedItems = isFocused && groupedItems.length >= 7;
   const modifiedItemCount = groupedItems.reduce(
     (sum, item) => sum + (item.isModified ? item.count : 0),
@@ -52,8 +54,8 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
       aria-label={`Table ${order.tableId} order`}
       data-testid={`kitchen-order-card-${order.id}`}
       className={cn(
-        'flex h-[clamp(24rem,62vh,40rem)] min-h-[24rem] flex-col overflow-hidden rounded-2xl border bg-[#121417] shadow-lg shadow-black/40 outline-none transition',
-        isFocused && 'md:col-span-2',
+        'flex min-h-[16rem] flex-col overflow-hidden rounded-2xl border bg-[#121417] shadow-lg shadow-black/40 outline-none transition',
+        shouldSpanBoardWidth && 'md:col-span-2',
         viewModel.isOverdue ? 'border-orange-500/80' : 'border-neutral-700',
         isFocused && 'ring-4 ring-cyan-400/90 ring-offset-2 ring-offset-black',
       )}

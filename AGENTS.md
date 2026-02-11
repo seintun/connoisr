@@ -22,6 +22,7 @@ Use the following document as the source of truth for implementation conventions
 4. Run:
    - `npm run lint`
    - `npm run type-check`
+   - `npm run test:docs`
    - `npm run test`
 5. If UI architecture constraints apply, also run:
    - `npm run test:architecture`

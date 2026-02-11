@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+npm run test:architecture
+npm run test:docs
 npm run test:unit
 
 CHANGED_FILES="$(git diff --name-only @{upstream}...HEAD 2>/dev/null || git diff --name-only HEAD~1...HEAD 2>/dev/null || true)"

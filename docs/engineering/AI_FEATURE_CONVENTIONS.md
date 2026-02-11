@@ -81,6 +81,7 @@ For each feature/fix:
 ```bash
 npm run lint
 npm run type-check
+npm run test:docs
 npm run test
 ```
 

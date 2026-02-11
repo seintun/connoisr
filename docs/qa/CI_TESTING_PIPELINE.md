@@ -28,6 +28,8 @@ Pipeline layers map to that architecture:
 - `pre-commit`:
   - `npm run lint-staged`
 - `pre-push`:
+  - `npm run test:architecture`
+  - `npm run test:docs`
   - `npm run test:unit`
   - `npm run test:e2e:smoke` only when UI/e2e-relevant files changed.
 
@@ -50,10 +52,10 @@ Workflow file: `.github/workflows/ci.yml`
 ### Trigger Matrix
 
 - `pull_request`:
-  - Run `quality` (lint, type-check, unit tests with coverage thresholds).
+  - Run `quality` (lint, type-check, architecture guard, docs guard, unit tests with coverage thresholds).
   - Run full Chromium e2e if UI paths changed.
 - `push` (`main`, `develop`):
-  - Run `quality` (lint, type-check, unit tests with coverage thresholds).
+  - Run `quality` (lint, type-check, architecture guard, docs guard, unit tests with coverage thresholds).
   - Run smoke e2e if UI paths changed.
 - `schedule` (daily):
   - Run full matrix e2e (`npm run test:e2e:full`).

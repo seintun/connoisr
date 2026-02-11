@@ -37,6 +37,11 @@ For documentation navigation and source-of-truth ownership, see `docs/README.md`
    ```bash
    npm run type-check
    ```
+5. **Architecture + docs guards**:
+   ```bash
+   npm run test:architecture
+   npm run test:docs
+   ```
 
 ### Why Two Build Systems?
 
@@ -103,5 +108,5 @@ All diner-facing components must be optimized for mobile devices first.
 - **Branching**: Create feature branches from `develop` (e.g., `feat/add-menu-search`).
 - **Commits**: Use conventional commits (e.g., `feat: ...`, `fix: ...`, `chore: ...`).
 - **Pre-Commit Hook**: Runs `lint-staged` to lint/format changed files only.
-- **Pre-Push Hook**: Runs `npm run test:unit` and conditional `npm run test:e2e:smoke` for UI/e2e changes.
+- **Pre-Push Hook**: Runs `npm run test:architecture`, `npm run test:docs`, `npm run test:unit`, and conditional `npm run test:e2e:smoke` for UI/e2e changes.
 - **Commit Message Hook**: Enforces conventional commit format with `commitlint`.

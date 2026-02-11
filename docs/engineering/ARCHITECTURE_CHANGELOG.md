@@ -42,3 +42,16 @@ Keep entries concise and always include affected files.
     - `docs/plan/performance-enhancements-v1-walkthrough.md`
     - `docs/plan/turbo-onboarding.md`
     - `docs/adr/cart-order-invariants.md`
+- Summary: Hardened local/CI script gates for architecture and documentation consistency, and optimized lint execution with cache.
+  - Why: Keep modularity and documentation goals continuously enforced with faster feedback loops.
+  - Impact: `pre-push` and CI now enforce architecture/docs guards; lint runs faster with cache; quality command set is standardized.
+  - Affected files:
+    - `scripts/architecture-guards.mjs`
+    - `scripts/docs-guards.mjs`
+    - `package.json`
+    - `.husky/pre-push`
+    - `.github/workflows/ci.yml`
+    - `AGENTS.md`
+    - `CONTRIBUTING.md`
+    - `docs/engineering/AI_FEATURE_CONVENTIONS.md`
+    - `docs/qa/CI_TESTING_PIPELINE.md`

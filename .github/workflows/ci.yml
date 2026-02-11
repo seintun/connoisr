@@ -10,11 +10,11 @@ on:
       - main
       - develop
   schedule:
-    - cron: "0 8 * * *"
+    - cron: '0 8 * * *'
   workflow_dispatch:
     inputs:
       full_e2e:
-        description: "Run full Playwright matrix (Chromium + Mobile emulation)"
+        description: 'Run full Playwright matrix (Chromium + Mobile emulation)'
         required: false
         default: false
         type: boolean
@@ -59,6 +59,8 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run type-check
+      - run: npm run test:architecture
+      - run: npm run test:docs
       - run: npm run test:coverage
 
   e2e_pr_chromium:

@@ -1,30 +1,36 @@
 #!/usr/bin/env node
 
-import { readdirSync, readFileSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { execSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { relative } from 'node:path';
 
 const ROOT = process.cwd();
 const TARGET_DIRS = ['components/domain', 'app'];
 const FORBIDDEN = [
-  { pattern: /dangerouslySetInnerHTML/g, reason: 'runtime HTML/style injection' },
-  { pattern: /\blocation\.reload\s*\(/g, reason: 'hard page reload side-effect' },
-  { pattern: /\balert\s*\(/g, reason: 'global blocking browser alert side-effect' },
+  { pattern: /dangerouslySetInnerHTML/, reason: 'runtime HTML/style injection' },
+  { pattern: /\blocation\.reload\s*\(/, reason: 'hard page reload side-effect' },
+  { pattern: /\balert\s*\(/, reason: 'global blocking browser alert side-effect' },
 ];
 
-function walk(dir, files = []) {
-  for (const entry of readdirSync(dir)) {
-    const fullPath = join(dir, entry);
-    const stats = statSync(fullPath);
-    if (stats.isDirectory()) {
-      walk(fullPath, files);
-    } else if (/\.(ts|tsx)$/.test(entry)) {
-      files.push(fullPath);
-    }
+function getCandidateFiles() {
+  const pattern = TARGET_DIRS.map((dir) => `${dir}/**/*.{ts,tsx}`).join(' ');
+  try {
+    const output = execSync(`rg --files ${pattern}`, {
+      cwd: ROOT,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    });
+    return output
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((file) => `${ROOT}/${file}`);
+  } catch {
+    return [];
   }
-  return files;
 }
 
-const candidates = TARGET_DIRS.flatMap((relativeDir) => walk(join(ROOT, relativeDir)));
+const candidates = getCandidateFiles();
 const violations = [];
 
 for (const filePath of candidates) {
@@ -32,7 +38,7 @@ for (const filePath of candidates) {
   for (const rule of FORBIDDEN) {
     if (rule.pattern.test(source)) {
       violations.push({
-        filePath: filePath.replace(`${ROOT}/`, ''),
+        filePath: relative(ROOT, filePath),
         pattern: rule.pattern.toString(),
         reason: rule.reason,
       });

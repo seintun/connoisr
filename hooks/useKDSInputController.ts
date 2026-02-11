@@ -151,6 +151,9 @@ export function useKDSInputController({ orders, updateOrderStatus }: UseKDSInput
         return;
       }
 
+      if (event.metaKey || event.ctrlKey || event.altKey) {
+        return;
+      }
       if (event.key === '?') {
         event.preventDefault();
         setInputMode('keyboard');

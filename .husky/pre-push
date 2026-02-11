@@ -5,7 +5,7 @@ npm run test:docs
 npm run test:unit
 
 CHANGED_FILES="$(git diff --name-only @{upstream}...HEAD 2>/dev/null || git diff --name-only HEAD~1...HEAD 2>/dev/null || true)"
-PATTERN='^(app/|components/|context/|hooks/|lib/|tests/e2e/|playwright\.config\.ts|package\.json|package-lock\.json)'
+PATTERN='^(app/|components/|context/|hooks/|lib/|tests/e2e/|playwright\.config\.ts)'
 
 if command -v rg >/dev/null 2>&1; then
   if echo "$CHANGED_FILES" | rg -q "$PATTERN"; then

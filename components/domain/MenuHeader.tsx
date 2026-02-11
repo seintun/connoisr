@@ -196,3 +196,5 @@ export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderP
     </>
   );
 }
+
+MenuHeader.displayName = 'MenuHeader';

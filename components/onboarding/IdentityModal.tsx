@@ -163,3 +163,5 @@ export function IdentityModal({ tableId, prefetchProgress }: IdentityModalProps)
     </motion.div>
   );
 }
+
+IdentityModal.displayName = 'IdentityModal';

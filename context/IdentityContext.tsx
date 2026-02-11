@@ -104,6 +104,8 @@ export function IdentityProvider({
   );
 }
 
+IdentityProvider.displayName = 'IdentityProvider';
+
 export function useIdentity() {
   const context = useContext(IdentityContext);
   if (!context) throw new Error('useIdentity must be used within IdentityProvider');

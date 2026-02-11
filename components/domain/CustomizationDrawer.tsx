@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { CartItem } from "@/types";
-import { AnimatePresence, motion } from "framer-motion";
-import { ChefHat, Flame, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { cn } from '@/lib/utils';
+import { CartItem } from '@/types';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChefHat, Flame, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface CustomizationDrawerProps {
   isOpen: boolean;
@@ -29,11 +29,11 @@ interface CustomizationDrawerProps {
 }
 
 const INTENSITY_PRESETS = [
-  { value: 0, label: "None" },
-  { value: 50, label: "Light" },
-  { value: 100, label: "Regular" },
-  { value: 150, label: "Extra" },
-  { value: 200, label: "Max" },
+  { value: 0, label: 'None' },
+  { value: 50, label: 'Light' },
+  { value: 100, label: 'Regular' },
+  { value: 150, label: 'Extra' },
+  { value: 200, label: 'Max' },
 ];
 
 export function CustomizationDrawer({
@@ -46,23 +46,23 @@ export function CustomizationDrawer({
 }: CustomizationDrawerProps) {
   // Parse initial intensity from "100%" string if present
   const initialIntensity = initialOptions?.intensity
-    ? parseInt(initialOptions.intensity.replace("%", ""), 10)
+    ? parseInt(initialOptions.intensity.replace('%', ''), 10)
     : 100;
 
   const [intensity, setIntensity] = useState(initialIntensity);
-  const [chefNote, setChefNote] = useState(initialOptions?.note || "");
+  const [chefNote, setChefNote] = useState(initialOptions?.note || '');
   const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     if (!isOpen) return;
 
     const initInt = initialOptions?.intensity
-      ? parseInt(initialOptions.intensity.replace("%", ""), 10)
+      ? parseInt(initialOptions.intensity.replace('%', ''), 10)
       : 100;
 
     const timer = setTimeout(() => {
       setIntensity(initInt);
-      setChefNote(initialOptions?.note || "");
+      setChefNote(initialOptions?.note || '');
       setQuantity(1);
     }, 0);
 
@@ -73,18 +73,18 @@ export function CustomizationDrawer({
     if (!item) return;
 
     const options: Record<string, string> = {};
-    
+
     if (intensity !== 100) {
       // Convert intensity to readable label if it matches a preset, else use percentage
-      const preset = INTENSITY_PRESETS.find(p => p.value === intensity);
+      const preset = INTENSITY_PRESETS.find((p) => p.value === intensity);
       const label = preset ? preset.label : `${intensity}%`; // e.g. "Extra", "Light", or "125%"
 
-      if (item.tags?.includes("Spicy")) {
-         options.spiciness = label; 
-      } else if (item.tags?.includes("Sweet")) {
-         options.sweetness = label;
+      if (item.tags?.includes('Spicy')) {
+        options.spiciness = label;
+      } else if (item.tags?.includes('Sweet')) {
+        options.sweetness = label;
       } else {
-         options.intensity = label;
+        options.intensity = label;
       }
     }
 
@@ -103,7 +103,7 @@ export function CustomizationDrawer({
 
     // Reset state
     setIntensity(100);
-    setChefNote("");
+    setChefNote('');
     setQuantity(1);
     onClose();
   };
@@ -126,10 +126,10 @@ export function CustomizationDrawer({
 
           {/* Modern Drawer */}
           <motion.div
-            initial={{ y: "100%", opacity: 0 }}
+            initial={{ y: '100%', opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            exit={{ y: "100%", opacity: 0 }}
-            transition={{ type: "spring", damping: 28, stiffness: 300 }}
+            exit={{ y: '100%', opacity: 0 }}
+            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
             className="fixed bottom-0 left-0 right-0 bg-background rounded-t-3xl z-[70] max-h-[92vh] overflow-y-auto shadow-2xl border-t border-border/40"
             data-testid="customization-drawer"
           >
@@ -140,7 +140,7 @@ export function CustomizationDrawer({
             <div className="px-6 pb-4 pt-0">
               <div className="flex justify-between items-start gap-4">
                 <div className="flex-1 min-w-0">
-                  <h2 
+                  <h2
                     data-testid="drawer-title"
                     className="text-xl font-semibold text-foreground truncate leading-snug"
                   >
@@ -165,20 +165,17 @@ export function CustomizationDrawer({
             {/* Content Section */}
             <div className="space-y-4 px-6 pb-32">
               {/* Spiciness/Sweetness Intensity */}
-              {(item.tags?.includes("Spicy") ||
-                item.tags?.includes("Sweet")) && (
+              {(item.tags?.includes('Spicy') || item.tags?.includes('Sweet')) && (
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <h3 className="text-xs font-semibold text-foreground uppercase tracking-wide flex items-center gap-2">
                       <Flame
                         className={cn(
-                          "w-3.5 h-3.5",
-                          item.tags?.includes("Sweet")
-                            ? "text-pink-500"
-                            : "text-orange-500",
+                          'w-3.5 h-3.5',
+                          item.tags?.includes('Sweet') ? 'text-pink-500' : 'text-orange-500',
                         )}
                       />
-                      {item.tags?.includes("Sweet") ? "Sweetness" : "Spiciness"}
+                      {item.tags?.includes('Sweet') ? 'Sweetness' : 'Spiciness'}
                     </h3>
                     <span className="text-xs font-bold bg-primary/10 px-2 py-1 rounded-lg text-primary">
                       {intensity}%
@@ -195,12 +192,12 @@ export function CustomizationDrawer({
                         whileTap={{ scale: 0.95 }}
                         data-testid={`customization-intensity-${preset.value}`}
                         className={cn(
-                          "py-2 px-1 rounded-lg text-xs font-semibold transition-colors duration-200",
+                          'py-2 px-1 rounded-lg text-xs font-semibold transition-colors duration-200',
                           intensity === preset.value
-                            ? item.tags?.includes("Sweet")
-                              ? "bg-pink-500 text-white"
-                              : "bg-orange-500 text-white"
-                            : "bg-muted text-muted-foreground hover:bg-muted/80 border border-border/40",
+                            ? item.tags?.includes('Sweet')
+                              ? 'bg-pink-500 text-white'
+                              : 'bg-orange-500 text-white'
+                            : 'bg-muted text-muted-foreground hover:bg-muted/80 border border-border/40',
                         )}
                       >
                         {preset.label}
@@ -213,8 +210,7 @@ export function CustomizationDrawer({
               {/* Chef's Note */}
               <div className="space-y-2">
                 <h3 className="text-xs font-semibold text-foreground uppercase tracking-wide flex items-center gap-2">
-                  <ChefHat className="w-3.5 h-3.5 text-indigo-500" />{" "}
-                  Chef&apos;s Note
+                  <ChefHat className="w-3.5 h-3.5 text-indigo-500" /> Chef&apos;s Note
                 </h3>
                 <div className="relative">
                   <textarea
@@ -245,22 +241,26 @@ export function CustomizationDrawer({
                   >
                     −
                   </motion.button>
-                  <span 
+                  <span
                     className="font-bold text-sm w-5 text-center tabular-nums text-foreground"
                     data-testid="drawer-quantity"
                   >
                     {quantity}
                   </span>
                   <motion.button
-                    onClick={() => setQuantity(prev => maxQuantity ? Math.min(maxQuantity, prev + 1) : prev + 1)}
+                    onClick={() =>
+                      setQuantity((prev) =>
+                        maxQuantity ? Math.min(maxQuantity, prev + 1) : prev + 1,
+                      )
+                    }
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.9 }}
                     data-testid="customization-qty-increment"
                     className={cn(
-                      "w-8 h-8 rounded-lg bg-background shadow-xs flex items-center justify-center text-foreground transition-colors text-sm font-bold",
-                      maxQuantity && quantity >= maxQuantity 
-                        ? "opacity-50 cursor-not-allowed" 
-                        : "hover:bg-background/80"
+                      'w-8 h-8 rounded-lg bg-background shadow-xs flex items-center justify-center text-foreground transition-colors text-sm font-bold',
+                      maxQuantity && quantity >= maxQuantity
+                        ? 'opacity-50 cursor-not-allowed'
+                        : 'hover:bg-background/80',
                     )}
                     disabled={maxQuantity ? quantity >= maxQuantity : false}
                   >
@@ -289,3 +289,5 @@ export function CustomizationDrawer({
     </AnimatePresence>
   );
 }
+
+CustomizationDrawer.displayName = 'CustomizationDrawer';

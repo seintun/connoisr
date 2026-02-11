@@ -118,6 +118,8 @@ export function TableSessionProvider({
   );
 }
 
+TableSessionProvider.displayName = 'TableSessionProvider';
+
 export function useTableSession() {
   const context = useContext(TableSessionContext);
   if (context === undefined)

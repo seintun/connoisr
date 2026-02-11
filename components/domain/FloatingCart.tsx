@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { AnimatePresence, motion } from "framer-motion";
-import { ShoppingBag } from "lucide-react";
-import React from "react";
+import { AnimatePresence, motion } from 'framer-motion';
+import { ShoppingBag } from 'lucide-react';
+import React from 'react';
 
 interface FloatingCartProps {
   itemCount: number;
@@ -41,7 +41,7 @@ export const FloatingCart = React.memo(function FloatingCart({
         >
           <motion.button
             onClick={onOpen}
-            data-testid={testId || "floating-cart-trigger"}
+            data-testid={testId || 'floating-cart-trigger'}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-3 bg-primary text-primary-foreground px-6 py-3 rounded-full shadow-2xl shadow-primary/40 hover:shadow-primary/50 transition-all cursor-pointer border border-primary-foreground/10 z-50 backdrop-blur-none"
@@ -57,7 +57,7 @@ export const FloatingCart = React.memo(function FloatingCart({
             </div>
             <div className="flex flex-col items-start leading-none gap-0.5">
               <span className="font-bold text-sm">
-                {itemCount > 0 ? "Review & Send" : `Pay $${orderTotal}`}
+                {itemCount > 0 ? 'Review & Send' : `Pay $${orderTotal}`}
               </span>
               <div className="flex items-center gap-1.5 text-[10px] text-primary-foreground/90 font-medium">
                 {itemCount > 0 ? (
@@ -77,3 +77,5 @@ export const FloatingCart = React.memo(function FloatingCart({
     </AnimatePresence>
   );
 });
+
+FloatingCart.displayName = 'FloatingCart';

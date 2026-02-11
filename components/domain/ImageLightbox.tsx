@@ -83,3 +83,5 @@ export function ImageLightbox({
     </motion.div>
   );
 }
+
+ImageLightbox.displayName = 'ImageLightbox';

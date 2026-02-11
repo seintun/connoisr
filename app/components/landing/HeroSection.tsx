@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { ArrowRight, Smartphone, Zap } from "lucide-react";
-import Link from "next/link";
+import { motion } from 'framer-motion';
+import { ArrowRight, Smartphone, Zap } from 'lucide-react';
+import Link from 'next/link';
 
 export function HeroSection() {
   return (
@@ -20,7 +20,7 @@ export function HeroSection() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: 'easeOut' }}
             className="space-y-8 text-center lg:text-left pt-20 lg:pt-0"
           >
             <div className="space-y-4">
@@ -32,7 +32,8 @@ export function HeroSection() {
                 .
               </h1>
               <p className="text-lg sm:text-2xl text-muted-foreground font-sans max-w-xl mx-auto lg:mx-0 leading-relaxed">
-                Experience the <strong>&quot;3-Tap Rule&quot;</strong>. From scan to order in seconds. No friction, just flow.
+                Experience the <strong>&quot;3-Tap Rule&quot;</strong>. From scan to order in
+                seconds. No friction, just flow.
               </p>
             </div>
 
@@ -77,7 +78,7 @@ export function HeroSection() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
             className="hidden lg:block relative"
           >
             <div className="relative z-10 glass-card p-2 rounded-2xl transform rotate-[-5deg] hover:rotate-0 transition-transform duration-500 max-w-sm mx-auto">
@@ -108,16 +109,16 @@ export function HeroSection() {
                     <div className="h-3 w-full bg-muted-foreground/10 rounded-full" />
                     <div className="h-3 w-5/6 bg-muted-foreground/10 rounded-full" />
                   </div>
-                 {/* Floating CTA */}
+                  {/* Floating CTA */}
                   <div className="mt-auto p-4">
-                     <div className="h-12 w-full bg-primary rounded-full shadow-lg shadow-primary/20 flex items-center justify-center text-primary-foreground font-bold text-sm">
-                        Slide to Order
-                     </div>
+                    <div className="h-12 w-full bg-primary rounded-full shadow-lg shadow-primary/20 flex items-center justify-center text-primary-foreground font-bold text-sm">
+                      Slide to Order
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-             {/* Decorative Elements */}
+            {/* Decorative Elements */}
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-primary/20 rounded-full blur-3xl -z-10" />
             <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-secondary/30 rounded-full blur-3xl -z-10" />
           </motion.div>
@@ -126,3 +127,5 @@ export function HeroSection() {
     </section>
   );
 }
+
+HeroSection.displayName = 'HeroSection';

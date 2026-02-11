@@ -1,36 +1,36 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { ChefHat, Clock, LayoutGrid, WifiOff } from "lucide-react";
+import { motion } from 'framer-motion';
+import { ChefHat, Clock, LayoutGrid, WifiOff } from 'lucide-react';
 
 const features = [
   {
     icon: ChefHat,
-    title: "Orchestration, Not Just Display",
+    title: 'Orchestration, Not Just Display',
     description:
       "The KDS doesn't just show orders. It choreographs the kitchen. Intelligent routing, timing, and prep flow.",
-    color: "text-primary",
+    color: 'text-primary',
   },
   {
     icon: WifiOff,
-    title: "Offline-First Resilience",
+    title: 'Offline-First Resilience',
     description:
       "Internet down? Dinner service isn't. Full PWA capabilities mean you never stop taking orders, even when the cloud vanishes.",
-    color: "text-secondary-foreground",
+    color: 'text-secondary-foreground',
   },
   {
     icon: Clock,
-    title: "Sync in Milliseconds",
+    title: 'Sync in Milliseconds',
     description:
-      "Real-time state management across all devices. When a server updates an order, the kitchen sees it instantly.",
-    color: "text-primary",
+      'Real-time state management across all devices. When a server updates an order, the kitchen sees it instantly.',
+    color: 'text-primary',
   },
   {
     icon: LayoutGrid,
-    title: "Service as a Material",
+    title: 'Service as a Material',
     description:
-      "Interfaces that feel like physical objects. Tactile, responsive, and designed to disappear into the workflow.",
-    color: "text-secondary-foreground",
+      'Interfaces that feel like physical objects. Tactile, responsive, and designed to disappear into the workflow.',
+    color: 'text-secondary-foreground',
   },
 ];
 
@@ -52,7 +52,7 @@ export function FeatureShowcase() {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                viewport={{ once: true, margin: "-10%" }}
+                viewport={{ once: true, margin: '-10%' }}
                 transition={{ duration: 0.5, delay: 0.1 }}
                 className="glass-card p-8 sm:p-10 rounded-3xl border border-white/10 dark:border-white/5 backdrop-blur-xl shadow-2xl bg-card/50"
               >
@@ -77,3 +77,5 @@ export function FeatureShowcase() {
     </section>
   );
 }
+
+FeatureShowcase.displayName = 'FeatureShowcase';

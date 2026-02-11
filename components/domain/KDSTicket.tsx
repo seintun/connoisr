@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { UrgencyLevel, useOrderTimer } from "@/hooks/useOrderTimer";
-import { Order } from "@/types";
-import clsx from "clsx";
+import { UrgencyLevel, useOrderTimer } from '@/hooks/useOrderTimer';
+import { Order } from '@/types';
+import clsx from 'clsx';
 
 interface KDSTicketProps {
   order: Order;
-  onStatusUpdate: (orderId: string, status: Order["status"]) => void;
+  onStatusUpdate: (orderId: string, status: Order['status']) => void;
 }
 
 export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
@@ -14,18 +14,18 @@ export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
 
   const getUrgencyStyles = (level: UrgencyLevel) => {
     switch (level) {
-      case "new":
-        return "border-primary bg-primary/5 shadow-glow text-primary"; // Coral
-      case "process":
-        return "border-secondary bg-secondary/5 text-secondary"; // Indigo
-      case "delayed":
-        return "border-amber-500 bg-amber-500/5 text-amber-600"; // Amber
-      case "ready":
-        return "border-success bg-success/5 text-success"; // Emerald
-      case "served":
-        return "border-muted bg-muted/50 text-muted-foreground opacity-75";
+      case 'new':
+        return 'border-primary bg-primary/5 shadow-glow text-primary'; // Coral
+      case 'process':
+        return 'border-secondary bg-secondary/5 text-secondary'; // Indigo
+      case 'delayed':
+        return 'border-amber-500 bg-amber-500/5 text-amber-600'; // Amber
+      case 'ready':
+        return 'border-success bg-success/5 text-success'; // Emerald
+      case 'served':
+        return 'border-muted bg-muted/50 text-muted-foreground opacity-75';
       default:
-        return "border-border bg-card";
+        return 'border-border bg-card';
     }
   };
 
@@ -33,8 +33,8 @@ export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
     <div
       data-testid={`kds-ticket-${order.id}`}
       className={clsx(
-        "flex flex-col rounded-2xl border-2 p-5 transition-all duration-300 transform",
-        getUrgencyStyles(urgency)
+        'flex flex-col rounded-2xl border-2 p-5 transition-all duration-300 transform',
+        getUrgencyStyles(urgency),
       )}
     >
       <div className="flex justify-between items-start mb-6">
@@ -46,9 +46,7 @@ export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
         </div>
         <div className="text-right">
           <div className="text-3xl font-mono font-bold tracking-tighter">{formattedTime}</div>
-          <div className="text-xs uppercase font-bold tracking-widest mt-1">
-            {order.status}
-          </div>
+          <div className="text-xs uppercase font-bold tracking-widest mt-1">{order.status}</div>
         </div>
       </div>
 
@@ -56,7 +54,10 @@ export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
         {order.items.map((item) => {
           const displayNote = item.notes || item.options?.note;
           return (
-            <div key={item.instanceId} className="flex justify-between items-center text-foreground/90">
+            <div
+              key={item.instanceId}
+              className="flex justify-between items-center text-foreground/90"
+            >
               <div className="flex items-center gap-2">
                 <span className="font-bold font-sans bg-foreground/5 px-2 py-0.5 rounded-md text-sm">
                   {item.quantity}x
@@ -74,27 +75,27 @@ export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
       </div>
 
       <div className="grid grid-cols-2 gap-3 mt-auto">
-        {order.status === "ordered" && (
+        {order.status === 'ordered' && (
           <button
-            onClick={() => onStatusUpdate(order.id, "cooking")}
+            onClick={() => onStatusUpdate(order.id, 'cooking')}
             data-testid={`kds-action-cooking-${order.id}`}
             className="col-span-2 py-3 bg-primary text-primary-foreground font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/25"
           >
             Start Cooking
           </button>
         )}
-        {order.status === "cooking" && (
+        {order.status === 'cooking' && (
           <button
-            onClick={() => onStatusUpdate(order.id, "ready")}
+            onClick={() => onStatusUpdate(order.id, 'ready')}
             data-testid={`kds-action-ready-${order.id}`}
             className="col-span-2 py-3 bg-success text-success-foreground font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-success/25"
           >
             Mark Ready
           </button>
         )}
-        {order.status === "ready" && (
+        {order.status === 'ready' && (
           <button
-            onClick={() => onStatusUpdate(order.id, "served")}
+            onClick={() => onStatusUpdate(order.id, 'served')}
             data-testid={`kds-action-served-${order.id}`}
             className="col-span-2 py-3 bg-secondary text-secondary-foreground font-bold rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-secondary/25"
           >
@@ -105,3 +106,5 @@ export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
     </div>
   );
 }
+
+KDSTicket.displayName = 'KDSTicket';

@@ -292,3 +292,7 @@ const MenuItemControls = React.memo(function MenuItemControls({
     </div>
   );
 });
+
+DinerMenuItem.displayName = 'DinerMenuItem';
+MenuItemImage.displayName = 'MenuItemImage';
+MenuItemControls.displayName = 'MenuItemControls';

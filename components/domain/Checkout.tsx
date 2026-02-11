@@ -526,3 +526,5 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
     </AnimatePresence>
   );
 }
+
+Checkout.displayName = 'Checkout';

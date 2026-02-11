@@ -64,3 +64,5 @@ export function NetworkStatus() {
     </AnimatePresence>
   );
 }
+
+NetworkStatus.displayName = 'NetworkStatus';

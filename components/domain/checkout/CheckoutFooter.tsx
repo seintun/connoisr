@@ -156,3 +156,5 @@ export function CheckoutFooter({
     </div>
   );
 }
+
+CheckoutFooter.displayName = 'CheckoutFooter';

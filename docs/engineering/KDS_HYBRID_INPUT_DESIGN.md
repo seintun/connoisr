@@ -92,8 +92,16 @@ Default shortcuts:
 - KPI chips stay in-device-width with no horizontal scrolling.
 - KPI priority order: `Overdue` -> `Ready` -> `Cooking` -> `Ordered`.
 - `Active` count is promoted beside the `Connoisr KDS` title on mobile.
+- Bottom command rail is pinned to viewport bottom for both short and long boards.
+- Mobile command rail uses compact controls and truncated action hint to avoid horizontal scrolling.
 
-### 8. Focus visibility guarantees
+### 8. Ticket density for portrait
+
+- Ticket header typography is reduced on small phones to keep one-ticket cards concise.
+- Quantity pill, item title text, and card paddings use smaller mobile defaults while preserving contrast.
+- Primary action remains a large touch target for fast status progression.
+
+### 9. Focus visibility guarantees
 
 - Keyboard focus changes must keep the focused ticket fully visible in the safe viewport band.
 - Safe viewport band is constrained by:

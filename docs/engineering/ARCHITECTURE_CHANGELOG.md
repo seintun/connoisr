@@ -94,3 +94,11 @@ Keep entries concise and always include affected files.
     - `__tests__/components/KDSHeader.test.tsx`
     - `docs/engineering/KDS_HYBRID_INPUT_DESIGN.md`
     - `docs/engineering/ARCHITECTURE_CHANGELOG.md`
+- Summary: Converted KDS bottom hint bar to a persistent fixed command rail and compacted mobile ticket density.
+  - Why: Keep controls reachable at scroll end and reduce oversized ticket chrome on iPhone portrait without losing glanceability.
+  - Impact: Command rail now stays pinned to viewport bottom; order cards use tighter mobile typography/spacing for faster scanning.
+  - Affected files:
+    - `components/domain/kitchen/KDSInputHintBar.tsx`
+    - `components/domain/kitchen/KDSOrderCard.tsx`
+    - `docs/engineering/KDS_HYBRID_INPUT_DESIGN.md`
+    - `docs/engineering/ARCHITECTURE_CHANGELOG.md`

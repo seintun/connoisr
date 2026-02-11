@@ -74,7 +74,7 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
         key={item.key}
         className={cn(
           'rounded-xl border',
-          compactFocusedItems ? 'p-2' : 'p-3',
+          compactFocusedItems ? 'p-2' : 'p-2.5 sm:p-3',
           item.isModified
             ? 'border-amber-400/70 bg-amber-500/10'
             : 'border-emerald-400/40 bg-emerald-500/5',
@@ -84,7 +84,9 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
           <span
             className={cn(
               'inline-flex shrink-0 items-center justify-center rounded-lg bg-black/40 font-black text-white',
-              compactFocusedItems ? 'h-8 w-8 text-lg' : 'h-11 w-11 text-2xl',
+              compactFocusedItems
+                ? 'h-8 w-8 text-lg'
+                : 'h-9 w-9 text-xl sm:h-11 sm:w-11 sm:text-2xl',
             )}
           >
             {item.count}
@@ -93,13 +95,13 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
             <p
               className={cn(
                 'font-bold leading-tight text-white',
-                compactFocusedItems ? 'text-sm' : 'text-xl',
+                compactFocusedItems ? 'text-sm' : 'text-lg sm:text-xl',
               )}
             >
               {item.name}
             </p>
             {item.orderedByName && !compactFocusedItems && (
-              <p className="text-xs font-semibold uppercase tracking-wide text-neutral-300">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-neutral-300 sm:text-xs">
                 {item.orderedByName}
               </p>
             )}
@@ -137,7 +139,7 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
       aria-label={`Table ${order.tableId} order`}
       data-testid={`kitchen-order-card-${order.id}`}
       className={cn(
-        'flex min-h-[16rem] flex-col overflow-hidden rounded-2xl border bg-[#121417] shadow-lg shadow-black/40 outline-none transition',
+        'flex min-h-[13.25rem] flex-col overflow-hidden rounded-2xl border bg-[#121417] shadow-lg shadow-black/40 outline-none transition sm:min-h-[16rem]',
         shouldSpanBoardWidth && 'md:col-span-2',
         viewModel.isOverdue ? 'border-orange-500/80' : 'border-neutral-700',
         isFocused && 'ring-4 ring-cyan-400/90 ring-offset-2 ring-offset-black',
@@ -145,10 +147,10 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
       onPointerDown={() => onFocus(order.id)}
       onFocus={() => onFocus(order.id)}
     >
-      <header className="border-b border-neutral-700 bg-black/30 px-3 py-2 sm:px-4 sm:py-2.5">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <header className="border-b border-neutral-700 bg-black/30 px-2.5 py-2 sm:px-4 sm:py-2.5">
+        <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0 flex flex-wrap items-center gap-1.5">
-            <h2 className="truncate text-4xl font-black leading-none tracking-tight text-white sm:text-[30px]">
+            <h2 className="truncate text-[2.05rem] font-black leading-none tracking-tight text-white sm:text-[30px]">
               Table {order.tableId}
             </h2>
             {viewModel.isModified && (
@@ -209,7 +211,7 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
         </div>
       </header>
 
-      <div className="flex-1 overflow-hidden p-3">
+      <div className="flex-1 overflow-hidden p-2.5 sm:p-3">
         {isFocused ? (
           <div
             className="flex items-start gap-2"
@@ -226,10 +228,10 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
             ))}
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2.5 sm:space-y-3">
             {visibleItems.map((item) => renderItem(item))}
             {hiddenItemsCount > 0 && (
-              <div className="rounded-lg border border-cyan-400/50 bg-cyan-500/10 px-3 py-2 text-xs font-bold uppercase tracking-wide text-cyan-100">
+              <div className="rounded-lg border border-cyan-400/50 bg-cyan-500/10 px-2.5 py-2 text-[11px] font-bold uppercase tracking-wide text-cyan-100 sm:px-3 sm:text-xs">
                 +{hiddenItemsCount} more item{hiddenItemsCount > 1 ? 's' : ''} (focus to expand)
               </div>
             )}
@@ -237,7 +239,7 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
         )}
       </div>
 
-      <footer className="border-t border-neutral-700 bg-black/40 p-3">
+      <footer className="border-t border-neutral-700 bg-black/40 p-2.5 sm:p-3">
         <KDSStatusAction order={order} onStatusUpdate={onStatusUpdate} />
       </footer>
     </article>

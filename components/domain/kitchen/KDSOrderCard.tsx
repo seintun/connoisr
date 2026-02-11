@@ -13,6 +13,14 @@ interface KDSOrderCardProps {
   onStatusUpdate: (orderId: string, status: KDSOrderViewModel['order']['status']) => void;
 }
 
+function splitIntoColumns<T>(items: T[], columnCount: number): T[][] {
+  const columns = Array.from({ length: Math.max(columnCount, 1) }, () => [] as T[]);
+  items.forEach((item, index) => {
+    columns[index % columns.length].push(item);
+  });
+  return columns;
+}
+
 function statusClass(status: KDSOrderViewModel['order']['status']): string {
   switch (status) {
     case 'ordered':
@@ -32,11 +40,7 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
   const visibleItems = isFocused ? groupedItems : groupedItems.slice(0, collapsedPreviewCount);
   const hiddenItemsCount = Math.max(groupedItems.length - visibleItems.length, 0);
   const focusedColumnCount = isFocused ? (groupedItems.length >= 18 ? 3 : 2) : 1;
-  const focusedColumnsClass = isFocused
-    ? focusedColumnCount >= 3
-      ? 'grid grid-cols-3 gap-2 content-start'
-      : 'grid grid-cols-2 gap-2 content-start'
-    : 'space-y-3';
+  const focusedColumns = isFocused ? splitIntoColumns(visibleItems, focusedColumnCount) : [];
   const shouldSpanBoardWidth = isFocused && focusedColumnCount >= 3;
   const compactFocusedItems = isFocused && groupedItems.length >= 7;
   const modifiedItemCount = groupedItems.reduce(
@@ -47,6 +51,70 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
     (sum, item) => sum + (!item.isModified ? item.count : 0),
     0,
   );
+  const renderItem = (item: (typeof visibleItems)[number]) => {
+    const placeModifierRight = isFocused && item.isModified;
+
+    return (
+      <section
+        key={item.key}
+        className={cn(
+          'rounded-xl border',
+          compactFocusedItems ? 'p-2' : 'p-3',
+          item.isModified
+            ? 'border-amber-400/70 bg-amber-500/10'
+            : 'border-emerald-400/40 bg-emerald-500/5',
+        )}
+      >
+        <div className={cn('flex gap-3', placeModifierRight ? 'items-start' : 'items-center')}>
+          <span
+            className={cn(
+              'inline-flex shrink-0 items-center justify-center rounded-lg bg-black/40 font-black text-white',
+              compactFocusedItems ? 'h-8 w-8 text-lg' : 'h-11 w-11 text-2xl',
+            )}
+          >
+            {item.count}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p
+              className={cn(
+                'font-bold leading-tight text-white',
+                compactFocusedItems ? 'text-sm' : 'text-xl',
+              )}
+            >
+              {item.name}
+            </p>
+            {item.orderedByName && !compactFocusedItems && (
+              <p className="text-xs font-semibold uppercase tracking-wide text-neutral-300">
+                {item.orderedByName}
+              </p>
+            )}
+          </div>
+          {placeModifierRight && (
+            <div className="min-w-0 w-[48%] max-w-[14rem]">
+              <KDSModifierBlock
+                orderId={order.id}
+                itemKey={item.key}
+                tokens={item.modifierTokens}
+                kitchenNote={item.kitchenNote}
+                compact
+              />
+            </div>
+          )}
+        </div>
+        {!placeModifierRight && (
+          <div className={cn(compactFocusedItems ? 'mt-2 pl-10' : 'mt-3 pl-14')}>
+            <KDSModifierBlock
+              orderId={order.id}
+              itemKey={item.key}
+              tokens={item.modifierTokens}
+              kitchenNote={item.kitchenNote}
+              compact={compactFocusedItems}
+            />
+          </div>
+        )}
+      </section>
+    );
+  };
 
   return (
     <article
@@ -126,60 +194,31 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
       </header>
 
       <div className="flex-1 overflow-hidden p-3">
-        <div className={focusedColumnsClass}>
-          {visibleItems.map((item) => (
-            <section
-              key={item.key}
-              className={cn(
-                'rounded-xl border',
-                compactFocusedItems ? 'p-2' : 'p-3',
-                item.isModified
-                  ? 'border-amber-400/70 bg-amber-500/10'
-                  : 'border-emerald-400/40 bg-emerald-500/5',
-              )}
-            >
-              <div className="flex items-start gap-3">
-                <span
-                  className={cn(
-                    'inline-flex shrink-0 items-center justify-center rounded-lg bg-black/40 font-black text-white',
-                    compactFocusedItems ? 'h-8 w-8 text-lg' : 'h-11 w-11 text-2xl',
-                  )}
-                >
-                  {item.count}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p
-                    className={cn(
-                      'font-bold leading-tight text-white',
-                      compactFocusedItems ? 'text-sm' : 'text-xl',
-                    )}
-                  >
-                    {item.name}
-                  </p>
-                  {item.orderedByName && !compactFocusedItems && (
-                    <p className="text-xs font-semibold uppercase tracking-wide text-neutral-300">
-                      {item.orderedByName}
-                    </p>
-                  )}
-                </div>
+        {isFocused ? (
+          <div
+            className="flex items-start gap-2"
+            data-testid={`kds-focused-item-columns-${order.id}`}
+          >
+            {focusedColumns.map((column, idx) => (
+              <div
+                key={`${order.id}-col-${idx}`}
+                className="min-w-0 flex-1 space-y-2"
+                data-testid={`kds-focused-item-column-${order.id}-${idx + 1}`}
+              >
+                {column.map((item) => renderItem(item))}
               </div>
-              <div className={cn(compactFocusedItems ? 'mt-2 pl-10' : 'mt-3 pl-14')}>
-                <KDSModifierBlock
-                  orderId={order.id}
-                  itemKey={item.key}
-                  tokens={item.modifierTokens}
-                  kitchenNote={item.kitchenNote}
-                  compact={compactFocusedItems}
-                />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {visibleItems.map((item) => renderItem(item))}
+            {hiddenItemsCount > 0 && (
+              <div className="rounded-lg border border-cyan-400/50 bg-cyan-500/10 px-3 py-2 text-xs font-bold uppercase tracking-wide text-cyan-100">
+                +{hiddenItemsCount} more item{hiddenItemsCount > 1 ? 's' : ''} (focus to expand)
               </div>
-            </section>
-          ))}
-          {!isFocused && hiddenItemsCount > 0 && (
-            <div className="rounded-lg border border-cyan-400/50 bg-cyan-500/10 px-3 py-2 text-xs font-bold uppercase tracking-wide text-cyan-100">
-              +{hiddenItemsCount} more item{hiddenItemsCount > 1 ? 's' : ''} (focus to expand)
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
 
       <footer className="border-t border-neutral-700 bg-black/40 p-3">

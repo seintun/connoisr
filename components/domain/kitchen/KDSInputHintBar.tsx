@@ -33,7 +33,7 @@ export function KDSInputHintBar({
 
   return (
     <aside
-      className="sticky bottom-0 z-20 mt-3 border border-neutral-700 bg-black/85 p-2 backdrop-blur"
+      className="sticky bottom-0 z-20 mt-3 border border-neutral-700 bg-black/85 p-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] backdrop-blur"
       data-testid="kds-input-hint-bar"
     >
       <div className="flex w-full items-center gap-2 overflow-x-auto pb-0.5 text-neutral-100">
@@ -61,7 +61,8 @@ export function KDSInputHintBar({
           className={`${controlBaseClass} border-neutral-500 bg-neutral-800 text-neutral-100 hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 normal-case`}
         >
           <Keyboard className="h-3.5 w-3.5" aria-hidden="true" />
-          Shortcuts (?)
+          <span className="sm:hidden">Keys (?)</span>
+          <span className="hidden sm:inline">Shortcuts (?)</span>
         </button>
         <button
           type="button"
@@ -71,10 +72,11 @@ export function KDSInputHintBar({
           className={`${controlBaseClass} border-amber-300/70 bg-amber-500/20 text-amber-100 normal-case disabled:cursor-not-allowed disabled:opacity-45`}
         >
           <Undo2 className="h-3.5 w-3.5" aria-hidden="true" />
-          Undo (U)
+          <span className="sm:hidden">Undo</span>
+          <span className="hidden sm:inline">Undo (U)</span>
         </button>
-        <span className="h-6 w-px bg-neutral-700" aria-hidden="true" />
-        <div className="flex items-center gap-1.5" data-testid="kds-shortcuts-legend">
+        <span className="hidden h-6 w-px bg-neutral-700 md:block" aria-hidden="true" />
+        <div className="hidden items-center gap-1.5 md:flex" data-testid="kds-shortcuts-legend">
           {SHORTCUT_LEGEND.map((entry) => (
             <span key={entry.key} className={shortcutChipClass}>
               <span className="rounded border border-cyan-400/50 bg-cyan-500/10 px-1.5 py-0.5 font-black text-cyan-200">

@@ -37,7 +37,7 @@ export function KDSHeader({
   inputMode,
 }: KDSHeaderProps) {
   const controlBaseClass =
-    'inline-flex h-11 items-center justify-center gap-2 rounded-lg border px-3 text-xs font-extrabold uppercase tracking-wide whitespace-nowrap';
+    'inline-flex h-10 items-center justify-center gap-1.5 rounded-lg border px-2.5 text-[10px] font-extrabold uppercase tracking-wide whitespace-nowrap sm:h-11 sm:gap-2 sm:px-3 sm:text-xs';
 
   const formattedTime =
     now === null
@@ -50,26 +50,28 @@ export function KDSHeader({
 
   return (
     <header className="mb-5 space-y-4" data-testid="kitchen-header">
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-3">
-          <ChefHat className="h-8 w-8 text-orange-300" aria-hidden="true" />
+          <ChefHat className="h-7 w-7 text-orange-300 sm:h-8 sm:w-8" aria-hidden="true" />
           <div>
-            <h1 className="text-3xl font-black text-white tracking-tight">{APP_NAME} KDS</h1>
-            <p className="text-sm font-semibold uppercase tracking-wide text-neutral-300">
+            <h1 className="text-[2rem] font-black leading-none text-white tracking-tight sm:text-3xl">
+              {APP_NAME} KDS
+            </h1>
+            <p className="text-xs font-semibold uppercase tracking-wide text-neutral-300 sm:text-sm">
               Hybrid Touch + Keyboard
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="grid w-full grid-cols-3 gap-2 md:w-auto md:flex md:items-center">
           <div
-            className={`${controlBaseClass} min-w-[126px] border-neutral-500 bg-neutral-900 text-neutral-100 tabular-nums`}
+            className={`${controlBaseClass} min-w-0 border-neutral-500 bg-neutral-900 text-neutral-100 tabular-nums sm:min-w-[126px]`}
           >
             <Clock3 className="h-3.5 w-3.5 text-neutral-300" aria-hidden="true" />
             <span suppressHydrationWarning>{formattedTime}</span>
           </div>
           <div
-            className={`${controlBaseClass} min-w-[98px] border-cyan-400/50 bg-cyan-500/10 text-cyan-100`}
+            className={`${controlBaseClass} min-w-0 border-cyan-400/50 bg-cyan-500/10 text-cyan-100 sm:min-w-[98px]`}
           >
             <Keyboard className="h-3.5 w-3.5" aria-hidden="true" />
             {inputMode.toUpperCase()}
@@ -78,7 +80,7 @@ export function KDSHeader({
             type="button"
             onClick={onToggleSound}
             data-testid="kds-sound-toggle"
-            className={`${controlBaseClass} min-w-[128px] border-neutral-500 bg-neutral-800 text-neutral-100 hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300`}
+            className={`${controlBaseClass} min-w-0 border-neutral-500 bg-neutral-800 text-neutral-100 hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 sm:min-w-[128px]`}
             aria-pressed={soundEnabled}
           >
             {soundEnabled ? (
@@ -86,7 +88,8 @@ export function KDSHeader({
             ) : (
               <VolumeX className="h-3.5 w-3.5" aria-hidden="true" />
             )}
-            <span>{soundEnabled ? 'SOUND ON' : 'SOUND OFF'}</span>
+            <span className="sm:hidden">SOUND</span>
+            <span className="hidden sm:inline">{soundEnabled ? 'SOUND ON' : 'SOUND OFF'}</span>
           </button>
         </div>
       </div>

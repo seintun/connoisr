@@ -136,7 +136,10 @@ export default function KitchenPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#0a0c0f] p-4 md:p-6" data-testid="kitchen-page">
+    <div
+      className="min-h-screen bg-[#0a0c0f] p-3 pb-24 sm:p-4 md:p-6 md:pb-6"
+      data-testid="kitchen-page"
+    >
       <KDSHeader
         metrics={metrics}
         now={now}

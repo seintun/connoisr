@@ -35,7 +35,7 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
       aria-label={`Table ${order.tableId} order`}
       data-testid={`kitchen-order-card-${order.id}`}
       className={cn(
-        'flex h-full flex-col overflow-hidden rounded-2xl border bg-[#121417] shadow-lg shadow-black/40 outline-none transition',
+        'flex max-h-[72vh] min-h-[16rem] flex-col overflow-hidden rounded-2xl border bg-[#121417] shadow-lg shadow-black/40 outline-none transition',
         viewModel.isOverdue ? 'border-orange-500/80' : 'border-neutral-700',
         isFocused && 'ring-4 ring-cyan-400/90 ring-offset-2 ring-offset-black',
       )}

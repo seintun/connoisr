@@ -73,6 +73,27 @@ export default function KitchenPage() {
   });
 
   useEffect(() => {
+    if (inputController.inputMode !== 'keyboard') {
+      return;
+    }
+
+    const focusedId = inputController.focusedOrderId;
+    if (!focusedId) {
+      return;
+    }
+
+    const focusedCard = document.querySelector<HTMLElement>(
+      `[data-testid="kitchen-order-card-${focusedId}"]`,
+    );
+
+    focusedCard?.scrollIntoView({
+      block: 'nearest',
+      inline: 'nearest',
+      behavior: 'smooth',
+    });
+  }, [inputController.focusedOrderId, inputController.inputMode]);
+
+  useEffect(() => {
     const currentOrderIds = new Set(orderViewModels.map((entry) => entry.order.id));
     const hasNewOrder = Array.from(currentOrderIds).some(
       (id) => !previousOrderIdsRef.current.has(id),
@@ -124,7 +145,10 @@ export default function KitchenPage() {
         inputMode={inputController.inputMode}
       />
 
-      <main className="grid grid-cols-1 gap-4 md:grid-cols-2" data-testid="kitchen-orders-grid">
+      <main
+        className="grid grid-cols-1 items-start gap-4 md:grid-cols-2"
+        data-testid="kitchen-orders-grid"
+      >
         {orderViewModels.map((entry) => (
           <KDSOrderCard
             key={entry.order.id}

@@ -1,0 +1,10 @@
+# Default code owner for all files in this repository.
+* @seintun
+
+# CI / governance surfaces
+.github/workflows/* @seintun
+.github/dependabot.yml @seintun
+.github/pull_request_template.md @seintun
+
+# QA process docs
+docs/qa/* @seintun

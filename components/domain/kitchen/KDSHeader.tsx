@@ -14,7 +14,7 @@ interface KDSHeaderMetrics {
 
 interface KDSHeaderProps {
   metrics: KDSHeaderMetrics;
-  now: number;
+  now: number | null;
   soundEnabled: boolean;
   onToggleSound: () => void;
   inputMode: 'touch' | 'keyboard';
@@ -36,6 +36,15 @@ export function KDSHeader({
   onToggleSound,
   inputMode,
 }: KDSHeaderProps) {
+  const formattedTime =
+    now === null
+      ? '--:--:--'
+      : new Date(now).toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+        });
+
   return (
     <header className="mb-5 space-y-4" data-testid="kitchen-header">
       <div className="flex items-center justify-between gap-3">
@@ -51,11 +60,7 @@ export function KDSHeader({
 
         <div className="flex items-center gap-2">
           <div className="rounded-md border border-neutral-600 bg-black/30 px-3 py-2 text-xs font-bold uppercase tracking-wide text-neutral-200">
-            {new Date(now).toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-            })}
+            <span suppressHydrationWarning>{formattedTime}</span>
           </div>
           <div className="inline-flex items-center gap-1 rounded-md border border-cyan-400/50 bg-cyan-500/10 px-2 py-1 text-xs font-bold uppercase tracking-wide text-cyan-100">
             <Keyboard className="h-3.5 w-3.5" aria-hidden="true" />

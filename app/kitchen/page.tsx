@@ -10,7 +10,6 @@ import { useKitchenOrders } from '@/hooks/useKitchenOrders';
 import { Clock } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-const INITIAL_NOW = Date.now();
 const NOW_REFRESH_MS = 10_000;
 const OVERDUE_CHIME_INTERVAL_MS = 120_000;
 
@@ -46,17 +45,27 @@ function playKDSChime(frequency = 880, durationMs = 120) {
 
 export default function KitchenPage() {
   const { orders, updateOrderStatus } = useKitchenOrders();
-  const [now, setNow] = useState(INITIAL_NOW);
+  const [now, setNow] = useState<number | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const previousOrderIdsRef = useRef<Set<string>>(new Set());
   const lastOverdueChimeAtRef = useRef<number>(0);
 
   useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), NOW_REFRESH_MS);
-    return () => clearInterval(interval);
+    const tick = () => setNow(Date.now());
+    const frame = window.requestAnimationFrame(tick);
+    const interval = setInterval(tick, NOW_REFRESH_MS);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      clearInterval(interval);
+    };
   }, []);
 
-  const orderViewModels = useMemo(() => buildKDSOrderViewModels(orders, now), [orders, now]);
+  const effectiveNow = now ?? 0;
+  const orderViewModels = useMemo(
+    () => buildKDSOrderViewModels(orders, effectiveNow),
+    [orders, effectiveNow],
+  );
 
   const inputController = useKDSInputController({
     orders: orderViewModels,

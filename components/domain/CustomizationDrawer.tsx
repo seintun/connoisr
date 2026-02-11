@@ -25,6 +25,7 @@ interface CustomizationDrawerProps {
     [key: string]: string | undefined;
   };
   onAddToCart: (customizedItem: Partial<CartItem>) => void;
+  maxQuantity?: number;
 }
 
 const SPICINESS_LEVELS = [
@@ -49,6 +50,7 @@ export function CustomizationDrawer({
   item,
   initialOptions,
   onAddToCart,
+  maxQuantity,
 }: CustomizationDrawerProps) {
   // Parse initial intensity from "100%" string if present
   const initialIntensity = initialOptions?.intensity 
@@ -244,10 +246,16 @@ export function CustomizationDrawer({
                     {quantity}
                   </span>
                   <motion.button
-                    onClick={() => setQuantity(quantity + 1)}
+                    onClick={() => setQuantity(prev => maxQuantity ? Math.min(maxQuantity, prev + 1) : prev + 1)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.9 }}
-                    className="w-8 h-8 rounded-lg bg-background shadow-xs flex items-center justify-center text-foreground hover:bg-background/80 transition-colors text-sm font-bold"
+                    className={cn(
+                      "w-8 h-8 rounded-lg bg-background shadow-xs flex items-center justify-center text-foreground transition-colors text-sm font-bold",
+                      maxQuantity && quantity >= maxQuantity 
+                        ? "opacity-50 cursor-not-allowed" 
+                        : "hover:bg-background/80"
+                    )}
+                    disabled={maxQuantity ? quantity >= maxQuantity : false}
                   >
                     +
                   </motion.button>

@@ -126,10 +126,37 @@ export default function DinerPageClient() {
       }
   }, []);
 
+  const getIdenticalItemCount = useCallback((cartItem: CartItem) => {
+    return session?.cart.filter(i => 
+      i.menuItemId === cartItem.menuItemId && 
+      i.orderedByName === cartItem.orderedByName &&
+      JSON.stringify(i.options) === JSON.stringify(cartItem.options) &&
+      i.status === 'PENDING'
+    ).length || 0;
+  }, [session?.cart]);
+
+  // Max quantity for drawer is the count of identical items if we are editing
+  const editingMaxQuantity = useMemo(() => {
+    if (!editingCartItem) return undefined;
+    
+    return getIdenticalItemCount(editingCartItem);    
+  }, [editingCartItem, getIdenticalItemCount]);
+
+
   const handleAddToCartFromDrawer = useCallback((customizedItem: Partial<CartItem>) => {
-      // If we were editing, remove the old one first
+      const quantityToAdd = customizedItem.quantity || 1;
+
+      // If we were editing, we need to remove 'quantityToAdd' from the original group
       if (editingCartItem) {
-          removeItem(editingCartItem.instanceId);
+          // 1. Get current count of the group we are editing
+          const currentCount = getIdenticalItemCount(editingCartItem);
+          
+          // 2. Reduce the quantity of the original group
+          // We want to remove 'quantityToAdd' instances.
+          const newQuantity = Math.max(0, currentCount - quantityToAdd);
+          
+          // Use updateItemQuantity to adjust the count (handles removal)
+          updateItemQuantity(editingCartItem.instanceId, newQuantity);
       }
 
       if (customizedItem.menuItemId) {
@@ -140,7 +167,7 @@ export default function DinerPageClient() {
       }
       setSelectedItemForCustomization(null);
       setEditingCartItem(null);
-  }, [addItem, userName, editingCartItem, removeItem]);
+  }, [addItem, userName, editingCartItem, updateItemQuantity, getIdenticalItemCount]);
 
   const showMenu = !!userName && isReady;
 
@@ -219,6 +246,7 @@ export default function DinerPageClient() {
             }}
             item={selectedItemForCustomization}
             initialOptions={editingCartItem?.options}
+            maxQuantity={editingMaxQuantity}
             onAddToCart={handleAddToCartFromDrawer}
         />
       </motion.div>

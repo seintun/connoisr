@@ -83,7 +83,7 @@ export function KDSModifierBlock({
             Kitchen Note
           </div>
           <p
-            className={cn('font-semibold text-yellow-50', compact ? 'truncate text-xs' : 'text-sm')}
+            className={cn('font-semibold text-yellow-50', compact ? 'text-xs' : 'text-sm')}
           >
             {kitchenNote}
           </p>

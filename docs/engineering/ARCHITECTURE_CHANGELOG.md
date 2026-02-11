@@ -110,3 +110,11 @@ Keep entries concise and always include affected files.
     - `__tests__/components/KDSOrderCard.test.tsx`
     - `docs/engineering/KDS_HYBRID_INPUT_DESIGN.md`
     - `docs/engineering/ARCHITECTURE_CHANGELOG.md`
+- Summary: Refined portrait focused grid so single-item tickets stay full-width and only expand to two columns when needed.
+  - Why: Eliminate dead space for small focused tickets while preserving dense layout for larger orders.
+  - Impact: Focused mobile cards default to one column and switch to two columns only when there are at least two unmodified items.
+  - Affected files:
+    - `components/domain/kitchen/KDSOrderCard.tsx`
+    - `__tests__/components/KDSOrderCard.test.tsx`
+    - `docs/engineering/KDS_HYBRID_INPUT_DESIGN.md`
+    - `docs/engineering/ARCHITECTURE_CHANGELOG.md`

@@ -123,4 +123,31 @@ describe('KDSOrderCard', () => {
     expect(screen.getByText('Four')).toBeInTheDocument();
     expect(screen.getByText('Five')).toBeInTheDocument();
   });
+
+  it('uses one focused column on portrait when only one unmodified item exists', () => {
+    const now = Date.now();
+    const order = buildOrder({
+      id: 'kds-3',
+      tableId: '14',
+      createdAt: now - 60_000,
+      status: 'ready',
+      items: [
+        buildCartItem({
+          instanceId: 'i-1',
+          menuItemId: 'm-1',
+          name: 'Yuzu Lemon Tart',
+          status: 'SENT',
+        }),
+      ],
+    });
+
+    const [viewModel] = buildKDSOrderViewModels([order], now);
+
+    render(
+      <KDSOrderCard viewModel={viewModel} isFocused onFocus={vi.fn()} onStatusUpdate={vi.fn()} />,
+    );
+
+    const focusedGrid = screen.getByTestId('kds-focused-mobile-grid-kds-3');
+    expect(focusedGrid).toHaveClass('grid-cols-1');
+  });
 });

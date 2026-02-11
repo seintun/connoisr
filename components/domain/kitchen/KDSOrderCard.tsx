@@ -60,6 +60,7 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
   const focusedColumns = isFocused ? splitIntoColumns(visibleItems, focusedColumnCount) : [];
   const focusedModifiedItems = isFocused ? visibleItems.filter((item) => item.isModified) : [];
   const focusedStandardItems = isFocused ? visibleItems.filter((item) => !item.isModified) : [];
+  const useTwoColumnFocusedMobile = focusedStandardItems.length >= 2;
   const shouldSpanBoardWidth = isFocused && focusedColumnCount >= 3;
   const compactFocusedItems = isFocused && groupedItems.length >= 7;
   const modifiedItemCount = groupedItems.reduce(
@@ -251,11 +252,17 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
             </div>
           ) : (
             <div
-              className="grid grid-cols-2 gap-2"
+              className={cn(
+                'grid gap-2',
+                useTwoColumnFocusedMobile ? 'grid-cols-2' : 'grid-cols-1',
+              )}
               data-testid={`kds-focused-mobile-grid-${order.id}`}
             >
               {focusedModifiedItems.map((item) => (
-                <div key={`mobile-mod-${item.key}`} className="col-span-2">
+                <div
+                  key={`mobile-mod-${item.key}`}
+                  className={cn(useTwoColumnFocusedMobile && 'col-span-2')}
+                >
                   {renderItem(item)}
                 </div>
               ))}

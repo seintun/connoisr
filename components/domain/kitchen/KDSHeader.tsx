@@ -69,12 +69,12 @@ export function KDSHeader({
         <div className="flex items-center gap-2">
           <ChefHat className="h-5 w-5 text-orange-300 sm:h-7 sm:w-7" aria-hidden="true" />
           <div>
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex flex-wrap items-stretch gap-1.5">
               <h1 className="text-[2rem] font-black leading-none tracking-tight text-white sm:text-[2.1rem]">
                 {APP_NAME} KDS
               </h1>
               <span
-                className="inline-flex h-[2rem] items-center gap-1 rounded-md border border-cyan-300/70 bg-cyan-500/10 px-2.5 text-[10px] font-extrabold uppercase tracking-wide text-cyan-100 sm:h-[2.1rem]"
+                className="inline-flex self-stretch items-center gap-1 rounded-md border border-cyan-300/70 bg-cyan-500/10 px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wide text-cyan-100"
                 data-testid="kds-active-chip"
               >
                 <span className="text-cyan-200/85">Active</span>

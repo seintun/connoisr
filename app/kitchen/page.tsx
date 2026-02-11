@@ -13,7 +13,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 const NOW_REFRESH_MS = 1_000;
 const OVERDUE_CHIME_INTERVAL_MS = 120_000;
 const FOCUS_SCROLL_TOP_GAP_PX = 12;
-const FOCUS_SCROLL_BOTTOM_GAP_PX = 12;
+const FOCUS_SCROLL_BOTTOM_GAP_PX = 20;
 
 function playKDSChime(frequency = 880, durationMs = 120) {
   if (typeof window === 'undefined' || typeof window.AudioContext === 'undefined') {
@@ -166,7 +166,7 @@ export default function KitchenPage() {
 
   return (
     <div
-      className="min-h-screen bg-[#0a0c0f] p-3 pb-24 sm:p-4 md:p-6 md:pb-6"
+      className="min-h-screen bg-[#0a0c0f] p-3 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:p-4 md:p-6 md:pb-28"
       data-testid="kitchen-page"
     >
       <KDSHeader

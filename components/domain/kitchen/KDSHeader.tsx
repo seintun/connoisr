@@ -26,10 +26,22 @@ function StatChip({
 }: {
   label: string;
   value: number;
-  tone?: 'default' | 'alert';
+  tone?: 'default' | 'alert' | 'ready' | 'cooking' | 'ordered';
 }) {
-  const toneClass =
-    tone === 'alert' ? 'border-orange-400/75 bg-orange-500/15' : 'border-neutral-600 bg-black/35';
+  const toneClass = (() => {
+    switch (tone) {
+      case 'alert':
+        return 'border-orange-400/75 bg-orange-500/15';
+      case 'ready':
+        return 'border-emerald-400/70 bg-emerald-500/12';
+      case 'cooking':
+        return 'border-amber-400/70 bg-amber-500/12';
+      case 'ordered':
+        return 'border-sky-400/70 bg-sky-500/10';
+      default:
+        return 'border-neutral-600 bg-black/35';
+    }
+  })();
 
   return (
     <div className={`rounded-md border px-1.5 py-0.5 text-center sm:px-2 sm:py-1 ${toneClass}`}>
@@ -125,13 +137,13 @@ export function KDSHeader({
           <StatChip label="Overdue" value={metrics.overdue} tone="alert" />
         </div>
         <div data-testid="kds-metric-ready">
-          <StatChip label="Ready" value={metrics.ready} />
+          <StatChip label="Ready" value={metrics.ready} tone="ready" />
         </div>
         <div data-testid="kds-metric-cooking">
-          <StatChip label="Cooking" value={metrics.cooking} />
+          <StatChip label="Cooking" value={metrics.cooking} tone="cooking" />
         </div>
         <div data-testid="kds-metric-ordered">
-          <StatChip label="Ordered" value={metrics.ordered} />
+          <StatChip label="Ordered" value={metrics.ordered} tone="ordered" />
         </div>
       </div>
     </header>

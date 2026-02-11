@@ -9,6 +9,7 @@ interface KDSModifierBlockProps {
   itemKey: string;
   tokens: KDSModifierToken[];
   kitchenNote: string | null;
+  compact?: boolean;
 }
 
 function toTestIdFragment(value: string): string {
@@ -32,7 +33,13 @@ function tokenClassForTone(tone: KDSModifierToken['tone']): string {
   }
 }
 
-export function KDSModifierBlock({ orderId, itemKey, tokens, kitchenNote }: KDSModifierBlockProps) {
+export function KDSModifierBlock({
+  orderId,
+  itemKey,
+  tokens,
+  kitchenNote,
+  compact = false,
+}: KDSModifierBlockProps) {
   if (tokens.length === 0 && !kitchenNote) {
     return null;
   }
@@ -46,7 +53,8 @@ export function KDSModifierBlock({ orderId, itemKey, tokens, kitchenNote }: KDSM
               key={`${itemKey}-${token.id}`}
               data-testid={`kds-modifier-token-${toTestIdFragment(token.id)}-${toTestIdFragment(itemKey)}-${orderId}`}
               className={cn(
-                'inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-semibold uppercase tracking-wide',
+                'inline-flex items-center gap-1 rounded-md border font-semibold uppercase tracking-wide',
+                compact ? 'px-1.5 py-0.5 text-[10px]' : 'px-2 py-1 text-[11px]',
                 tokenClassForTone(token.tone),
               )}
             >
@@ -59,14 +67,26 @@ export function KDSModifierBlock({ orderId, itemKey, tokens, kitchenNote }: KDSM
 
       {kitchenNote && (
         <div
-          className="rounded-lg border border-yellow-300/70 bg-yellow-300/20 p-3"
+          className={cn(
+            'rounded-lg border border-yellow-300/70 bg-yellow-300/20',
+            compact ? 'p-2' : 'p-3',
+          )}
           data-testid={`kds-note-${orderId}-${itemKey}`}
         >
-          <div className="mb-1 flex items-center gap-1 text-xs font-bold uppercase tracking-wide text-yellow-100">
+          <div
+            className={cn(
+              'mb-1 flex items-center gap-1 font-bold uppercase tracking-wide text-yellow-100',
+              compact ? 'text-[10px]' : 'text-xs',
+            )}
+          >
             <StickyNote className="h-3.5 w-3.5" aria-hidden="true" />
             Kitchen Note
           </div>
-          <p className="text-sm font-semibold text-yellow-50">{kitchenNote}</p>
+          <p
+            className={cn('font-semibold text-yellow-50', compact ? 'truncate text-xs' : 'text-sm')}
+          >
+            {kitchenNote}
+          </p>
         </div>
       )}
     </div>

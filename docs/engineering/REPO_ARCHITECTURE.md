@@ -69,7 +69,8 @@ Current guard blocks unsafe side effects in UI surfaces (for example hard reload
 
 ## Related Documents
 
-1. `docs/engineering/AI_FEATURE_CONVENTIONS.md`
-2. `docs/engineering/ARCHITECTURE_CHANGELOG.md`
-3. `docs/plan/architecture-scalability-modularity-plan.md`
-4. `docs/refactor/phase-*.md`
+1. `docs/README.md`
+2. `docs/engineering/AI_FEATURE_CONVENTIONS.md`
+3. `docs/engineering/ARCHITECTURE_CHANGELOG.md`
+4. `docs/plan/architecture-scalability-modularity-plan.md`
+5. `docs/refactor/phase-*.md`

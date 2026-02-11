@@ -1,6 +1,8 @@
-# Contributing(to Connoisr)
+# Contributing to Connoisr
 
 We welcome contributions to Connoisr! This document outlines the standards and setup required to work on the project.
+
+For documentation navigation and source-of-truth ownership, see `docs/README.md`.
 
 ## Development Setup
 
@@ -47,7 +49,7 @@ We welcome contributions to Connoisr! This document outlines the standards and s
 - Node.js 24.x
 - npm 10+ or yarn
 
-### Installation
+### Repository Setup
 
 1.  **Clone the repository**:
 
@@ -62,34 +64,7 @@ We welcome contributions to Connoisr! This document outlines the standards and s
     npm install
     ```
 
-3.  **Start the development server**:
-
-    ```bash
-    npm run dev
-    ```
-
-4.  **Testing**:
-    Before pushing any code, ensure quality checks pass.
-
-    ```bash
-    npm run lint
-    npm run type-check
-    npm run test:coverage
-    npm run test:e2e:smoke
-    ```
-
-5.  **Build for Production**:
-    To test PWA features (Service Worker, Manifest), you must run a production build.
-
-    ```bash
-    # Turbopack is currently incompatible with the PWA plugin
-    npx next build --webpack
-    npm start
-    ```
-
-6.  **Open the application**:
-    - Landing: `http://localhost:3000`
-    - Diner App: `http://localhost:3000/table/1`
+For run/test commands, use **Development Setup** above to avoid duplication.
 
 ## Project Structure
 

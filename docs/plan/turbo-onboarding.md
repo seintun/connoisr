@@ -1,5 +1,8 @@
 # Turbo-Onboarding Module — Implementation Plan
 
+Status: Historical proposal.
+Current architecture references: `docs/engineering/REPO_ARCHITECTURE.md`
+
 ## Architecture
 
 ```mermaid
@@ -31,22 +34,22 @@ npm install @tanstack/react-query
 
 ### New Files
 
-#### [NEW] [IdentityContext.tsx](file:///Users/seintun/code/projects/tempodine/context/IdentityContext.tsx)
+#### [NEW] `context/IdentityContext.tsx`
 
 - Stores `userName`, `userId` (UUID), `isGuest`
 - Random name generator: `["Hungry","Happy","Crispy","Golden","Chilled"]` × `["Taco","Noodle","Dumpling","Brioche","Espresso"]`
-- Persists to `sessionStorage` (key: `tempodine-identity-{tableId}`)
+- Persists to `sessionStorage` (key: `connoisr-identity-{tableId}`)
 - Exposes `setIdentity(name)` and `joinAsGuest()` actions
 - Checks sessionStorage on mount → if found, auto-hydrates (returning guests skip modal)
 
-#### [NEW] [useMenuPrefetch.ts](file:///Users/seintun/code/projects/tempodine/hooks/useMenuPrefetch.ts)
+#### [NEW] `hooks/useMenuPrefetch.ts`
 
 - Uses `useQuery` with key `['menu', tableId]`
 - `queryFn` returns the static `MENU_ITEMS` with a simulated async delay (~200ms)
 - Returns `{ isReady: boolean }` — true when data is cached
 - Runs immediately on mount, in parallel with the IdentityModal
 
-#### [NEW] [IdentityModal.tsx](file:///Users/seintun/code/projects/tempodine/components/onboarding/IdentityModal.tsx)
+#### [NEW] `components/onboarding/IdentityModal.tsx`
 
 | Element | Spec |
 |---|---|
@@ -59,7 +62,7 @@ npm install @tanstack/react-query
 | **Progress bar** | Bottom of card — fills as `useMenuPrefetch` loads |
 | **Animation** | `motion.div` fade-in + scale-up on mount, slide-up exit |
 
-#### [NEW] [QueryProvider.tsx](file:///Users/seintun/code/projects/tempodine/components/providers/QueryProvider.tsx)
+#### [NEW] `components/providers/QueryProvider.tsx`
 
 - Wraps app in `QueryClientProvider` with stale-time of 5 min
 
@@ -67,22 +70,22 @@ npm install @tanstack/react-query
 
 ### Modified Files
 
-#### [MODIFY] [layout.tsx](file:///Users/seintun/code/projects/tempodine/app/table/[id]/layout.tsx) or [page.tsx](file:///Users/seintun/code/projects/tempodine/app/table/[id]/page.tsx)
+#### [MODIFY] `app/table/[id]/layout.tsx` or `app/table/[id]/page.tsx`
 
 - Wrap in `QueryProvider` + `IdentityProvider`
 
-#### [MODIFY] [DinerPageClient.tsx](file:///Users/seintun/code/projects/tempodine/app/table/[id]/DinerPageClient.tsx)
+#### [MODIFY] `app/table/[id]/DinerPageClient.tsx`
 
 - Import `useIdentity` and `useMenuPrefetch`
 - `AnimatePresence` gate: show `IdentityModal` when no `userName`, cross-fade to menu when both `userName` and `isReady` are truthy
 - Existing menu grid stays untouched — it IS the `MenuGrid`
 
-#### [MODIFY] [index.ts](file:///Users/seintun/code/projects/tempodine/types/index.ts)
+#### [MODIFY] `types/index.ts`
 
 - Add `guestName?: string` to `TableSession`
 - Add `orderedByName?: string` to `CartItem`
 
-#### [MODIFY] [TableSessionProvider.tsx](file:///Users/seintun/code/projects/tempodine/components/providers/TableSessionProvider.tsx)
+#### [MODIFY] `components/providers/TableSessionProvider.tsx`
 
 - Add `SET_GUEST_NAME` action
 - Propagate `guestName` to cart items as `orderedByName`

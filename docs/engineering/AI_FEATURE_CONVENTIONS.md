@@ -4,6 +4,7 @@ This guide defines implementation conventions for AI agents and contributors.
 
 ## Where This Should Live
 
+- **Documentation index**: `docs/README.md`
 - **Root entrypoint for agents**: `AGENTS.md`
 - **Detailed engineering guide**: `docs/engineering/AI_FEATURE_CONVENTIONS.md`
 - **Current architecture snapshot**: `docs/engineering/REPO_ARCHITECTURE.md`

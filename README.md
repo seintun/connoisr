@@ -6,6 +6,8 @@
 
 Connoisr is built with **Next.js 16+**, **TypeScript**, and **Tailwind CSS v4**. It features a "Product-Led" design philosophy, balancing a beautiful, vibrant user experience for guests with high-utility tools for staff.
 
+Documentation map: `docs/README.md`
+
 ### Core Interfaces
 
 - **Diner PWA (The "Fresh Bistro" Experience)**: A guest-facing, zero-auth flow. Focus on "Time-to-Table" with a <3-tap path from scan to order.
@@ -51,7 +53,7 @@ We've pivoted to a premium "Modern Fine Dining" aesthetic, featuring materials f
 - **PWA**: @ducanh2912/next-pwa
 - **Icons**: Lucide React
 
-## Key Features
+## Feature Highlights
 
 ### 🛒 Smart Floating Cart
 
@@ -116,7 +118,7 @@ npm run build  # Uses webpack (PWA compatible)
 npm start
 ```
 
-### Key Features
+### PWA Notes
 
 - **Offline-First**: Cached pages and images work without internet
 - **Installable**: Add to home screen on mobile/desktop
@@ -124,7 +126,7 @@ npm start
 
 > **Note**: PWA features only work in production builds. Dev mode disables service workers.
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for detailed development guidelines.
+See `CONTRIBUTING.md` for detailed development guidelines.
 
 ## License
 

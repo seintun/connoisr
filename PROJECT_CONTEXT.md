@@ -1,4 +1,12 @@
-# 🚀 Master Prompt: Project Connoisr
+# Project Context (Historical Prompt)
+
+Status: Historical reference, not source of truth.
+
+For current engineering and architecture guidance, use:
+
+- `docs/README.md`
+- `docs/engineering/AI_FEATURE_CONVENTIONS.md`
+- `docs/engineering/REPO_ARCHITECTURE.md`
 
 ## Role
 

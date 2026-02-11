@@ -4,6 +4,10 @@ This file is the default entrypoint for AI coding agents in this repository.
 
 ## Primary Reference
 
+Start here:
+
+- `docs/README.md`
+
 Use the following document as the source of truth for implementation conventions:
 
 - `docs/engineering/AI_FEATURE_CONVENTIONS.md`

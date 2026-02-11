@@ -44,7 +44,7 @@ We welcome contributions to Connoisr! This document outlines the standards and s
 
 ### Prerequisites
 
-- Node.js 20+ (LTS)
+- Node.js 24.x
 - npm 10+ or yarn
 
 ### Installation
@@ -69,11 +69,13 @@ We welcome contributions to Connoisr! This document outlines the standards and s
     ```
 
 4.  **Testing**:
-    Before pushing any code, ensure all tests pass.
+    Before pushing any code, ensure quality checks pass.
 
     ```bash
-    npm test             # Run unit & integration tests
-    npm run test:e2e     # Run E2E tests (Playwright)
+    npm run lint
+    npm run type-check
+    npm run test:coverage
+    npm run test:e2e:smoke
     ```
 
 5.  **Build for Production**:
@@ -118,4 +120,6 @@ All diner-facing components must be optimized for mobile devices first.
 
 - **Branching**: Create feature branches from `develop` (e.g., `feat/add-menu-search`).
 - **Commits**: Use conventional commits (e.g., `feat: ...`, `fix: ...`, `chore: ...`).
-- **Pre-Push**: ALWAYS run `npm test` before pushing to ensure the build is stable.
+- **Pre-Commit Hook**: Runs `lint-staged` to lint/format changed files only.
+- **Pre-Push Hook**: Runs `npm run test:unit` and conditional `npm run test:e2e:smoke` for UI/e2e changes.
+- **Commit Message Hook**: Enforces conventional commit format with `commitlint`.

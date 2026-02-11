@@ -95,9 +95,10 @@ npm run test:e2e:full        # Full e2e matrix (includes mobile emulation)
 ```
 
 Recommended workflow:
-- Local commit: unit tests (handled by `pre-commit`)
+
+- Local commit: staged lint + format checks (handled by `pre-commit`)
 - Local push: unit + e2e smoke only when UI/e2e files changed (handled by `pre-push`)
-- PR CI: full Chromium e2e when UI paths change
+- PR CI: lint + type-check + coverage thresholds, plus full Chromium e2e when UI paths change
 - Nightly CI: full matrix regression run
 
 ### CI / QA Pipeline

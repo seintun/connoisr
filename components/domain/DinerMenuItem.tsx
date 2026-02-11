@@ -3,19 +3,11 @@
 import { TAG_EMOJIS } from '@/lib/menu';
 import { optimizeUnsplashUrl } from '@/lib/image';
 import { cn } from '@/lib/utils';
+import { ImageLightbox } from '@/components/domain/ImageLightbox';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Minus, Plus, Trash2 } from 'lucide-react';
-import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import React, { useEffect, useMemo, useState } from 'react';
-
-const ImageLightbox = dynamic(
-  () =>
-    import('@/components/domain/ImageLightbox').then((mod) => ({
-      default: mod.ImageLightbox,
-    })),
-  { ssr: false },
-);
 
 interface DinerMenuItemProps {
   id: string;

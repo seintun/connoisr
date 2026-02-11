@@ -222,15 +222,18 @@ export function useKDSInputController({ orders, updateOrderStatus }: UseKDSInput
   }, []);
 
   const closeShortcuts = useCallback(() => setShowShortcuts(false), []);
+  const openShortcuts = useCallback(() => setShowShortcuts(true), []);
 
   return {
     focusedOrderId,
     inputMode,
     showShortcuts,
     closeShortcuts,
+    openShortcuts,
     actionHint,
     setFocusedFromTouch,
     commitStatusUpdate,
     undoAvailable: !!lastAction,
+    undoLastAction,
   };
 }

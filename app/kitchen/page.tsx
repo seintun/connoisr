@@ -10,7 +10,7 @@ import { useKitchenOrders } from '@/hooks/useKitchenOrders';
 import { Clock } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-const NOW_REFRESH_MS = 10_000;
+const NOW_REFRESH_MS = 1_000;
 const OVERDUE_CHIME_INTERVAL_MS = 120_000;
 
 function playKDSChime(frequency = 880, durationMs = 120) {
@@ -154,6 +154,8 @@ export default function KitchenPage() {
         inputMode={inputController.inputMode}
         actionHint={inputController.actionHint}
         undoAvailable={inputController.undoAvailable}
+        onUndo={inputController.undoLastAction}
+        onShowShortcuts={inputController.openShortcuts}
       />
 
       <KDSKeyboardHelp

@@ -21,6 +21,21 @@ function splitIntoColumns<T>(items: T[], columnCount: number): T[][] {
   return columns;
 }
 
+function getFocusedColumnCount(groupedItems: KDSOrderViewModel['groupedItems']): number {
+  // Modified items usually include extra metadata blocks, so they consume more vertical space.
+  const weightedLoad = groupedItems.reduce((sum, item) => sum + (item.isModified ? 2 : 1), 0);
+
+  if (weightedLoad <= 8) {
+    return 1;
+  }
+
+  if (weightedLoad <= 16) {
+    return 2;
+  }
+
+  return 3;
+}
+
 function statusClass(status: KDSOrderViewModel['order']['status']): string {
   switch (status) {
     case 'ordered':
@@ -39,7 +54,7 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
   const collapsedPreviewCount = 3;
   const visibleItems = isFocused ? groupedItems : groupedItems.slice(0, collapsedPreviewCount);
   const hiddenItemsCount = Math.max(groupedItems.length - visibleItems.length, 0);
-  const focusedColumnCount = isFocused ? (groupedItems.length >= 18 ? 3 : 2) : 1;
+  const focusedColumnCount = isFocused ? getFocusedColumnCount(groupedItems) : 1;
   const focusedColumns = isFocused ? splitIntoColumns(visibleItems, focusedColumnCount) : [];
   const shouldSpanBoardWidth = isFocused && focusedColumnCount >= 3;
   const compactFocusedItems = isFocused && groupedItems.length >= 7;

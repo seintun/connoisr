@@ -1,12 +1,12 @@
-"use client";
+'use client';
 
-import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { APP_NAME } from "@/lib/constants";
-import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { APP_NAME } from '@/lib/constants';
+import { cn } from '@/lib/utils';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
 
-import { useIdentity } from "@/context/IdentityContext";
+import { useIdentity } from '@/context/IdentityContext';
 
 interface MenuHeaderProps {
   categories: string[];
@@ -14,24 +14,22 @@ interface MenuHeaderProps {
   onCategoryClick: (category: string) => void;
 }
 
-export function MenuHeader({
-  categories,
-  tableId,
-  onCategoryClick,
-}: MenuHeaderProps) {
+export function MenuHeader({ categories, tableId, onCategoryClick }: MenuHeaderProps) {
   const { userName } = useIdentity();
   const [activeCategory, setActiveCategory] = useState(categories[0]);
-  const [displayText, setDisplayText] = useState("");
+  const [displayText, setDisplayText] = useState('');
   const navRef = useRef<HTMLDivElement>(null);
   const isProgrammaticScroll = useRef(false);
+  const targetText = useMemo(
+    () => (userName ? `${userName} is ordering` : `${APP_NAME} is ready`),
+    [userName],
+  );
+  const isTyping = displayText.length < targetText.length;
 
   // Typewriter effect
   useEffect(() => {
-    const targetText = userName
-      ? `${userName} is ordering`
-      : `${APP_NAME} is ready`;
     let i = 0;
-    setDisplayText("");
+    setDisplayText('');
 
     const timer = setInterval(() => {
       if (i < targetText.length) {
@@ -43,18 +41,15 @@ export function MenuHeader({
     }, 50);
 
     return () => clearInterval(timer);
-  }, [userName]);
+  }, [targetText]);
 
   // Auto-scroll the nav pill into center view
   const scrollNavTo = (category: string) => {
     const navItem = document.getElementById(`nav-${category}`);
     if (navItem && navRef.current) {
       const container = navRef.current;
-      const scrollLeft =
-        navItem.offsetLeft -
-        container.offsetWidth / 2 +
-        navItem.offsetWidth / 2;
-      container.scrollTo({ left: scrollLeft, behavior: "smooth" });
+      const scrollLeft = navItem.offsetLeft - container.offsetWidth / 2 + navItem.offsetWidth / 2;
+      container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
     }
   };
 
@@ -95,10 +90,10 @@ export function MenuHeader({
       });
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
 
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [categories]);
 
   const handleCategoryClick = (category: string) => {
@@ -116,47 +111,53 @@ export function MenuHeader({
     }, 1000);
   };
 
-  const toTestIdFragment = (value: string) =>
-    value.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+  const toTestIdFragment = (value: string) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
   return (
     <>
       {/* Brand Bar - Scrolls away naturally */}
       <div className="bg-background w-full" data-testid="menu-header-brand-bar">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-          <div className="flex justify-between items-center h-14">
-            <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center shadow-lg shadow-primary/30 transform -rotate-3 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+          <div className="flex justify-between items-start min-h-12 gap-2">
+            <div className="flex items-center gap-3.5 min-w-0 flex-1">
+              <div className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-primary to-orange-500 flex items-center justify-center shadow-lg shadow-primary/30 overflow-hidden">
                 <Image
                   src="/apple-touch-icon.png"
                   alt={APP_NAME}
                   width={40}
                   height={40}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-full"
                 />
               </div>
-              <div className="flex flex-col gap-0.5">
-                <h1 className="text-2xl font-serif font-bold text-foreground tracking-tight leading-none">
-                  {APP_NAME}
-                </h1>
-                <p className="text-xs text-muted-foreground font-medium tracking-wide h-4 flex items-center">
+              <div className="flex flex-col gap-0.5 min-w-0">
+                <div className="flex items-center gap-2 min-w-0">
+                  <h1 className="text-xl sm:text-2xl font-serif font-bold text-foreground tracking-tight leading-none truncate">
+                    {APP_NAME}
+                  </h1>
+                  {tableId && (
+                    <div
+                      data-testid="menu-header-table-badge"
+                      className="flex px-2 py-0.5 bg-secondary/10 text-secondary-foreground/80 rounded-full text-[10px] font-bold uppercase tracking-wider border border-secondary/20 items-center gap-1 whitespace-nowrap shrink-0"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shrink-0" />
+                      Table {tableId}
+                    </div>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground font-medium tracking-wide leading-tight min-h-[1rem] max-w-[165px] sm:max-w-[260px] whitespace-normal break-words">
                   {displayText}
-                  <span className="inline-block w-[1.5px] h-3 bg-primary/70 ml-0.5 animate-pulse" />
+                  {isTyping && (
+                    <span
+                      data-testid="menu-header-typing-cursor"
+                      className="inline-block w-[1.5px] h-3 bg-primary/70 ml-0.5 animate-pulse"
+                    />
+                  )}
                 </p>
               </div>
             </div>
 
             {/* Right Side Actions */}
-            <div className="flex items-center gap-2">
-              {tableId && (
-                <div
-                  data-testid="menu-header-table-badge"
-                  className="flex px-2.5 py-1 bg-secondary/10 text-secondary-foreground/80 rounded-full text-[10px] font-bold uppercase tracking-wider border border-secondary/20 items-center gap-1.5 whitespace-nowrap"
-                >
-                  <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shrink-0" />
-                  Table {tableId}
-                </div>
-              )}
+            <div className="flex items-center shrink-0 pl-1">
               <ThemeToggle />
             </div>
           </div>
@@ -180,10 +181,10 @@ export function MenuHeader({
                 onClick={() => handleCategoryClick(category)}
                 data-testid={`menu-category-tab-${toTestIdFragment(category)}`}
                 className={cn(
-                  "whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 snap-start flex-shrink-0 border-2",
+                  'whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 snap-start flex-shrink-0 border-2',
                   activeCategory === category
-                    ? "bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/25 scale-100"
-                    : "bg-muted/50 border-transparent text-muted-foreground hover:bg-muted hover:text-foreground",
+                    ? 'bg-primary border-primary text-primary-foreground shadow-lg shadow-primary/25 scale-100'
+                    : 'bg-muted/50 border-transparent text-muted-foreground hover:bg-muted hover:text-foreground',
                 )}
               >
                 {category}

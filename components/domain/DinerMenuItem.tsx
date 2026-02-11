@@ -1,16 +1,17 @@
-"use client";
+'use client';
 
-import { TAG_EMOJIS } from "@/lib/menu";
-import { cn } from "@/lib/utils";
-import { AnimatePresence, motion } from "framer-motion";
-import { Minus, Plus, Trash2 } from "lucide-react";
-import dynamic from "next/dynamic";
-import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import { TAG_EMOJIS } from '@/lib/menu';
+import { optimizeUnsplashUrl } from '@/lib/image';
+import { cn } from '@/lib/utils';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Minus, Plus, Trash2 } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import Image from 'next/image';
+import React, { useEffect, useMemo, useState } from 'react';
 
 const ImageLightbox = dynamic(
   () =>
-    import("@/components/domain/ImageLightbox").then((mod) => ({
+    import('@/components/domain/ImageLightbox').then((mod) => ({
       default: mod.ImageLightbox,
     })),
   { ssr: false },
@@ -34,30 +35,39 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
   name,
   price,
   description,
-  imageUrl = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800",
+  imageUrl = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=60&w=640',
   onAdd,
   quantity = 0,
   onUpdateQuantity,
   tags = [],
   priority = false,
 }: DinerMenuItemProps) {
+  const cardImageUrl = useMemo(
+    () =>
+      optimizeUnsplashUrl(imageUrl, {
+        width: priority ? 720 : 540,
+        quality: 58,
+      }),
+    [imageUrl, priority],
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       data-testid={`menu-item-card-${id}`}
       className={cn(
-        "group relative overflow-hidden rounded-2xl bg-card transition-all duration-300 h-full",
-        "flex flex-row md:flex-col",
-        "border border-border/50",
+        'group relative overflow-hidden rounded-2xl bg-card transition-all duration-300 h-full',
+        'flex flex-row md:flex-col',
+        'border border-border/50',
         quantity > 0
-          ? "ring-2 ring-primary/20 shadow-md"
-          : "shadow-sm hover:shadow-lg hover:-translate-y-0.5",
+          ? 'ring-2 ring-primary/20 shadow-md'
+          : 'shadow-sm hover:shadow-lg hover:-translate-y-0.5',
       )}
     >
       <MenuItemImage
         name={name}
-        imageUrl={imageUrl}
+        imageUrl={cardImageUrl}
         quantity={quantity}
         description={description}
         priority={priority}
@@ -71,7 +81,7 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
               <span className="line-clamp-2">{name}</span>
             </h3>
             <span className="font-bold text-xs md:text-base text-primary bg-primary/8 px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg tabular-nums flex-shrink-0">
-              ${price.toLocaleString("en-US")}
+              ${price.toLocaleString('en-US')}
             </span>
           </div>
 
@@ -84,42 +94,39 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
           {tags && tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mb-2">
               {tags.map((tag) => {
-                let colorClass =
-                  "bg-secondary text-secondary-foreground border-border/50";
+                let colorClass = 'bg-secondary text-secondary-foreground border-border/50';
 
-                if (["Spicy"].includes(tag))
+                if (['Spicy'].includes(tag))
                   colorClass =
-                    "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20";
-                else if (["Vegetarian", "Vegan"].includes(tag))
+                    'bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20';
+                else if (['Vegetarian', 'Vegan'].includes(tag))
                   colorClass =
-                    "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20";
-                else if (["GF", "Gluten Free"].includes(tag))
+                    'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20';
+                else if (['GF', 'Gluten Free'].includes(tag))
                   colorClass =
-                    "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20";
-                else if (["Seafood", "Shellfish"].includes(tag))
+                    'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20';
+                else if (['Seafood', 'Shellfish'].includes(tag))
                   colorClass =
-                    "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20";
-                else if (["Sweet"].includes(tag))
+                    'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20';
+                else if (['Sweet'].includes(tag))
                   colorClass =
-                    "bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-500/10 dark:text-pink-400 dark:border-pink-500/20";
-                else if (["Alcohol"].includes(tag))
+                    'bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-500/10 dark:text-pink-400 dark:border-pink-500/20';
+                else if (['Alcohol'].includes(tag))
                   colorClass =
-                    "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20";
-                else if (["Nuts", "Nut Free"].includes(tag))
+                    'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20';
+                else if (['Nuts', 'Nut Free'].includes(tag))
                   colorClass =
-                    "bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-500/10 dark:text-stone-400 dark:border-stone-500/20";
+                    'bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-500/10 dark:text-stone-400 dark:border-stone-500/20';
 
                 return (
                   <span
                     key={tag}
                     className={cn(
-                      "text-[9px] md:text-[10px] uppercase font-bold px-1.5 py-0.5 rounded-md border flex items-center gap-0.5",
+                      'text-[9px] md:text-[10px] uppercase font-bold px-1.5 py-0.5 rounded-md border flex items-center gap-0.5',
                       colorClass,
                     )}
                   >
-                    <span className="opacity-75 scale-75 origin-left">
-                      {TAG_EMOJIS[tag]}
-                    </span>
+                    <span className="opacity-75 scale-75 origin-left">{TAG_EMOJIS[tag]}</span>
                     {tag}
                   </span>
                 );
@@ -158,20 +165,20 @@ const MenuItemImage = React.memo(function MenuItemImage({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setIsImageOpen(false);
+      if (e.key === 'Escape') setIsImageOpen(false);
     };
-    if (isImageOpen) window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    if (isImageOpen) window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isImageOpen]);
 
   return (
     <>
       <div
         className={cn(
-          "w-1/3 min-w-[100px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 cursor-zoom-in group",
-          isImageOpen && "z-[100]",
+          'w-1/3 min-w-[100px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 cursor-zoom-in group',
+          isImageOpen && 'z-[100]',
         )}
-        data-testid={`menu-item-image-trigger-${name.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}
+        data-testid={`menu-item-image-trigger-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
         onClick={() => setIsImageOpen(true)}
       >
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
@@ -179,8 +186,9 @@ const MenuItemImage = React.memo(function MenuItemImage({
           src={imageUrl}
           alt={name}
           fill
+          quality={58}
           priority={priority}
-          sizes="(max-width: 768px) 33vw, (max-width: 1024px) 50vw, 25vw"
+          sizes="(max-width: 640px) 40vw, (max-width: 1024px) 33vw, 25vw"
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
         />
 
@@ -280,7 +288,6 @@ const MenuItemControls = React.memo(function MenuItemControls({
           <span>Add</span>
         </motion.button>
       )}
-
     </div>
   );
 });

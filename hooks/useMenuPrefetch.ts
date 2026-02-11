@@ -1,6 +1,7 @@
 'use client';
 
 import { menuRepository } from '@/features/menu/repositories/menuRepository';
+import { optimizeUnsplashUrl, shouldAvoidImagePrefetch } from '@/lib/image';
 import { MENU_ITEMS } from '@/lib/menu';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
@@ -24,17 +25,34 @@ export function useMenuPrefetch(tableId: string) {
   useEffect(() => {
     if (!isSuccess || !data || typeof window === 'undefined') return;
     if (!navigator.onLine) return;
+    if (shouldAvoidImagePrefetch()) return;
     if (warmedTablesRef.current.has(tableId)) return;
 
     const preloadTargets = data
+      .slice(0, 8)
       .map((item) => item.imageUrl)
       .filter((url): url is string => Boolean(url))
-      .flatMap((url) => [url, `/_next/image?url=${encodeURIComponent(url)}&w=1200&q=75`]);
+      .map(
+        (url) =>
+          `/_next/image?url=${encodeURIComponent(
+            optimizeUnsplashUrl(url, { width: 640, quality: 55 }),
+          )}&w=640&q=55`,
+      );
 
-    preloadTargets.forEach((src) => {
-      const img = new Image();
-      img.src = src;
-    });
+    const warm = () => {
+      preloadTargets.forEach((src) => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.loading = 'eager';
+        img.src = src;
+      });
+    };
+
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(warm);
+    } else {
+      setTimeout(warm, 0);
+    }
 
     warmedTablesRef.current.add(tableId);
   }, [data, isSuccess, tableId]);

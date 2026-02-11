@@ -1,202 +1,221 @@
 export const TAG_EMOJIS: Record<string, string> = {
-  "Spicy": "🌶️",
-  "Sweet": "🍬",
-  "Vegetarian": "🥬",
-  "GF": "🌾",
-  "Seafood": "🦐",
-  "Shellfish": "🐚",
-  "Raw": "🥩",
-  "Alcohol": "🍷",
-  "Non-Alcoholic": "🥤",
-  "Vegan": "🌱",
-  "Dairy Free": "🥛",
-  "Nut Free": "🥜",
-  "Nuts": "🥜",
+  Spicy: '🌶️',
+  Sweet: '🍬',
+  Vegetarian: '🥬',
+  GF: '🌾',
+  Seafood: '🦐',
+  Shellfish: '🐚',
+  Raw: '🥩',
+  Alcohol: '🍷',
+  'Non-Alcoholic': '🥤',
+  Vegan: '🌱',
+  'Dairy Free': '🥛',
+  'Nut Free': '🥜',
+  Nuts: '🥜',
 };
 
 export const MENU_ITEMS = [
   // Starters
   {
-    id: "item-1",
-    name: "Truffle Risotto",
+    id: 'item-1',
+    name: 'Truffle Risotto',
     price: 28,
-    description: "Arborio rice, black truffle, parmesan crisp",
-    imageUrl: "https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&q=80&w=800",
-    category: "Starters",
-    tags: ["Vegetarian", "GF"]
+    description: 'Arborio rice, black truffle, parmesan crisp',
+    imageUrl:
+      'https://images.unsplash.com/photo-1476124369491-e7addf5db371?auto=format&fit=crop&q=60&w=640',
+    category: 'Starters',
+    tags: ['Vegetarian', 'GF'],
   },
   {
-    id: "item-2",
-    name: "Pan-Seared Scallops",
+    id: 'item-2',
+    name: 'Pan-Seared Scallops',
     price: 32,
-    description: "Cauliflower purée, brown butter, capers",
-    imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800",
-    category: "Starters",
-    tags: ["GF", "Shellfish"]
+    description: 'Cauliflower purée, brown butter, capers',
+    imageUrl:
+      'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=60&w=640',
+    category: 'Starters',
+    tags: ['GF', 'Shellfish'],
   },
   {
-    id: "item-3",
-    name: "Wagyu Beef Carpaccio",
+    id: 'item-3',
+    name: 'Wagyu Beef Carpaccio',
     price: 24,
-    description: "Mustard seed, pickled shallot, rye cracker",
-    imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=80&w=800",
-    category: "Starters",
-    tags: ["Raw", "GF"]
+    description: 'Mustard seed, pickled shallot, rye cracker',
+    imageUrl:
+      'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&q=60&w=640',
+    category: 'Starters',
+    tags: ['Raw', 'GF'],
   },
   {
-    id: "item-4",
-    name: "Burrata & Heirloom Tomato",
+    id: 'item-4',
+    name: 'Burrata & Heirloom Tomato',
     price: 22,
-    description: "Basil pesto, balsamic glaze, toasted pine nuts",
-    imageUrl: "https://images.unsplash.com/photo-1608897013039-887f21d8c804?auto=format&fit=crop&q=80&w=800",
-    category: "Starters",
-    tags: ["Vegetarian", "GF", "Nuts"]
+    description: 'Basil pesto, balsamic glaze, toasted pine nuts',
+    imageUrl:
+      'https://images.unsplash.com/photo-1608897013039-887f21d8c804?auto=format&fit=crop&q=60&w=640',
+    category: 'Starters',
+    tags: ['Vegetarian', 'GF', 'Nuts'],
   },
 
   // Brunch
   {
-    id: "item-5",
-    name: "Avocado Toast",
+    id: 'item-5',
+    name: 'Avocado Toast',
     price: 16,
-    description: "Sourdough, smashed avocado, poached egg, chili crisp",
-    imageUrl: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?auto=format&fit=crop&q=80&w=800",
-    category: "Brunch",
-    tags: ["Vegetarian", "Spicy"]
+    description: 'Sourdough, smashed avocado, poached egg, chili crisp',
+    imageUrl:
+      'https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?auto=format&fit=crop&q=60&w=640',
+    category: 'Brunch',
+    tags: ['Vegetarian', 'Spicy'],
   },
   {
-    id: "item-6",
-    name: "Ricotta Pancakes",
+    id: 'item-6',
+    name: 'Ricotta Pancakes',
     price: 18,
-    description: "Blueberry compote, maple butter, toasted pecans",
-    imageUrl: "https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&q=80&w=800",
-    category: "Brunch",
-    tags: ["Sweet", "Vegetarian", "Nuts"]
+    description: 'Blueberry compote, maple butter, toasted pecans',
+    imageUrl:
+      'https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?auto=format&fit=crop&q=60&w=640',
+    category: 'Brunch',
+    tags: ['Sweet', 'Vegetarian', 'Nuts'],
   },
-  
+
   // Mains
   {
-    id: "item-7",
-    name: "Miso Glazed Black Cod",
+    id: 'item-7',
+    name: 'Miso Glazed Black Cod',
     price: 42,
-    description: "Bok choy, ginger dashi broth, sesame crisp",
-    imageUrl: "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&q=80&w=800",
-    category: "Mains",
-    tags: ["Seafood", "GF"]
+    description: 'Bok choy, ginger dashi broth, sesame crisp',
+    imageUrl:
+      'https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&q=60&w=640',
+    category: 'Mains',
+    tags: ['Seafood', 'GF'],
   },
   {
-    id: "item-8",
-    name: "Wild Mushroom Tagliatelle",
+    id: 'item-8',
+    name: 'Wild Mushroom Tagliatelle',
     price: 26,
-    description: "Hand-made pasta, truffle cream, aged pecorino",
-    imageUrl: "https://images.unsplash.com/photo-1556761223-4c4282c73f77?auto=format&fit=crop&q=80&w=800",
-    category: "Mains",
-    tags: ["Vegetarian"]
+    description: 'Hand-made pasta, truffle cream, aged pecorino',
+    imageUrl:
+      'https://images.unsplash.com/photo-1556761223-4c4282c73f77?auto=format&fit=crop&q=60&w=640',
+    category: 'Mains',
+    tags: ['Vegetarian'],
   },
   {
-    id: "item-9",
-    name: "Crispy Skin Salmon",
+    id: 'item-9',
+    name: 'Crispy Skin Salmon',
     price: 34,
-    description: "Quinoa salad, avocado crema, citrus dressing",
-    imageUrl: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&q=80&w=800",
-    category: "Mains",
-    tags: ["Seafood", "GF"]
+    description: 'Quinoa salad, avocado crema, citrus dressing',
+    imageUrl:
+      'https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&q=60&w=640',
+    category: 'Mains',
+    tags: ['Seafood', 'GF'],
   },
 
   // Desserts
   {
-    id: "item-10",
-    name: "Dark Chocolate Fondant",
+    id: 'item-10',
+    name: 'Dark Chocolate Fondant',
     price: 16,
-    description: "Salted caramel center, vanilla bean ice cream",
-    imageUrl: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&q=80&w=800",
-    category: "Desserts",
-    tags: ["Sweet", "Vegetarian"]
+    description: 'Salted caramel center, vanilla bean ice cream',
+    imageUrl:
+      'https://images.unsplash.com/photo-1624353365286-3f8d62daad51?auto=format&fit=crop&q=60&w=640',
+    category: 'Desserts',
+    tags: ['Sweet', 'Vegetarian'],
   },
   {
-    id: "item-11",
-    name: "Yuzu Lemon Tart",
+    id: 'item-11',
+    name: 'Yuzu Lemon Tart',
     price: 14,
-    description: "Italian meringue, raspberry coulis, mint",
-    imageUrl: "https://images.unsplash.com/photo-1519915028121-7d3463d20b13?auto=format&fit=crop&q=80&w=800",
-    category: "Desserts",
-    tags: ["Sweet", "Vegetarian"]
+    description: 'Italian meringue, raspberry coulis, mint',
+    imageUrl:
+      'https://images.unsplash.com/photo-1519915028121-7d3463d20b13?auto=format&fit=crop&q=60&w=640',
+    category: 'Desserts',
+    tags: ['Sweet', 'Vegetarian'],
   },
 
   // Drinks
   {
-    id: "item-12",
-    name: "Signature Old Fashioned",
+    id: 'item-12',
+    name: 'Signature Old Fashioned',
     price: 18,
-    description: "Smoked oak, orange bitters, large ice cube",
-    imageUrl: "https://images.unsplash.com/photo-1595981267035-7b04ca84a82d?auto=format&fit=crop&q=80&w=800",
-    category: "Drinks",
-    tags: ["Alcohol"]
+    description: 'Smoked oak, orange bitters, large ice cube',
+    imageUrl:
+      'https://images.unsplash.com/photo-1595981267035-7b04ca84a82d?auto=format&fit=crop&q=60&w=640',
+    category: 'Drinks',
+    tags: ['Alcohol'],
   },
   {
-    id: "item-13",
-    name: "Matcha Latte",
+    id: 'item-13',
+    name: 'Matcha Latte',
     price: 8,
-    description: "Ceremonial grade matcha, oat milk, honey",
-    imageUrl: "https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&q=80&w=800",
-    category: "Drinks",
-    tags: ["Non-Alcoholic"]
+    description: 'Ceremonial grade matcha, oat milk, honey',
+    imageUrl:
+      'https://images.unsplash.com/photo-1515823064-d6e0c04616a7?auto=format&fit=crop&q=60&w=640',
+    category: 'Drinks',
+    tags: ['Non-Alcoholic'],
   },
   {
-    id: "item-14",
-    name: "Espresso Martini",
+    id: 'item-14',
+    name: 'Espresso Martini',
     price: 16,
-    description: "Vodka, fresh espresso, coffee liqueur, vanilla",
-    imageUrl: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800",
-    category: "Drinks",
-    tags: ["Alcohol", "Sweet"]
+    description: 'Vodka, fresh espresso, coffee liqueur, vanilla',
+    imageUrl:
+      'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=60&w=640',
+    category: 'Drinks',
+    tags: ['Alcohol', 'Sweet'],
   },
 
   // Salads
   {
-    id: "item-15",
-    name: "Grilled Caesar Salad",
+    id: 'item-15',
+    name: 'Grilled Caesar Salad',
     price: 18,
-    description: "Charred romaine, anchovy crumbs, parmesan tuile",
-    imageUrl: "https://images.unsplash.com/photo-1550304943-4f24f54ddde9?auto=format&fit=crop&q=80&w=800",
-    category: "Salads",
-    tags: ["Seafood"]
+    description: 'Charred romaine, anchovy crumbs, parmesan tuile',
+    imageUrl:
+      'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?auto=format&fit=crop&q=60&w=640',
+    category: 'Salads',
+    tags: ['Seafood'],
   },
   {
-    id: "item-16",
-    name: "Peach & Burrata Salad",
+    id: 'item-16',
+    name: 'Peach & Burrata Salad',
     price: 20,
-    description: "Arugula, candied walnut, white balsamic, basil oil",
-    imageUrl: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=800",
-    category: "Salads",
-    tags: ["Vegetarian", "GF", "Nuts"]
+    description: 'Arugula, candied walnut, white balsamic, basil oil',
+    imageUrl:
+      'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=60&w=640',
+    category: 'Salads',
+    tags: ['Vegetarian', 'GF', 'Nuts'],
   },
 
   // Sides
   {
-    id: "item-17",
-    name: "Truffle Parmesan Fries",
+    id: 'item-17',
+    name: 'Truffle Parmesan Fries',
     price: 12,
-    description: "Hand-cut fries, truffle oil, grated parmesan, herbs",
-    imageUrl: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&q=80&w=800",
-    category: "Sides",
-    tags: ["Vegetarian", "GF"]
+    description: 'Hand-cut fries, truffle oil, grated parmesan, herbs',
+    imageUrl:
+      'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?auto=format&fit=crop&q=60&w=640',
+    category: 'Sides',
+    tags: ['Vegetarian', 'GF'],
   },
   {
-    id: "item-18",
-    name: "Charred Broccolini",
+    id: 'item-18',
+    name: 'Charred Broccolini',
     price: 10,
-    description: "Lemon zest, chili flake, toasted almonds",
-    imageUrl: "https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?auto=format&fit=crop&q=80&w=800",
-    category: "Sides",
-    tags: ["Vegetarian", "Spicy", "GF", "Nuts"]
+    description: 'Lemon zest, chili flake, toasted almonds',
+    imageUrl:
+      'https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?auto=format&fit=crop&q=60&w=640',
+    category: 'Sides',
+    tags: ['Vegetarian', 'Spicy', 'GF', 'Nuts'],
   },
   {
-    id: "item-19",
-    name: "Roasted Garlic Mash",
+    id: 'item-19',
+    name: 'Roasted Garlic Mash',
     price: 9,
-    description: "Yukon gold potato, cultured butter, chive",
-    imageUrl: "https://images.unsplash.com/photo-1585672840563-f2af2ced55c9?auto=format&fit=crop&q=80&w=800",
-    category: "Sides",
-    tags: ["Vegetarian", "GF"]
+    description: 'Yukon gold potato, cultured butter, chive',
+    imageUrl:
+      'https://images.unsplash.com/photo-1585672840563-f2af2ced55c9?auto=format&fit=crop&q=60&w=640',
+    category: 'Sides',
+    tags: ['Vegetarian', 'GF'],
   },
 ];

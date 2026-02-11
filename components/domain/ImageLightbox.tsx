@@ -1,8 +1,10 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { X } from "lucide-react";
-import Image from "next/image";
+import { optimizeUnsplashUrl } from '@/lib/image';
+import { motion } from 'framer-motion';
+import { X } from 'lucide-react';
+import Image from 'next/image';
+import { useMemo } from 'react';
 
 interface ImageLightboxProps {
   imageUrl: string;
@@ -12,6 +14,11 @@ interface ImageLightboxProps {
 }
 
 export function ImageLightbox({ imageUrl, name, description, onClose }: ImageLightboxProps) {
+  const zoomImageUrl = useMemo(
+    () => optimizeUnsplashUrl(imageUrl, { width: 1280, quality: 68 }),
+    [imageUrl],
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -41,10 +48,11 @@ export function ImageLightbox({ imageUrl, name, description, onClose }: ImageLig
         </motion.button>
 
         <Image
-          src={imageUrl}
+          src={zoomImageUrl}
           alt={name}
           fill
-          sizes="100vw"
+          quality={68}
+          sizes="(max-width: 768px) 100vw, 80vw"
           className="object-contain rounded-xl shadow-2xl"
           priority
         />

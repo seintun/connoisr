@@ -1,16 +1,16 @@
-import type { NextConfig } from "next";
-import withPWAInit from "@ducanh2912/next-pwa";
+import type { NextConfig } from 'next';
+import withPWAInit from '@ducanh2912/next-pwa';
 
 const withPWA = withPWAInit({
-  dest: "public",
-  disable: process.env.NODE_ENV === "development",
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
   workboxOptions: {
     runtimeCaching: [
       {
         urlPattern: /^https:\/\/.*\.(png|jpg|jpeg|svg|gif|webp)/,
-        handler: "CacheFirst",
+        handler: 'CacheFirst',
         options: {
-          cacheName: "external-images",
+          cacheName: 'external-images',
           expiration: {
             maxEntries: 50,
             maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
@@ -19,9 +19,9 @@ const withPWA = withPWAInit({
       },
       {
         urlPattern: /\/_next\/image\?url=.+/,
-        handler: "CacheFirst",
+        handler: 'CacheFirst',
         options: {
-          cacheName: "next-images",
+          cacheName: 'next-images',
           expiration: {
             maxEntries: 50,
             maxAgeSeconds: 30 * 24 * 60 * 60, // 30 Days
@@ -30,9 +30,9 @@ const withPWA = withPWAInit({
       },
       {
         urlPattern: /\/_next\/static\/.+/,
-        handler: "StaleWhileRevalidate",
+        handler: 'StaleWhileRevalidate',
         options: {
-          cacheName: "next-static",
+          cacheName: 'next-static',
           expiration: {
             maxEntries: 50,
             maxAgeSeconds: 24 * 60 * 60, // 24 Hours
@@ -41,9 +41,9 @@ const withPWA = withPWAInit({
       },
       {
         urlPattern: /\/api\/.*/,
-        handler: "StaleWhileRevalidate",
+        handler: 'StaleWhileRevalidate',
         options: {
-          cacheName: "api-cache",
+          cacheName: 'api-cache',
           expiration: {
             maxEntries: 50,
             maxAgeSeconds: 24 * 60 * 60, // 24 Hours
@@ -51,11 +51,10 @@ const withPWA = withPWAInit({
         },
       },
       {
-        urlPattern: ({ request }: { request: Request }) =>
-          request.mode === "navigate",
-        handler: "StaleWhileRevalidate",
+        urlPattern: ({ request }: { request: Request }) => request.mode === 'navigate',
+        handler: 'StaleWhileRevalidate',
         options: {
-          cacheName: "pages",
+          cacheName: 'pages',
           expiration: {
             maxEntries: 50,
             maxAgeSeconds: 24 * 60 * 60, // 24 Hours
@@ -72,10 +71,14 @@ const nextConfig: NextConfig = {
   // The empty turbopack config silences the warning about webpack config
   turbopack: {},
   images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    deviceSizes: [360, 540, 640, 750, 828, 1080, 1200],
+    imageSizes: [96, 128, 192, 256, 384],
     remotePatterns: [
       {
-        protocol: "https",
-        hostname: "images.unsplash.com",
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
       },
     ],
   },

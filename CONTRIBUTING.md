@@ -100,6 +100,11 @@ We welcome contributions to Connoisr! This document outlines the standards and s
 - `lib/`: Utility functions and constants.
 - `types/`: TypeScript definitions.
 
+## Engineering Conventions
+
+- AI + feature implementation conventions: `docs/engineering/AI_FEATURE_CONVENTIONS.md`
+- Agent entrypoint: `AGENTS.md`
+
 ## Aesthetic Guidelines (Vibrant Modernism)
 
 ### Mobile First Philosophy 📱

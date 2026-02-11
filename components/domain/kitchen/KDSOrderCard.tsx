@@ -28,6 +28,17 @@ function statusClass(status: KDSOrderViewModel['order']['status']): string {
 
 export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: KDSOrderCardProps) {
   const { order, groupedItems } = viewModel;
+  const collapsedPreviewCount = 3;
+  const visibleItems = isFocused ? groupedItems : groupedItems.slice(0, collapsedPreviewCount);
+  const hiddenItemsCount = Math.max(groupedItems.length - visibleItems.length, 0);
+  const modifiedItemCount = groupedItems.reduce(
+    (sum, item) => sum + (item.isModified ? item.count : 0),
+    0,
+  );
+  const standardItemCount = groupedItems.reduce(
+    (sum, item) => sum + (!item.isModified ? item.count : 0),
+    0,
+  );
 
   return (
     <article
@@ -35,7 +46,7 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
       aria-label={`Table ${order.tableId} order`}
       data-testid={`kitchen-order-card-${order.id}`}
       className={cn(
-        'flex max-h-[72vh] min-h-[16rem] flex-col overflow-hidden rounded-2xl border bg-[#121417] shadow-lg shadow-black/40 outline-none transition',
+        'flex h-[clamp(24rem,62vh,40rem)] min-h-[24rem] flex-col overflow-hidden rounded-2xl border bg-[#121417] shadow-lg shadow-black/40 outline-none transition',
         viewModel.isOverdue ? 'border-orange-500/80' : 'border-neutral-700',
         isFocused && 'ring-4 ring-cyan-400/90 ring-offset-2 ring-offset-black',
       )}
@@ -44,20 +55,34 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
     >
       <header className="flex items-start justify-between gap-3 border-b border-neutral-700 bg-black/30 px-4 py-3">
         <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-black tracking-tight text-white">Table {order.tableId}</h2>
-          {viewModel.isModified && (
-            <span
-              className="rounded-md border border-amber-300 bg-amber-400/20 px-2 py-0.5 text-xs font-extrabold uppercase tracking-widest text-amber-100"
-              data-testid={`kds-ticket-mod-badge-${order.id}`}
-            >
-              MOD
-            </span>
-          )}
-          {viewModel.isNew && (
-            <span className="rounded-md border border-emerald-300 bg-emerald-300/20 px-2 py-0.5 text-xs font-extrabold uppercase tracking-widest text-emerald-100">
-              NEW
-            </span>
-          )}
+          <div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-black tracking-tight text-white">
+                Table {order.tableId}
+              </h2>
+              {viewModel.isModified && (
+                <span
+                  className="rounded-md border border-amber-300 bg-amber-400/20 px-2 py-0.5 text-xs font-extrabold uppercase tracking-widest text-amber-100"
+                  data-testid={`kds-ticket-mod-badge-${order.id}`}
+                >
+                  MOD
+                </span>
+              )}
+              {viewModel.isNew && (
+                <span className="rounded-md border border-emerald-300 bg-emerald-300/20 px-2 py-0.5 text-xs font-extrabold uppercase tracking-widest text-emerald-100">
+                  NEW
+                </span>
+              )}
+            </div>
+            <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide">
+              <span className="rounded border border-amber-300/60 bg-amber-400/10 px-1.5 py-0.5 text-amber-100">
+                Modified {modifiedItemCount}
+              </span>
+              <span className="rounded border border-emerald-300/60 bg-emerald-400/10 px-1.5 py-0.5 text-emerald-100">
+                Standard {standardItemCount}
+              </span>
+            </div>
+          </div>
         </div>
 
         <div className="text-right">
@@ -91,8 +116,10 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
         </div>
       </header>
 
-      <div className="flex-1 space-y-3 overflow-y-auto p-4">
-        {groupedItems.map((item) => (
+      <div
+        className={cn('flex-1 space-y-3 p-4', isFocused ? 'overflow-y-auto' : 'overflow-hidden')}
+      >
+        {visibleItems.map((item) => (
           <section
             key={item.key}
             className={cn(
@@ -125,6 +152,11 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
             </div>
           </section>
         ))}
+        {!isFocused && hiddenItemsCount > 0 && (
+          <div className="rounded-lg border border-cyan-400/50 bg-cyan-500/10 px-3 py-2 text-xs font-bold uppercase tracking-wide text-cyan-100">
+            +{hiddenItemsCount} more item{hiddenItemsCount > 1 ? 's' : ''} (focus to expand)
+          </div>
+        )}
       </div>
 
       <footer className="border-t border-neutral-700 bg-black/40 p-3">

@@ -1,7 +1,7 @@
 'use client';
 
 import { APP_NAME } from '@/lib/constants';
-import { ChefHat, Keyboard, Volume2, VolumeX } from 'lucide-react';
+import { Clock3, ChefHat, Keyboard, Volume2, VolumeX } from 'lucide-react';
 
 interface KDSHeaderMetrics {
   total: number;
@@ -36,6 +36,9 @@ export function KDSHeader({
   onToggleSound,
   inputMode,
 }: KDSHeaderProps) {
+  const controlBaseClass =
+    'inline-flex h-11 items-center justify-center gap-2 rounded-lg border px-3 text-xs font-extrabold uppercase tracking-wide whitespace-nowrap';
+
   const formattedTime =
     now === null
       ? '--:--:--'
@@ -59,26 +62,31 @@ export function KDSHeader({
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="rounded-md border border-neutral-600 bg-black/30 px-3 py-2 text-xs font-bold uppercase tracking-wide text-neutral-200">
+          <div
+            className={`${controlBaseClass} min-w-[126px] border-neutral-500 bg-neutral-900 text-neutral-100 tabular-nums`}
+          >
+            <Clock3 className="h-3.5 w-3.5 text-neutral-300" aria-hidden="true" />
             <span suppressHydrationWarning>{formattedTime}</span>
           </div>
-          <div className="inline-flex items-center gap-1 rounded-md border border-cyan-400/50 bg-cyan-500/10 px-2 py-1 text-xs font-bold uppercase tracking-wide text-cyan-100">
+          <div
+            className={`${controlBaseClass} min-w-[98px] border-cyan-400/50 bg-cyan-500/10 text-cyan-100`}
+          >
             <Keyboard className="h-3.5 w-3.5" aria-hidden="true" />
-            {inputMode}
+            {inputMode.toUpperCase()}
           </div>
           <button
             type="button"
             onClick={onToggleSound}
             data-testid="kds-sound-toggle"
-            className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-neutral-500 bg-neutral-800 px-3 py-2 text-sm font-bold text-neutral-100 hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300"
+            className={`${controlBaseClass} min-w-[128px] border-neutral-500 bg-neutral-800 text-neutral-100 hover:bg-neutral-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300`}
             aria-pressed={soundEnabled}
           >
             {soundEnabled ? (
-              <Volume2 className="h-4 w-4" aria-hidden="true" />
+              <Volume2 className="h-3.5 w-3.5" aria-hidden="true" />
             ) : (
-              <VolumeX className="h-4 w-4" aria-hidden="true" />
+              <VolumeX className="h-3.5 w-3.5" aria-hidden="true" />
             )}
-            <span>{soundEnabled ? 'Sound On' : 'Sound Off'}</span>
+            <span>{soundEnabled ? 'SOUND ON' : 'SOUND OFF'}</span>
           </button>
         </div>
       </div>

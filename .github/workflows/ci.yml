@@ -76,7 +76,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e:chromium -- --max-failures=1
       - if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: playwright-report-e2e_pr_chromium
           path: |
@@ -100,7 +100,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e:smoke
       - if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: playwright-report-e2e_push_smoke
           path: |
@@ -123,7 +123,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e:full
       - if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: playwright-report-e2e_nightly_full
           path: |

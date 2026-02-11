@@ -4,14 +4,8 @@ import { TAG_EMOJIS } from '@/lib/menu';
 import { optimizeUnsplashUrl } from '@/lib/image';
 import { cn } from '@/lib/utils';
 import { Minus, Plus, Trash2 } from 'lucide-react';
-import dynamic from 'next/dynamic';
 import Image from 'next/image';
-import React, { useEffect, useMemo, useState } from 'react';
-
-const ImageLightbox = dynamic(
-  () => import('@/components/domain/ImageLightbox').then((mod) => ({ default: mod.ImageLightbox })),
-  { ssr: false },
-);
+import React, { useMemo } from 'react';
 
 interface DinerMenuItemProps {
   id: string;
@@ -59,13 +53,7 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
           : 'shadow-sm hover:shadow-lg hover:-translate-y-0.5',
       )}
     >
-      <MenuItemImage
-        name={name}
-        imageUrl={cardImageUrl}
-        quantity={quantity}
-        description={description}
-        priority={priority}
-      />
+      <MenuItemImage name={name} imageUrl={cardImageUrl} quantity={quantity} priority={priority} />
 
       <div className="flex-1 p-3 md:p-4 flex flex-col justify-between min-h-fit">
         {/* Header Row: Title + Price */}
@@ -146,73 +134,34 @@ const MenuItemImage = React.memo(function MenuItemImage({
   name,
   imageUrl,
   quantity,
-  description,
   priority = false,
 }: {
   name: string;
   imageUrl: string;
   quantity: number;
-  description: string;
   priority?: boolean;
 }) {
-  const [isImageOpen, setIsImageOpen] = useState(false);
-  const [resolvedImageSrc, setResolvedImageSrc] = useState<string | null>(null);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setIsImageOpen(false);
-    };
-    if (isImageOpen) window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isImageOpen]);
-
   return (
-    <>
-      <div
-        className={cn(
-          'w-1/3 min-w-[100px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 cursor-zoom-in group select-none touch-manipulation',
-          isImageOpen && 'z-[100]',
-        )}
-        data-touchable="true"
-        data-testid={`menu-item-image-trigger-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-        onClick={() => setIsImageOpen(true)}
-      >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
-        <Image
-          src={imageUrl}
-          alt={name}
-          fill
-          quality={58}
-          priority={priority}
-          fetchPriority={priority ? 'high' : undefined}
-          loading={priority ? 'eager' : 'lazy'}
-          sizes="(max-width: 767px) 33vw, (max-width: 1023px) 46vw, (max-width: 1279px) 30vw, 22vw"
-          className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
-          onLoad={(event) => {
-            const img = event.currentTarget as HTMLImageElement;
-            if (img.currentSrc) {
-              setResolvedImageSrc(img.currentSrc);
-            }
-          }}
-        />
+    <div className="w-1/3 min-w-[100px] md:w-full md:aspect-[4/3] relative overflow-hidden shrink-0 group select-none">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10" />
+      <Image
+        src={imageUrl}
+        alt={name}
+        fill
+        quality={58}
+        priority={priority}
+        fetchPriority={priority ? 'high' : undefined}
+        loading={priority ? 'eager' : 'lazy'}
+        sizes="(max-width: 767px) 33vw, (max-width: 1023px) 46vw, (max-width: 1279px) 30vw, 22vw"
+        className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+      />
 
-        {quantity > 0 && (
-          <div className="absolute top-2 left-2 md:top-2.5 md:left-2.5 bg-white/95 backdrop-blur-sm text-foreground font-bold px-2 py-1 rounded-lg text-[9px] md:text-xs z-20 flex items-center gap-1 shadow-md border border-black/10">
-            <span className="text-primary font-bold">{quantity}×</span>
-          </div>
-        )}
-      </div>
-
-      {isImageOpen && (
-        <ImageLightbox
-          imageUrl={imageUrl}
-          cachedImageUrl={resolvedImageSrc ?? undefined}
-          name={name}
-          description={description}
-          onClose={() => setIsImageOpen(false)}
-        />
+      {quantity > 0 && (
+        <div className="absolute top-2 left-2 md:top-2.5 md:left-2.5 bg-white/95 backdrop-blur-sm text-foreground font-bold px-2 py-1 rounded-lg text-[9px] md:text-xs z-20 flex items-center gap-1 shadow-md border border-black/10">
+          <span className="text-primary font-bold">{quantity}×</span>
+        </div>
       )}
-    </>
+    </div>
   );
 });
 

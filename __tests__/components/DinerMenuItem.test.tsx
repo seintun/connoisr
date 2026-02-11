@@ -21,13 +21,6 @@ vi.mock('next/image', () => ({
   ),
 }));
 
-vi.mock('next/dynamic', () => ({
-  default: () => {
-    const MockComponent = () => <div>MockLightbox</div>;
-    return MockComponent;
-  },
-}));
-
 describe('DinerMenuItem', () => {
   const defaultProps = {
     id: '1',

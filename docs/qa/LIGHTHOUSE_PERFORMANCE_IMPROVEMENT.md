@@ -40,7 +40,7 @@
 6. Reduced route JavaScript execution on `/table/[id]`.
    - Removed `framer-motion` from `app/table/[id]/DinerPageClient.tsx` wrapper/render path.
    - Replaced animated `motion.*` controls in `components/domain/DinerMenuItem.tsx` with CSS transitions.
-   - Lazy-loaded `ImageLightbox` from `components/domain/DinerMenuItem.tsx` via `next/dynamic` so lightbox code is not part of initial critical route JS.
+   - Removed menu-image lightbox logic from `components/domain/DinerMenuItem.tsx`, eliminating that overlay code path from the diner route.
 7. Removed `framer-motion` from remaining startup UI components.
    - Replaced animation wrappers with CSS transitions in:
      - `components/domain/FloatingCart.tsx`

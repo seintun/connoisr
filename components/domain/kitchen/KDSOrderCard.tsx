@@ -130,65 +130,64 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
       onPointerDown={() => onFocus(order.id)}
       onFocus={() => onFocus(order.id)}
     >
-      <header className="flex items-start justify-between gap-3 border-b border-neutral-700 bg-black/30 px-4 py-3">
-        <div className="flex items-center gap-2">
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-black tracking-tight text-white">
-                Table {order.tableId}
-              </h2>
-              {viewModel.isModified && (
-                <span
-                  className="rounded-md border border-amber-300 bg-amber-400/20 px-2 py-0.5 text-xs font-extrabold uppercase tracking-widest text-amber-100"
-                  data-testid={`kds-ticket-mod-badge-${order.id}`}
-                >
-                  MOD
-                </span>
-              )}
-              {viewModel.isNew && (
-                <span className="rounded-md border border-emerald-300 bg-emerald-300/20 px-2 py-0.5 text-xs font-extrabold uppercase tracking-widest text-emerald-100">
-                  NEW
-                </span>
-              )}
-            </div>
-            <div className="mt-1 flex flex-wrap items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide">
-              <span className="rounded border border-amber-300/60 bg-amber-400/10 px-1.5 py-0.5 text-amber-100">
-                Modified {modifiedItemCount}
-              </span>
-              <span className="rounded border border-emerald-300/60 bg-emerald-400/10 px-1.5 py-0.5 text-emerald-100">
-                Standard {standardItemCount}
-              </span>
-            </div>
-          </div>
+      <header className="flex items-center justify-between gap-3 border-b border-neutral-700 bg-black/30 px-4 py-2.5">
+        <div className="min-w-0 flex items-center gap-2">
+          <h2 className="truncate text-[30px] font-black leading-none tracking-tight text-white">
+            Table {order.tableId}
+          </h2>
+          {viewModel.isModified && (
+            <span
+              className="rounded-md border border-amber-300 bg-amber-400/20 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-amber-100"
+              data-testid={`kds-ticket-mod-badge-${order.id}`}
+            >
+              MOD
+            </span>
+          )}
+          {viewModel.isNew && (
+            <span className="rounded-md border border-emerald-300 bg-emerald-300/20 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-widest text-emerald-100">
+              NEW
+            </span>
+          )}
+          <span className="rounded-md border border-amber-300/70 bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-100">
+            Modified {modifiedItemCount}
+          </span>
+          <span className="rounded-md border border-emerald-300/70 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-100">
+            Standard {standardItemCount}
+          </span>
         </div>
 
-        <div className="text-right">
+        <div className="flex shrink-0 items-center gap-2">
           <span
             className={cn(
-              'inline-flex rounded-md border px-2 py-1 text-xs font-extrabold uppercase tracking-wider',
+              'inline-flex h-7 items-center rounded-md border px-2 text-[11px] font-extrabold uppercase tracking-wider',
               statusClass(order.status),
             )}
           >
             {order.status}
           </span>
-          <div className="mt-1 flex items-center justify-end gap-1 text-sm font-bold text-neutral-100">
-            {viewModel.isOverdue ? (
-              <AlertTriangle className="h-4 w-4 text-orange-300" aria-hidden="true" />
-            ) : (
-              <Clock3 className="h-4 w-4 text-neutral-300" aria-hidden="true" />
+          <span
+            className={cn(
+              'inline-flex h-7 items-center gap-1 rounded-md border px-2 text-[12px] font-bold',
+              viewModel.isOverdue
+                ? 'border-orange-300/80 bg-orange-500/20 text-orange-100'
+                : 'border-neutral-500 bg-neutral-800/80 text-neutral-100',
             )}
-            <span className={cn(viewModel.isOverdue && 'text-orange-200')}>
-              {viewModel.elapsedMinutes}m
-            </span>
-          </div>
+          >
+            {viewModel.isOverdue ? (
+              <AlertTriangle className="h-3.5 w-3.5" aria-hidden="true" />
+            ) : (
+              <Clock3 className="h-3.5 w-3.5 text-neutral-300" aria-hidden="true" />
+            )}
+            <span>{viewModel.elapsedMinutes}m</span>
+          </span>
           {viewModel.isOverdue && (
-            <div
-              className="mt-1 inline-flex items-center gap-1 rounded-md border border-orange-300/80 bg-orange-500/20 px-2 py-0.5 text-[11px] font-black uppercase tracking-wide text-orange-100"
+            <span
+              className="inline-flex h-7 items-center gap-1 rounded-md border border-orange-300/80 bg-orange-500/20 px-2 text-[10px] font-black uppercase tracking-wide text-orange-100"
               data-testid={`kds-overdue-indicator-${order.id}`}
             >
               <AlertTriangle className="h-3 w-3" aria-hidden="true" />
               OVERDUE
-            </div>
+            </span>
           )}
         </div>
       </header>

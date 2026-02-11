@@ -20,7 +20,6 @@ describe('DinerMenuItem', () => {
     price: 15.50,
     description: 'A delicious test burger',
     onAdd: vi.fn(),
-    onModify: vi.fn(),
     onUpdateQuantity: vi.fn(),
   };
 
@@ -47,15 +46,6 @@ describe('DinerMenuItem', () => {
     
     expect(screen.queryByText('Add')).not.toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
-    expect(screen.getByTitle('Customize')).toBeInTheDocument();
-  });
-
-  it('calls onModify when clicking customize', () => {
-    render(<DinerMenuItem {...defaultProps} quantity={1} />);
-    
-    const customizeBtn = screen.getByTitle('Customize');
-    fireEvent.click(customizeBtn);
-    expect(defaultProps.onModify).toHaveBeenCalled();
   });
 
   it('renders tags correctly', () => {

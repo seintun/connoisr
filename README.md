@@ -26,7 +26,8 @@ We've pivoted to a premium "Modern Fine Dining" aesthetic, featuring materials f
 
 - **Real-Time State**: Orders sync instantly between Diner and Kitchen interfaces.
 - **Table Isolation**: Each table has its own isolated order session, ensuring data privacy and correct order tracking.
-- **Smart KDS**: Orders change color based on wait time (Coral -> Indigo -> Amber -> Emerald).
+- **Functional KDS**: Orders change color based on status and customization (Emerald for Standard, Amber for Custom).
+- **Instance-Based Cart**: Precise item tracking allows for individual customizations even within large orders.
 - **Offline-First**: Fully capable PWA with service worker caching and offline fallback.
 - **Installable**: Add to home screen support on iOS and Android.
 - **Frictionless Checkout**: Integrated Web Payment API support (simulated).

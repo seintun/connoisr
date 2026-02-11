@@ -55,7 +55,7 @@ export function KDSTicket({ order, onStatusUpdate }: KDSTicketProps) {
         {order.items.map((item) => {
           const displayNote = item.notes || item.options?.note;
           return (
-            <div key={item.id} className="flex justify-between items-center text-foreground/90">
+            <div key={item.instanceId} className="flex justify-between items-center text-foreground/90">
               <div className="flex items-center gap-2">
                 <span className="font-bold font-sans bg-foreground/5 px-2 py-0.5 rounded-md text-sm">
                   {item.quantity}x

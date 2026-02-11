@@ -23,7 +23,6 @@ interface DinerMenuItemProps {
   description: string;
   imageUrl?: string;
   onAdd: () => void;
-  onModify: () => void;
   quantity?: number;
   onUpdateQuantity?: (quantity: number) => void;
   tags?: string[];
@@ -37,7 +36,6 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
   description,
   imageUrl = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=800",
   onAdd,
-  onModify,
   quantity = 0,
   onUpdateQuantity,
   tags = [],
@@ -132,7 +130,6 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
         <MenuItemControls
           quantity={quantity}
           onAdd={onAdd}
-          onModify={onModify}
           onUpdateQuantity={onUpdateQuantity}
         />
       </div>
@@ -212,12 +209,10 @@ const MenuItemImage = React.memo(function MenuItemImage({
 const MenuItemControls = React.memo(function MenuItemControls({
   quantity,
   onAdd,
-  onModify,
   onUpdateQuantity,
 }: {
   quantity: number;
   onAdd: () => void;
-  onModify: () => void;
   onUpdateQuantity?: (q: number) => void;
 }) {
   return (
@@ -277,16 +272,6 @@ const MenuItemControls = React.memo(function MenuItemControls({
         </motion.button>
       )}
 
-      {/* Customize Button - Always Visible */}
-      <motion.button
-        onClick={onModify}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="py-2 md:py-2.5 px-2 md:px-2.5 bg-secondary/60 text-secondary-foreground rounded-lg md:rounded-lg flex items-center justify-center gap-1 hover:bg-secondary/80 transition-all duration-200 cursor-pointer border border-border/40 flex-shrink-0"
-        title="Customize"
-      >
-        <span className="text-xs md:text-sm">✏️</span>
-      </motion.button>
     </div>
   );
 });

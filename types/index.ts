@@ -1,10 +1,10 @@
 export interface CartItem {
-  id: string;
+  instanceId: string;
   menuItemId: string;
   name: string;
   category: string;
   price: number;
-  quantity: number;
+  quantity: number; // Deprecated: Always 1 for instances, but kept for compatibility during refactor if needed, or we can just remove it. Let's keep it as always 1 for now to minimize breakage until we fix all usages.
   notes?: string;
   options?: {
     spiciness?: string;
@@ -16,6 +16,7 @@ export interface CartItem {
   isCustomized?: boolean;
   tags?: string[];
   orderedByName?: string;
+  status: 'PENDING' | 'SENT';
 }
 
 export interface TableSession {

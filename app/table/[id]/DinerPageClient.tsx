@@ -33,6 +33,7 @@ export default function DinerPageClient() {
   const isOnline = useOnlineStatus();
 
   const [selectedItemForCustomization, setSelectedItemForCustomization] = useState<(typeof MENU_ITEMS)[0] | null>(null);
+  const [editingCartItem, setEditingCartItem] = useState<CartItem | null>(null);
 
   // Memoize categories to avoid recomputing on every render
   const categories = useMemo(
@@ -42,54 +43,57 @@ export default function DinerPageClient() {
 
   // Helper to find item quantity in cart - only counts UNMODIFIED items for CURRENT user
   const getItemQuantity = useCallback((menuItemId: string) => {
-    return session?.cart.find(i => 
+    // We filter all matching instances and sum them (since each is 1, length is count)
+    return session?.cart.filter(i => 
       i.menuItemId === menuItemId && 
       !i.isCustomized && 
       i.orderedByName === userName
-    )?.quantity || 0;
+    ).length || 0;
   }, [session?.cart, userName]);
 
   const handleUpdateQuantity = useCallback((menuItemId: string, newQuantity: number) => {
-    // Find the cart item ID for the UNMODIFIED version of this menu item for CURRENT user
-    const cartItemId = session?.cart.find(i => 
-      i.menuItemId === menuItemId && 
-      !i.isCustomized && 
-      i.orderedByName === userName
-    )?.id;
+    // For update logic, we need to know current count.
+    const currentCount = getItemQuantity(menuItemId);
+    const diff = newQuantity - currentCount;
     
-    if (!cartItemId) {
-        if (newQuantity > 0) {
-            const item = MENU_ITEMS.find(i => i.id === menuItemId);
-            if (item) {
-                addItem({
-                    menuItemId: item.id,
-                    name: item.name,
-                    category: item.category,
-                    price: item.price,
-                    tags: item.tags,
-                    quantity: newQuantity,
-                    orderedByName: userName || undefined,
-                });
-            }
-        }
-        return;
-    }
+    if (diff === 0) return;
 
-    if (newQuantity <= 0) {
-        removeItem(cartItemId);
+    if (diff > 0) {
+        // Add diff amount
+        const item = MENU_ITEMS.find(i => i.id === menuItemId);
+        if (item) {
+             addItem({
+                menuItemId: item.id,
+                name: item.name,
+                category: item.category,
+                price: item.price,
+                tags: item.tags,
+                quantity: diff, // We pass diff as quantity to be exploded by reducer
+                orderedByName: userName || undefined,
+            });
+        }
     } else {
-        updateItemQuantity(cartItemId, newQuantity);
+        // Remove instances
+        const instance = session?.cart.find(i => 
+             i.menuItemId === menuItemId && 
+             !i.isCustomized && 
+             i.orderedByName === userName
+        );
+        
+        if (instance) {
+             updateItemQuantity(instance.instanceId, newQuantity);
+        }
     }
-  }, [session?.cart, addItem, removeItem, updateItemQuantity, userName]);
+  }, [session?.cart, addItem, removeItem, updateItemQuantity, userName, getItemQuantity]);
 
   // Memoize derived values
   const itemCount = useMemo(
-    () => session?.cart.reduce((acc, item) => acc + item.quantity, 0) || 0,
+    () => session?.cart.length || 0, // Since quantity is 1 per instance
     [session?.cart]
   );
 
   const cartTotal = useMemo(
-    () => (session?.cart.reduce((acc, item) => acc + item.price * item.quantity, 0) || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
+    () => (session?.cart.reduce((acc, item) => acc + item.price, 0) || 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}),
     [session?.cart]
   );
 
@@ -113,16 +117,30 @@ export default function DinerPageClient() {
     });
   }, [addItem, userName]);
 
-  const handleModifyItem = useCallback((item: typeof MENU_ITEMS[number]) => {
-    setSelectedItemForCustomization(item);
+
+  const handleEditCartItem = useCallback((cartItem: CartItem) => {
+      const menuItem = MENU_ITEMS.find(i => i.id === cartItem.menuItemId);
+      if (menuItem) {
+          setEditingCartItem(cartItem);
+          setSelectedItemForCustomization(menuItem);
+      }
   }, []);
 
   const handleAddToCartFromDrawer = useCallback((customizedItem: Partial<CartItem>) => {
+      // If we were editing, remove the old one first
+      if (editingCartItem) {
+          removeItem(editingCartItem.instanceId);
+      }
+
       if (customizedItem.menuItemId) {
-          addItem({ ...customizedItem, orderedByName: userName || undefined } as any);
+          addItem({ 
+              ...customizedItem, 
+              orderedByName: userName || undefined
+           } as any);
       }
       setSelectedItemForCustomization(null);
-  }, [addItem, userName]);
+      setEditingCartItem(null);
+  }, [addItem, userName, editingCartItem, removeItem]);
 
   const showMenu = !!userName && isReady;
 
@@ -168,7 +186,6 @@ export default function DinerPageClient() {
                    quantity={getItemQuantity(item.id)}
                    onUpdateQuantity={(qty) => handleUpdateQuantity(item.id, qty)}
                    onAdd={() => handleAddItem(item)}
-                   onModify={() => handleModifyItem(item)}
                     priority={index < 4}
                  />
                ))}
@@ -188,12 +205,20 @@ export default function DinerPageClient() {
           onOpen={() => setIsCartOpen(true)}
         />
 
-        <Checkout isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+        <Checkout 
+            isOpen={isCartOpen} 
+            onClose={() => setIsCartOpen(false)} 
+            onEditItem={handleEditCartItem}
+        />
         
         <CustomizationDrawer 
             isOpen={!!selectedItemForCustomization}
-            onClose={() => setSelectedItemForCustomization(null)}
+            onClose={() => {
+                setSelectedItemForCustomization(null);
+                setEditingCartItem(null);
+            }}
             item={selectedItemForCustomization}
+            initialOptions={editingCartItem?.options}
             onAddToCart={handleAddToCartFromDrawer}
         />
       </motion.div>

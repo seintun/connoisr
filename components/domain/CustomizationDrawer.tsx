@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { CartItem } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChefHat, Flame, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface CustomizationDrawerProps {
   isOpen: boolean;
@@ -17,6 +17,13 @@ interface CustomizationDrawerProps {
     category: string;
     tags?: string[];
   } | null;
+  initialOptions?: {
+    spiciness?: string;
+    allergens?: string;
+    removals?: string;
+    note?: string;
+    [key: string]: string | undefined;
+  };
   onAddToCart: (customizedItem: Partial<CartItem>) => void;
 }
 
@@ -40,11 +47,30 @@ export function CustomizationDrawer({
   isOpen,
   onClose,
   item,
+  initialOptions,
   onAddToCart,
 }: CustomizationDrawerProps) {
-  const [intensity, setIntensity] = useState(100);
-  const [chefNote, setChefNote] = useState("");
+  // Parse initial intensity from "100%" string if present
+  const initialIntensity = initialOptions?.intensity 
+    ? parseInt(initialOptions.intensity.replace('%', '')) 
+    : 100;
+
+  const [intensity, setIntensity] = useState(initialIntensity);
+  const [chefNote, setChefNote] = useState(initialOptions?.note || "");
   const [quantity, setQuantity] = useState(1);
+
+  // Reset state when item changes or drawer opens/closes (handled somewhat by key or mounting, but let's be safe if we reuse)
+  // Actually, useState initial value only runs once. If we recycle the drawer, we need useEffect.
+  useEffect(() => {
+    if (isOpen) {
+        const initInt = initialOptions?.intensity 
+            ? parseInt(initialOptions.intensity.replace('%', '')) 
+            : 100;
+        setIntensity(initInt);
+        setChefNote(initialOptions?.note || "");
+        setQuantity(1);
+    }
+  }, [isOpen, initialOptions]);
 
   const handleAddToCart = () => {
     if (!item) return;

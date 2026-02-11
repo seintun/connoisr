@@ -3,7 +3,7 @@
 import { useKitchenOrders } from "@/hooks/useKitchenOrders";
 import { APP_NAME } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { Order } from "@/types";
+import { CartItem, Order } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
 import { AlertTriangle, CheckCircle2, ChefHat, Clock, Flame, Timer } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -40,6 +40,27 @@ export default function KitchenPage() {
     }
   };
 
+  // Helper to group identical items for KDS display
+  const groupOrderItems = (items: CartItem[]) => {
+      const groups: Record<string, { item: CartItem; count: number; instances: CartItem[] }> = {};
+      
+      items.forEach(item => {
+         // Identity key for Kitchen: MenuItemID + Options + Notes + OrderedBy
+         // We include notes in grouping
+         const optionsKey = JSON.stringify(item.options || {});
+         const notesKey = item.notes || '';
+         const key = `${item.menuItemId}|${optionsKey}|${notesKey}|${item.orderedByName || ''}`;
+         
+         if (!groups[key]) {
+             groups[key] = { item, count: 0, instances: [] };
+         }
+         groups[key].count++;
+         groups[key].instances.push(item);
+      });
+      
+      return Object.values(groups);
+  };
+
   return (
     <div className="p-6">
       <header className="flex items-center justify-between mb-8">
@@ -52,13 +73,14 @@ export default function KitchenPage() {
           <span>{new Date(now).toLocaleTimeString()}</span>
         </div>
       </header>
-
+ 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <AnimatePresence mode="popLayout">
           {activeOrders.map((order) => {
             const timeDiff = Math.floor((now - order.createdAt) / 60000);
             const isOverdue = timeDiff >= OVERDUE_THRESHOLD_MIN && order.status !== "ready";
             const statusColors = getStatusColor(order.status, timeDiff);
+            const groupedItems = groupOrderItems(order.items);
 
             return (
               <motion.div
@@ -101,12 +123,28 @@ export default function KitchenPage() {
 
                 {/* Order Items */}
                 <div className="p-4 space-y-4 flex-1">
-                  {order.items.map((item, idx) => {
+                  {groupedItems.map((group, idx) => {
+                    const item = group.item;
                     const hasOptions =
                       item.options && Object.keys(item.options).length > 0;
                     const hasNotes = !!item.notes;
                     const isCustom =
                       item.isCustomized || hasOptions || hasNotes;
+
+                    // Functional Color Theory
+                    // Standard: Emerald (Calm, Standard)
+                    // Custom: Amber (Caution, Attention)
+                    const itemContainerClass = isCustom 
+                        ? "bg-amber-500/10 border border-amber-500/30" // Amber for custom
+                        : "bg-emerald-500/5 border border-emerald-500/10"; // Emerald for standard
+
+                    const quantityBadgeClass = isCustom
+                        ? "bg-amber-500 text-amber-950" 
+                        : "bg-emerald-500/20 text-emerald-400";
+
+                    const itemNameClass = isCustom
+                        ? "text-amber-200"
+                        : "text-neutral-200";
 
                     // Helper for Spiciness Color
                     const getSpicinessColor = (level: string) => {
@@ -129,22 +167,23 @@ export default function KitchenPage() {
                         key={idx}
                         className={cn(
                           "flex flex-col gap-3 p-3 rounded-xl transition-colors",
-                          isCustom
-                            ? "bg-white/5 border border-white/5"
-                            : "hover:bg-white/5",
+                          itemContainerClass
                         )}
                       >
                         {/* Main Item Row */}
                         <div className="flex items-start gap-4">
-                          <span className="shrink-0 flex items-center justify-center w-10 h-10 rounded-lg bg-neutral-200 text-neutral-900 font-bold font-mono text-xl shadow-sm">
-                            {item.quantity}
+                          <span className={cn(
+                              "shrink-0 flex items-center justify-center w-10 h-10 rounded-lg font-bold font-mono text-xl shadow-sm",
+                              quantityBadgeClass
+                          )}>
+                            {group.count}
                           </span>
                           <div className="flex-1 min-w-0 pt-1">
                             <div className="flex items-baseline justify-between gap-2">
                               <span
                                 className={cn(
                                   "font-bold text-lg leading-tight",
-                                  isCustom ? "text-white" : "text-neutral-200",
+                                  itemNameClass
                                 )}
                               >
                                 {item.name}

@@ -3,17 +3,19 @@
 import { useTableSession } from "@/components/providers/TableSessionProvider";
 import { MENU_ITEMS, TAG_EMOJIS } from "@/lib/menu";
 import { cn } from "@/lib/utils";
+import { CartItem } from "@/types";
 import { AnimatePresence, motion } from "framer-motion";
-import { CheckCircle2, ChefHat, Clock, CreditCard, Minus, Plus, Trash2, X } from "lucide-react";
+import { CheckCircle2, ChefHat, Clock, CreditCard, Minus, Pencil, Plus, Trash2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 interface CheckoutProps {
   isOpen: boolean;
   onClose: () => void;
+  onEditItem?: (item: CartItem) => void;
 }
 
-export function Checkout({ isOpen, onClose }: CheckoutProps) {
-  const { session, clearCart, updateItemQuantity, sendOrder } = useTableSession();
+export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
+  const { session, clearCart, updateItemQuantity, sendOrder, removeItem, addItem } = useTableSession();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [idleMinutes, setIdleMinutes] = useState(0);
@@ -39,14 +41,13 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
   if (!session) return null;
 
   const cartSubtotal = session.cart.reduce(
-    (acc, item) => acc + item.price * item.quantity,
+    (acc, item) => acc + item.price, // Quantity is always 1 per instance
     0
   );
   
   const ordersTotal = (session.orders || []).reduce((acc, order) => acc + order.total, 0);
   const grandSubtotal = cartSubtotal + ordersTotal;
   const tax = grandSubtotal * 0.08;
-  const total = grandSubtotal + tax;
 
   const hasCartItems = session.cart.length > 0;
   const hasOrders = (session.orders || []).length > 0;
@@ -77,10 +78,9 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       // In a real app, we'd mark orders as paid in the backend
-      clearCart(); // Clear any remaining cart items
-      // We might want to clear the session or mark status as paid
-      // session.orders = []; // This would need a clearSession method
+      clearCart(); 
       location.reload(); // Simple reset for prototype
       alert("Payment successful! (Simulated)");
     } catch (err) {
@@ -91,18 +91,65 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
     }
   };
 
-  const groupItems = (items: typeof session.cart) => {
-    return Object.entries(
-      items.reduce((groups, item) => {
-        const category = item.category || 
-          MENU_ITEMS.find(m => m.id === item.menuItemId)?.category || 
-          "Other";
-          
-        if (!groups[category]) groups[category] = [];
-        groups[category].push(item);
-        return groups;
-      }, {} as Record<string, typeof items>)
-    );
+  // Group instances by identity for display
+  const groupInstances = (items: CartItem[]) => {
+    const groups: Record<string, { item: CartItem; count: number; instances: CartItem[] }> = {};
+    
+    items.forEach(item => {
+       // Identity key: MenuItemID + Options + OrderedBy
+       // We ignore instanceId for grouping
+       const optionsKey = JSON.stringify(item.options || {});
+       const key = `${item.menuItemId}|${optionsKey}|${item.orderedByName || ''}`;
+       
+       if (!groups[key]) {
+           groups[key] = { item, count: 0, instances: [] };
+       }
+       groups[key].count++;
+       groups[key].instances.push(item);
+    });
+    
+    return Object.values(groups);
+  };
+
+  const groupedCartItems = groupInstances(session.cart);
+
+  // Group by Category for display headers
+  const getCategoryGroups = (groupedItems: ReturnType<typeof groupInstances>) => {
+      const catGroups: Record<string, typeof groupedItems> = {};
+      
+      groupedItems.forEach(group => {
+          const category = group.item.category;
+          if (!catGroups[category]) catGroups[category] = [];
+          catGroups[category].push(group);
+      });
+      
+      return Object.entries(catGroups);
+  };
+
+  const categoryGroups = getCategoryGroups(groupedCartItems);
+
+  const handleIncrement = (group: { item: CartItem; count: number; instances: CartItem[] }) => {
+     // To increment, we just add a duplicate of one of the instances
+     const template = group.instances[0];
+     addItem({
+         menuItemId: template.menuItemId,
+         name: template.name,
+         category: template.category,
+         price: template.price,
+         tags: template.tags,
+         options: template.options,
+         isCustomized: template.isCustomized,
+         orderedByName: template.orderedByName,
+         quantity: 1 // Add 1 new instance
+     });
+  };
+
+  const handleDecrement = (group: { item: CartItem; count: number; instances: CartItem[] }) => {
+      // Remove the last instance in the group
+      const instanceToRemove = group.instances[group.instances.length - 1];
+      if (instanceToRemove) {
+          removeItem(instanceToRemove.instanceId);
+      }
   };
 
   return (
@@ -169,17 +216,17 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                             </span>
                           </div>
                         <div className="space-y-1 pl-2 border-l-2 border-border/50">
-                           {order.items.map((item) => (
-                             <div key={item.id} className="py-1 pr-2">
+                           {order.items.map((item, idx) => (
+                             <div key={idx} className="py-1 pr-2">
                                <div className="flex justify-between items-baseline">
                                  <div className="flex items-baseline gap-2">
-                                   <span className="text-xs font-medium text-foreground/80">{item.quantity}x</span>
+                                   <span className="text-xs font-medium text-foreground/80">1x</span>
                                    <span className="text-xs text-foreground/70">{item.name}</span>
                                    {item.orderedByName && (
                                      <span className="text-[9px] text-muted-foreground/60 font-medium">· {item.orderedByName}</span>
                                    )}
                                  </div>
-                                 <span className="text-xs font-medium text-foreground/50">${(item.price * item.quantity).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
+                                 <span className="text-xs font-medium text-foreground/50">${item.price.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>
                                </div>
                                {/* Customization Options */}
                                {item.options && Object.keys(item.options).length > 0 && (
@@ -259,28 +306,42 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                       </motion.div>
                     )}
 
-                    {groupItems(session.cart).map(([category, items]) => (
+                    {categoryGroups.map(([category, groups]) => (
                       <div key={category} className="space-y-1">
-                        <h4 className="font-medium text-[10px] text-muted-foreground/50 uppercase tracking-[0.15em] px-0.5">
+                        <h4 className="font-medium text-[10px] text-muted-foreground/50 uppercase tracking-[0.15em] px-0.5 mt-2">
                           {category}
                         </h4>
                         <div className="space-y-1">
-                          {items.map((item) => (
+                          {groups.map((group) => {
+                             const item = group.item;
+                             return (
                             <div 
-                              key={item.id} 
+                              key={`${item.menuItemId}-${JSON.stringify(item.options)}`}
                               className="p-2 rounded-xl bg-card border border-amber-200/50 dark:border-amber-500/20 shadow-sm relative overflow-hidden group"
                             >
                               {/* Background dash pattern for "draft" feel */}
                               <div className="absolute inset-0 border-2 border-dashed border-amber-300/40 dark:border-amber-500/20 rounded-xl pointer-events-none" />
 
                               <div className="relative">
-                                {/* Row 1: Name & Total Price */}
+                                {/* Row 1: Name & Total Price & Edit Button */}
                                 <div className="flex justify-between items-start mb-1 gap-2">
-                                  <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 break-all">
-                                    {item.name}
-                                  </span>
+                                  <div className="flex flex-col gap-0.5 min-w-0">
+                                      <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 break-all">
+                                        {item.name}
+                                      </span>
+                                      {/* Edit Button for Split Logic */}
+                                      {onEditItem && (
+                                          <button 
+                                            onClick={() => onEditItem(group.instances[0])}
+                                            className="text-[10px] text-primary hover:text-primary/80 font-medium flex items-center gap-1 w-fit"
+                                          >
+                                            <Pencil className="w-3 h-3" />
+                                            {group.count > 1 ? "Modify one" : "Edit Details"}
+                                          </button>
+                                      )}
+                                  </div>
                                   <span className="font-bold text-[13px] text-foreground tabular-nums shrink-0">
-                                    ${(item.price * item.quantity).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                                    ${(item.price * group.count).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                                   </span>
                                 </div>
 
@@ -348,23 +409,23 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                                    {/* Controls */}
                                     <div className="flex items-center gap-0.5 bg-muted/60 rounded-lg p-0.5 ml-auto">
                                       <button 
-                                        onClick={() => updateItemQuantity(item.id, item.quantity - 1)}
+                                        onClick={() => handleDecrement(group)}
                                         className={cn(
                                           "w-7 h-7 rounded-md flex items-center justify-center transition-all active:scale-95 shadow-sm",
-                                          item.quantity === 1
+                                          group.count === 1
                                             ? "bg-white dark:bg-zinc-800 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
                                             : "bg-white dark:bg-zinc-800 text-muted-foreground hover:text-foreground"
                                         )}
                                       >
-                                        {item.quantity === 1 ? <Trash2 className="w-3.5 h-3.5" /> : <Minus className="w-3.5 h-3.5" />}
+                                        {group.count === 1 ? <Trash2 className="w-3.5 h-3.5" /> : <Minus className="w-3.5 h-3.5" />}
                                       </button>
                                       
                                       <span className="font-mono font-bold text-xs w-6 text-center text-foreground tabular-nums">
-                                        {item.quantity}
+                                        {group.count}
                                       </span>
 
                                       <button 
-                                        onClick={() => updateItemQuantity(item.id, item.quantity + 1)}
+                                        onClick={() => handleIncrement(group)}
                                         className="w-7 h-7 rounded-md bg-foreground text-background flex items-center justify-center hover:opacity-90 transition-all active:scale-95 shadow-sm"
                                       >
                                         <Plus className="w-3.5 h-3.5" />
@@ -373,10 +434,10 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
                                 </div>
                               </div>
                             </div>
-                        ))}
+                          )})}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                   </div> {/* close amber wrapper */}
                 </div>
               )}
@@ -406,7 +467,7 @@ export function Checkout({ isOpen, onClose }: CheckoutProps) {
 
                 {hasCartItems && (
                   <div className="mt-2 pt-2 border-t border-dashed border-border/40 flex justify-between items-center text-[10px]">
-                     <span className="text-muted-foreground font-medium">+ {session.cart.length} pending (${session.cart.reduce((a, b) => a + (b.price * b.quantity), 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})})</span>
+                     <span className="text-muted-foreground font-medium">+ {session.cart.length} pending (${session.cart.reduce((a, b) => a + b.price, 0).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})})</span>
                      <div className="flex gap-1 items-baseline">
                        <span className="font-medium text-muted-foreground">Grand Total:</span>
                        <span className="font-bold text-foreground text-xs">${(grandSubtotal * 1.08).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span>

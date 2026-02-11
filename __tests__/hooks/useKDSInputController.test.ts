@@ -66,4 +66,32 @@ describe('useKDSInputController', () => {
     expect(updateOrderStatus).toHaveBeenNthCalledWith(1, 'o1', 'cooking');
     expect(updateOrderStatus).toHaveBeenNthCalledWith(2, 'o1', 'ordered');
   });
+
+  it('does not process action shortcuts while keyboard help overlay is open', () => {
+    const now = Date.now();
+    const viewModels = buildKDSOrderViewModels(
+      [buildOrder({ id: 'o1', status: 'ordered', createdAt: now })],
+      now,
+    );
+    const updateOrderStatus = vi.fn();
+
+    const { result } = renderHook(() =>
+      useKDSInputController({
+        orders: viewModels,
+        updateOrderStatus,
+      }),
+    );
+
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: '?' }));
+    });
+
+    expect(result.current.showShortcuts).toBe(true);
+
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+    });
+
+    expect(updateOrderStatus).not.toHaveBeenCalled();
+  });
 });

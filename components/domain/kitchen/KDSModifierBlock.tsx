@@ -11,6 +11,14 @@ interface KDSModifierBlockProps {
   kitchenNote: string | null;
 }
 
+function toTestIdFragment(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 function tokenClassForTone(tone: KDSModifierToken['tone']): string {
   switch (tone) {
     case 'danger':
@@ -36,7 +44,7 @@ export function KDSModifierBlock({ orderId, itemKey, tokens, kitchenNote }: KDSM
           {tokens.map((token) => (
             <span
               key={`${itemKey}-${token.id}`}
-              data-testid={`kds-modifier-token-${token.label.toLowerCase()}-${orderId}`}
+              data-testid={`kds-modifier-token-${toTestIdFragment(token.id)}-${toTestIdFragment(itemKey)}-${orderId}`}
               className={cn(
                 'inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-semibold uppercase tracking-wide',
                 tokenClassForTone(token.tone),

@@ -163,6 +163,10 @@ export function useKDSInputController({ orders, updateOrderStatus }: UseKDSInput
         return;
       }
 
+      if (showShortcuts) {
+        return;
+      }
+
       switch (event.key) {
         case 'ArrowDown':
           event.preventDefault();
@@ -210,7 +214,7 @@ export function useKDSInputController({ orders, updateOrderStatus }: UseKDSInput
 
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [moveFocus, advanceFocusedOrder, jumpTo, undoLastAction]);
+  }, [moveFocus, advanceFocusedOrder, jumpTo, undoLastAction, showShortcuts]);
 
   const actionHint = focusedOrder
     ? getNextActionLabel(focusedOrder.order.status)

@@ -77,6 +77,7 @@ test.describe('Multi-client Synchronization', () => {
     await expect(ticket.getByText('cooking', { exact: false })).toBeVisible();
 
     await dinerPage.getByTestId('cart-trigger-btn').click();
+    await expect(dinerPage.getByTestId('checkout-sheet')).toBeVisible();
     await expect(dinerPage.getByTestId('checkout-sheet')).toContainText(/Preparing/i);
   });
 });

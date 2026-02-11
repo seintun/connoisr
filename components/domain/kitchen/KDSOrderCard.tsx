@@ -3,9 +3,9 @@
 import { KDSModifierBlock } from '@/components/domain/kitchen/KDSModifierBlock';
 import { KDSStatusAction } from '@/components/domain/kitchen/KDSStatusAction';
 import type { KDSOrderViewModel } from '@/features/kitchen/domain/kdsSelectors';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { cn } from '@/lib/utils';
 import { AlertTriangle, Clock3 } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 interface KDSOrderCardProps {
   viewModel: KDSOrderViewModel;
@@ -51,7 +51,7 @@ function statusClass(status: KDSOrderViewModel['order']['status']): string {
 }
 
 export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: KDSOrderCardProps) {
-  const [isDesktopLayout, setIsDesktopLayout] = useState(false);
+  const isDesktopLayout = useMediaQuery('(min-width: 768px)');
   const { order, groupedItems } = viewModel;
   const collapsedPreviewCount = 3;
   const visibleItems = isFocused ? groupedItems : groupedItems.slice(0, collapsedPreviewCount);
@@ -71,18 +71,6 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
     (sum, item) => sum + (!item.isModified ? item.count : 0),
     0,
   );
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
-      return;
-    }
-
-    const query = window.matchMedia('(min-width: 768px)');
-    const syncLayout = () => setIsDesktopLayout(query.matches);
-    syncLayout();
-    query.addEventListener('change', syncLayout);
-    return () => query.removeEventListener('change', syncLayout);
-  }, []);
 
   const renderItem = (item: (typeof visibleItems)[number]) => {
     const placeModifierRight = isFocused && item.isModified;

@@ -128,6 +128,7 @@ describe('Checkout', () => {
     expect(screen.getAllByText(/No:/)).toHaveLength(2);
     expect(screen.getByText('onion')).toBeInTheDocument();
     expect(screen.getByText('tomato')).toBeInTheDocument();
+    expect(screen.getByTestId('checkout-kitchen-user-group-alex')).toBeInTheDocument();
   });
 
   it('disables pay and send actions while offline', () => {
@@ -293,5 +294,50 @@ describe('Checkout', () => {
     expect(screen.getAllByText('Spiciness: Max')).toHaveLength(1);
     expect(screen.getByText('$10.00 ea')).toBeInTheDocument();
     expect(screen.getByText('"love"')).toBeInTheDocument();
+  });
+
+  it('groups pending items by ordered user with user name on top', () => {
+    mockSession.cart = [
+      {
+        instanceId: 'c1',
+        name: 'Burger',
+        price: 10,
+        quantity: 1,
+        menuItemId: 'm1',
+        category: 'Main',
+        status: 'PENDING',
+        orderedByName: 'Alex',
+      },
+      {
+        instanceId: 'c2',
+        name: 'Fries',
+        price: 5,
+        quantity: 1,
+        menuItemId: 'm2',
+        category: 'Sides',
+        status: 'PENDING',
+        orderedByName: 'Sam',
+      },
+      {
+        instanceId: 'c3',
+        name: 'Soda',
+        price: 3,
+        quantity: 1,
+        menuItemId: 'm3',
+        category: 'Drinks',
+        status: 'PENDING',
+        orderedByName: 'Alex',
+      },
+    ];
+
+    render(<Checkout isOpen={true} onClose={() => {}} />);
+
+    expect(screen.getByTestId('checkout-pending-user-group-alex')).toBeInTheDocument();
+    expect(screen.getByTestId('checkout-pending-user-group-sam')).toBeInTheDocument();
+    expect(screen.getAllByText('Alex')).toHaveLength(1);
+    expect(screen.getAllByText('Sam')).toHaveLength(1);
+    expect(screen.getByText('Burger')).toBeInTheDocument();
+    expect(screen.getByText('Fries')).toBeInTheDocument();
+    expect(screen.getByText('Soda')).toBeInTheDocument();
   });
 });

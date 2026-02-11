@@ -88,9 +88,20 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
   };
 
   type GroupedItem = { key: string; item: CartItem; count: number; instances: CartItem[] };
+  type UserGroupedItems = {
+    key: string;
+    label: string;
+    groups: GroupedItem[];
+    totalQuantity: number;
+  };
 
   const formatCurrency = (value: number) =>
     value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const toTestIdFragment = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '') || 'unassigned';
 
   // Group instances by display identity
   const groupInstances = useCallback((items: CartItem[]): GroupedItem[] => {
@@ -111,11 +122,44 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
     return Object.values(groups);
   }, []);
 
+  const groupByUser = useCallback((groups: GroupedItem[]): UserGroupedItems[] => {
+    const byUser = new Map<string, UserGroupedItems>();
+
+    groups.forEach((group) => {
+      const rawName = group.item.orderedByName?.trim() || '';
+      const key = rawName || '__unassigned__';
+      const label = rawName || 'Unassigned';
+
+      const existing = byUser.get(key);
+      if (existing) {
+        existing.groups.push(group);
+        existing.totalQuantity += group.count;
+      } else {
+        byUser.set(key, {
+          key,
+          label,
+          groups: [group],
+          totalQuantity: group.count,
+        });
+      }
+    });
+
+    return Array.from(byUser.values());
+  }, []);
+
   const groupedCartItems = useMemo(() => groupInstances(cartItems), [cartItems, groupInstances]);
+  const groupedPendingByUser = useMemo(
+    () => groupByUser(groupedCartItems),
+    [groupByUser, groupedCartItems],
+  );
 
   const groupedKitchenOrders = useMemo(
-    () => sortedOrders.map((order) => ({ order, groups: groupInstances(order.items) })),
-    [sortedOrders, groupInstances],
+    () =>
+      sortedOrders.map((order) => {
+        const groups = groupInstances(order.items);
+        return { order, userGroups: groupByUser(groups) };
+      }),
+    [sortedOrders, groupInstances, groupByUser],
   );
 
   if (!hasCartItems && !hasOrders) {
@@ -197,7 +241,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                   </div>
 
                   <div className="space-y-4">
-                    {groupedKitchenOrders.map(({ order, groups }) => (
+                    {groupedKitchenOrders.map(({ order, userGroups }) => (
                       <div key={order.id} className="opacity-80 grayscale-[0.3]">
                         <div className="flex items-center gap-2 mb-2 px-1">
                           <CheckCircle2
@@ -227,80 +271,89 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                             })}
                           </span>
                         </div>
-                        <div className="space-y-1 pl-2 border-l-2 border-border/50">
-                          {groups.map((group) => {
-                            const item = group.item;
-                            const displayNote = item.notes || item.options?.note;
-                            const intensityText = item.options?.spiciness
-                              ? `Spiciness: ${item.options.spiciness}`
-                              : item.options?.sweetness
-                                ? `Sweetness: ${item.options.sweetness}`
-                                : null;
-                            const intensityClass = item.options?.sweetness
-                              ? 'text-[10px] text-pink-600 font-medium truncate'
-                              : 'text-[10px] text-orange-600 font-medium truncate';
-                            return (
-                              <div key={group.key} className="py-1 pr-2">
-                                <div className="flex justify-between items-start gap-2">
-                                  <div className="min-w-0 space-y-1">
-                                    <div className="flex items-baseline gap-2 min-w-0">
-                                      <span className="text-xs font-medium text-foreground/80">
-                                        {group.count}x
-                                      </span>
-                                      <span className="text-xs text-foreground/70 truncate">
-                                        {item.name}
-                                      </span>
-                                      {item.orderedByName && (
-                                        <span className="text-[10px] font-medium text-amber-900/40 dark:text-amber-100/40 bg-amber-100/50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-md flex items-center gap-1 shrink-0">
-                                          <User className="w-3 h-3 opacity-70" />
-                                          {item.orderedByName}
-                                        </span>
-                                      )}
-                                    </div>
-
-                                    <div className="flex items-center justify-between gap-2">
-                                      {intensityText ? (
-                                        <span className={intensityClass}>{intensityText}</span>
-                                      ) : (
-                                        <span />
-                                      )}
-                                      <span className="text-[10px] text-muted-foreground/70 tabular-nums shrink-0">
-                                        ${formatCurrency(item.price)} ea
-                                      </span>
-                                    </div>
-                                  </div>
-                                  <span className="text-xs font-medium text-foreground/50 tabular-nums shrink-0">
-                                    ${formatCurrency(item.price * group.count)}
-                                  </span>
-                                </div>
-
-                                {(item.isCustomized || item.options || displayNote) && (
-                                  <div className="pl-6 pt-1 space-y-1">
-                                    {item.options?.removals && (
-                                      <div className="text-[10px] text-red-500/80 flex items-start gap-1">
-                                        <span className="font-semibold shrink-0">No:</span>
-                                        <span className="line-through opacity-80">
-                                          {item.options.removals}
-                                        </span>
-                                      </div>
-                                    )}
-                                    {item.options?.allergens && (
-                                      <div className="text-[10px] text-emerald-600 flex items-center gap-1">
-                                        <span className="font-semibold">Dietary:</span>{' '}
-                                        {item.options.allergens}
-                                      </div>
-                                    )}
-                                    {displayNote && (
-                                      <div className="text-[10px] text-indigo-500/90 flex items-start gap-1 italic">
-                                        <span className="font-semibold not-italic">Note:</span>{' '}
-                                        &quot;{displayNote}&quot;
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
+                        <div className="space-y-2 pl-2 border-l-2 border-border/50">
+                          {userGroups.map((userGroup) => (
+                            <div key={`${order.id}-${userGroup.key}`} className="space-y-1">
+                              <div
+                                data-testid={`checkout-kitchen-user-group-${toTestIdFragment(userGroup.label)}`}
+                                className="flex items-center justify-between pr-2 py-1"
+                              >
+                                <span className="text-[10px] font-medium text-amber-900/60 dark:text-amber-100/60 bg-amber-100/50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-md flex items-center gap-1 w-fit">
+                                  <User className="w-3 h-3 opacity-70" />
+                                  {userGroup.label}
+                                </span>
+                                <span className="text-[9px] text-muted-foreground/70 tabular-nums">
+                                  {userGroup.totalQuantity} item
+                                  {userGroup.totalQuantity > 1 ? 's' : ''}
+                                </span>
                               </div>
-                            );
-                          })}
+
+                              {userGroup.groups.map((group) => {
+                                const item = group.item;
+                                const displayNote = item.notes || item.options?.note;
+                                const intensityText = item.options?.spiciness
+                                  ? `Spiciness: ${item.options.spiciness}`
+                                  : item.options?.sweetness
+                                    ? `Sweetness: ${item.options.sweetness}`
+                                    : null;
+                                const intensityClass = item.options?.sweetness
+                                  ? 'text-[10px] text-pink-600 font-medium truncate'
+                                  : 'text-[10px] text-orange-600 font-medium truncate';
+                                return (
+                                  <div key={group.key} className="py-1 pr-2">
+                                    <div className="flex justify-between items-start gap-2">
+                                      <div className="min-w-0 flex-1 space-y-1">
+                                        <div className="flex items-baseline gap-2 min-w-0">
+                                          <span className="text-xs font-medium text-foreground/80">
+                                            {group.count}x
+                                          </span>
+                                          <span className="text-xs text-foreground/70 truncate">
+                                            {item.name}
+                                          </span>
+                                        </div>
+                                        {intensityText && (
+                                          <span className={intensityClass}>{intensityText}</span>
+                                        )}
+                                      </div>
+                                      <div className="w-[72px] shrink-0 text-right leading-tight space-y-0.5">
+                                        <span className="block text-xs font-medium text-foreground/50 tabular-nums">
+                                          ${formatCurrency(item.price * group.count)}
+                                        </span>
+                                        <span className="block text-[10px] text-muted-foreground/70 tabular-nums">
+                                          ${formatCurrency(item.price)} ea
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {(item.isCustomized || item.options || displayNote) && (
+                                      <div className="pl-6 pt-1 space-y-1">
+                                        {item.options?.removals && (
+                                          <div className="text-[10px] text-red-500/80 flex items-start gap-1">
+                                            <span className="font-semibold shrink-0">No:</span>
+                                            <span className="line-through opacity-80">
+                                              {item.options.removals}
+                                            </span>
+                                          </div>
+                                        )}
+                                        {item.options?.allergens && (
+                                          <div className="text-[10px] text-emerald-600 flex items-center gap-1">
+                                            <span className="font-semibold">Dietary:</span>{' '}
+                                            {item.options.allergens}
+                                          </div>
+                                        )}
+                                        {displayNote && (
+                                          <div className="text-[10px] text-indigo-500/90 flex items-start gap-1 italic">
+                                            <span className="font-semibold not-italic">Note:</span>{' '}
+                                            &quot;{displayNote}&quot;
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          ))}
                         </div>
                       </div>
                     ))}
@@ -341,153 +394,161 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                       </div>
                     </div>
 
-                    <div className="space-y-1">
-                      {groupedCartItems.map((group) => {
-                        const item = group.item;
-                        const displayNote = item.notes || item.options?.note;
-                        const intensityText = item.options?.spiciness
-                          ? `Spiciness: ${item.options.spiciness}`
-                          : item.options?.sweetness
-                            ? `Sweetness: ${item.options.sweetness}`
-                            : null;
-                        const intensityClass = item.options?.sweetness
-                          ? 'text-[10px] text-pink-600 dark:text-pink-400 font-medium truncate'
-                          : 'text-[10px] text-orange-600 dark:text-orange-400 font-medium truncate';
-                        return (
+                    <div className="space-y-2">
+                      {groupedPendingByUser.map((userGroup) => (
+                        <div key={userGroup.key} className="space-y-1.5">
                           <div
-                            key={group.key}
-                            data-testid={`cart-group-${item.name}`}
-                            className="p-2 rounded-xl bg-card border border-amber-200/50 dark:border-amber-500/20 shadow-sm relative overflow-hidden group"
+                            data-testid={`checkout-pending-user-group-${toTestIdFragment(userGroup.label)}`}
+                            className="flex items-center justify-between px-1"
                           >
-                            {/* Background dash pattern for "draft" feel */}
-                            <div className="absolute inset-0 border-2 border-dashed border-amber-300/40 dark:border-amber-500/20 rounded-xl pointer-events-none" />
+                            <span className="text-[10px] font-medium text-amber-900/60 dark:text-amber-100/60 bg-amber-100/50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-md flex items-center gap-1 w-fit">
+                              <User className="w-3 h-3 opacity-70" />
+                              {userGroup.label}
+                            </span>
+                            <span className="text-[9px] text-muted-foreground/70 tabular-nums">
+                              {userGroup.totalQuantity} item{userGroup.totalQuantity > 1 ? 's' : ''}
+                            </span>
+                          </div>
 
-                            <div className="relative">
-                              {/* Row 1: Name & Total Price & Edit Button */}
-                              <div className="flex justify-between items-start mb-1 gap-2">
-                                <div className="flex flex-col gap-0.5 min-w-0">
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 break-all">
-                                      {item.name}
-                                    </span>
-                                    {onEditItem && (
-                                      <button
-                                        onClick={() => onEditItem(group.instances[0])}
-                                        data-testid="modify-item-btn"
-                                        className="h-5 px-1.5 flex items-center justify-center rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors active:scale-95 flex-shrink-0 gap-1"
-                                        title={
-                                          group.count > 1
-                                            ? 'Modify one of these items'
-                                            : 'Edit item details'
-                                        }
-                                      >
-                                        <SlidersHorizontal className="w-3 h-3" />
-                                        <span className="text-[9px] font-medium leading-none pb-px">
-                                          {group.count > 1 ? 'Modify one' : 'Modify'}
+                          {userGroup.groups.map((group) => {
+                            const item = group.item;
+                            const displayNote = item.notes || item.options?.note;
+                            const intensityText = item.options?.spiciness
+                              ? `Spiciness: ${item.options.spiciness}`
+                              : item.options?.sweetness
+                                ? `Sweetness: ${item.options.sweetness}`
+                                : null;
+                            const intensityClass = item.options?.sweetness
+                              ? 'text-[10px] text-pink-600 dark:text-pink-400 font-medium truncate'
+                              : 'text-[10px] text-orange-600 dark:text-orange-400 font-medium truncate';
+                            return (
+                              <div
+                                key={group.key}
+                                data-testid={`cart-group-${item.name}`}
+                                className="p-2 rounded-xl bg-card border border-amber-200/50 dark:border-amber-500/20 shadow-sm relative overflow-hidden group"
+                              >
+                                {/* Background dash pattern for "draft" feel */}
+                                <div className="absolute inset-0 border-2 border-dashed border-amber-300/40 dark:border-amber-500/20 rounded-xl pointer-events-none" />
+
+                                <div className="relative">
+                                  {/* Row 1: Name & Total Price & Edit Button */}
+                                  <div className="flex justify-between items-start mb-1 gap-2">
+                                    <div className="flex flex-1 flex-col gap-0.5 min-w-0">
+                                      <div className="flex items-center gap-2">
+                                        <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 break-all">
+                                          {item.name}
                                         </span>
+                                        {onEditItem && (
+                                          <button
+                                            onClick={() => onEditItem(group.instances[0])}
+                                            data-testid="modify-item-btn"
+                                            className="h-5 px-1.5 flex items-center justify-center rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors active:scale-95 flex-shrink-0 gap-1"
+                                            title={
+                                              group.count > 1
+                                                ? 'Modify one of these items'
+                                                : 'Edit item details'
+                                            }
+                                          >
+                                            <SlidersHorizontal className="w-3 h-3" />
+                                            <span className="text-[9px] font-medium leading-none pb-px">
+                                              {group.count > 1 ? 'Modify one' : 'Modify'}
+                                            </span>
+                                          </button>
+                                        )}
+                                      </div>
+                                      {intensityText && (
+                                        <span className={intensityClass}>{intensityText}</span>
+                                      )}
+                                    </div>
+                                    <div className="w-[78px] shrink-0 text-right leading-tight space-y-0.5">
+                                      <span className="block font-bold text-[13px] text-foreground tabular-nums">
+                                        ${formatCurrency(item.price * group.count)}
+                                      </span>
+                                      <span className="block text-[10px] text-muted-foreground/70 font-medium tabular-nums">
+                                        ${formatCurrency(item.price)} ea
+                                      </span>
+                                    </div>
+                                  </div>
+
+                                  {/* Customization Options Display */}
+                                  {(item.options && Object.keys(item.options).length > 0) ||
+                                  displayNote ? (
+                                    <div className="mb-1.5 space-y-0.5 bg-muted/40 p-2 rounded-lg border border-border/50 text-[10px]">
+                                      {item.options?.removals && (
+                                        <div className="text-red-600 dark:text-red-400">
+                                          <span className="font-semibold text-foreground/70">
+                                            No:
+                                          </span>{' '}
+                                          {item.options.removals}
+                                        </div>
+                                      )}
+                                      {item.options?.allergens && (
+                                        <div className="text-emerald-600 dark:text-emerald-400">
+                                          <span className="font-semibold text-foreground/70">
+                                            Dietary:
+                                          </span>{' '}
+                                          {item.options.allergens}
+                                        </div>
+                                      )}
+                                      {displayNote && (
+                                        <div className="text-indigo-600 dark:text-indigo-400 italic">
+                                          &quot;{displayNote}&quot;
+                                        </div>
+                                      )}
+                                    </div>
+                                  ) : null}
+
+                                  {/* Row 3: User Badge, Custom Badge & Controls */}
+                                  <div className="flex justify-between items-end">
+                                    <div className="flex items-center gap-1.5 pb-0.5">
+                                      {item.isCustomized ? (
+                                        <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-md border border-amber-200/60 w-fit">
+                                          🍽️ Custom
+                                        </span>
+                                      ) : null}
+                                    </div>
+
+                                    {/* Controls */}
+                                    <div className="flex items-center gap-0.5 bg-muted/60 rounded-lg p-0.5 ml-auto">
+                                      <button
+                                        onClick={() => handleDecrement(group)}
+                                        data-testid={`checkout-item-decrement-${item.menuItemId}`}
+                                        className={cn(
+                                          'w-7 h-7 rounded-md flex items-center justify-center transition-all active:scale-95 shadow-sm',
+                                          group.count === 1
+                                            ? 'bg-white dark:bg-zinc-800 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20'
+                                            : 'bg-white dark:bg-zinc-800 text-muted-foreground hover:text-foreground',
+                                        )}
+                                      >
+                                        {group.count === 1 ? (
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        ) : (
+                                          <Minus className="w-3.5 h-3.5" />
+                                        )}
                                       </button>
-                                    )}
+
+                                      <span
+                                        className="font-mono font-bold text-xs w-6 text-center text-foreground tabular-nums"
+                                        data-testid="item-quantity"
+                                      >
+                                        {group.count}
+                                      </span>
+
+                                      <button
+                                        onClick={() => handleIncrement(group)}
+                                        data-testid={`checkout-item-increment-${item.menuItemId}`}
+                                        className="w-7 h-7 rounded-md bg-foreground text-background flex items-center justify-center hover:opacity-90 transition-all active:scale-95 shadow-sm"
+                                      >
+                                        <Plus className="w-3.5 h-3.5" />
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
-                                <span className="font-bold text-[13px] text-foreground tabular-nums shrink-0">
-                                  ${formatCurrency(item.price * group.count)}
-                                </span>
                               </div>
-
-                              {/* Row 2: Unit Price */}
-                              <div className="flex justify-between items-center mb-1.5 min-h-[16px] gap-2">
-                                {intensityText ? (
-                                  <span className={intensityClass}>{intensityText}</span>
-                                ) : (
-                                  <span />
-                                )}
-                                <span className="text-[10px] text-muted-foreground/70 font-medium tabular-nums">
-                                  ${formatCurrency(item.price)} ea
-                                </span>
-                              </div>
-
-                              {/* Customization Options Display */}
-                              {(item.options && Object.keys(item.options).length > 0) ||
-                              displayNote ? (
-                                <div className="mb-1.5 space-y-0.5 bg-muted/40 p-2 rounded-lg border border-border/50 text-[10px]">
-                                  {item.options?.removals && (
-                                    <div className="text-red-600 dark:text-red-400">
-                                      <span className="font-semibold text-foreground/70">No:</span>{' '}
-                                      {item.options.removals}
-                                    </div>
-                                  )}
-                                  {item.options?.allergens && (
-                                    <div className="text-emerald-600 dark:text-emerald-400">
-                                      <span className="font-semibold text-foreground/70">
-                                        Dietary:
-                                      </span>{' '}
-                                      {item.options.allergens}
-                                    </div>
-                                  )}
-                                  {displayNote && (
-                                    <div className="text-indigo-600 dark:text-indigo-400 italic">
-                                      &quot;{displayNote}&quot;
-                                    </div>
-                                  )}
-                                </div>
-                              ) : null}
-
-                              {/* Row 3: User Badge, Custom Badge & Controls */}
-                              <div className="flex justify-between items-end">
-                                <div className="flex items-center gap-1.5 pb-0.5">
-                                  {item.orderedByName && (
-                                    <span className="text-[10px] font-medium text-amber-900/40 dark:text-amber-100/40 bg-amber-100/50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-md flex items-center gap-1">
-                                      <User className="w-3 h-3 opacity-70" />
-                                      {item.orderedByName}
-                                    </span>
-                                  )}
-
-                                  {item.isCustomized ? (
-                                    <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-md border border-amber-200/60 w-fit">
-                                      🍽️ Custom
-                                    </span>
-                                  ) : null}
-                                </div>
-
-                                {/* Controls */}
-                                <div className="flex items-center gap-0.5 bg-muted/60 rounded-lg p-0.5 ml-auto">
-                                  <button
-                                    onClick={() => handleDecrement(group)}
-                                    data-testid={`checkout-item-decrement-${item.menuItemId}`}
-                                    className={cn(
-                                      'w-7 h-7 rounded-md flex items-center justify-center transition-all active:scale-95 shadow-sm',
-                                      group.count === 1
-                                        ? 'bg-white dark:bg-zinc-800 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20'
-                                        : 'bg-white dark:bg-zinc-800 text-muted-foreground hover:text-foreground',
-                                    )}
-                                  >
-                                    {group.count === 1 ? (
-                                      <Trash2 className="w-3.5 h-3.5" />
-                                    ) : (
-                                      <Minus className="w-3.5 h-3.5" />
-                                    )}
-                                  </button>
-
-                                  <span
-                                    className="font-mono font-bold text-xs w-6 text-center text-foreground tabular-nums"
-                                    data-testid="item-quantity"
-                                  >
-                                    {group.count}
-                                  </span>
-
-                                  <button
-                                    onClick={() => handleIncrement(group)}
-                                    data-testid={`checkout-item-increment-${item.menuItemId}`}
-                                    className="w-7 h-7 rounded-md bg-foreground text-background flex items-center justify-center hover:opacity-90 transition-all active:scale-95 shadow-sm"
-                                  >
-                                    <Plus className="w-3.5 h-3.5" />
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
+                            );
+                          })}
+                        </div>
+                      ))}
                     </div>
                   </div>{' '}
                   {/* close amber wrapper */}

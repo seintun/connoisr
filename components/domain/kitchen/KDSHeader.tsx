@@ -74,11 +74,11 @@ export function KDSHeader({
                 {APP_NAME} KDS
               </h1>
               <span
-                className="inline-flex h-7 items-center gap-1 rounded-md border border-cyan-300/70 bg-cyan-500/10 px-2 text-[10px] font-extrabold uppercase tracking-wide text-cyan-100"
+                className="inline-flex h-[2rem] items-center gap-1 rounded-md border border-cyan-300/70 bg-cyan-500/10 px-2.5 text-[10px] font-extrabold uppercase tracking-wide text-cyan-100 sm:h-[2.1rem]"
                 data-testid="kds-active-chip"
               >
                 <span className="text-cyan-200/85">Active</span>
-                <span className="text-base font-black leading-none text-white">
+                <span className="text-[1.05rem] font-black leading-none text-white">
                   {metrics.total}
                 </span>
               </span>

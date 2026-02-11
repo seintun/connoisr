@@ -2,7 +2,6 @@
 
 import { useIdentity } from '@/context/IdentityContext';
 import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
@@ -35,12 +34,7 @@ export function IdentityModal({ tableId, prefetchProgress }: IdentityModalProps)
   };
 
   return (
-    <motion.div
-      key="identity-modal"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0, y: -30, scale: 0.95 }}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
+    <div
       className="fixed inset-0 z-[100] flex items-center justify-center select-none"
       data-testid="identity-modal"
       style={{ WebkitTapHighlightColor: 'transparent' }}
@@ -49,13 +43,7 @@ export function IdentityModal({ tableId, prefetchProgress }: IdentityModalProps)
       <div className="absolute inset-0 backdrop-blur-xl bg-white/60 dark:bg-black/60" />
 
       {/* Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 40, scale: 0.92 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -20, scale: 0.95 }}
-        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-        className="relative w-full max-w-sm mx-4 overflow-hidden"
-      >
+      <div className="relative w-full max-w-sm mx-4 overflow-hidden">
         {/* Main content */}
         <div className="rounded-3xl bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md shadow-2xl shadow-black/10 border border-white/60 dark:border-white/10 p-8 space-y-6">
           {/* Icon */}
@@ -147,11 +135,11 @@ export function IdentityModal({ tableId, prefetchProgress }: IdentityModalProps)
           {/* Prefetch progress bar */}
           <div className="pt-1">
             <div className="h-1 w-full rounded-full bg-neutral-200/60 dark:bg-neutral-700/40 overflow-hidden">
-              <motion.div
-                className="h-full rounded-full bg-gradient-to-r from-[#FF6B4A] to-[#6366F1]"
-                initial={{ width: '10%' }}
-                animate={{ width: prefetchProgress ? '100%' : '60%' }}
-                transition={{ duration: prefetchProgress ? 0.3 : 2, ease: 'easeOut' }}
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-[#FF6B4A] to-[#6366F1] transition-[width] duration-300 ease-out"
+                style={{ width: prefetchProgress ? '100%' : '60%' }}
+                aria-hidden="true"
+                data-testid="identity-prefetch-progress"
               />
             </div>
             <p className="text-[10px] text-muted-foreground/50 text-center mt-1.5 font-medium">
@@ -159,8 +147,8 @@ export function IdentityModal({ tableId, prefetchProgress }: IdentityModalProps)
             </p>
           </div>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 

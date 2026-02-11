@@ -13,57 +13,70 @@ const disableAnimations = async (page: Page) => {
   });
 };
 
+async function sendOrderFromDiner(page: Page) {
+  await page.goto('/table/1');
+  await disableAnimations(page);
+
+  await page.getByTestId('identity-name-input').fill('Alice');
+  await page.getByTestId('identity-start-btn').click();
+  await expect(page.getByTestId('diner-menu-page')).toBeVisible({ timeout: 15000 });
+
+  await page.getByTestId('add-item-item-7').click();
+  await page.getByTestId('cart-trigger-btn').click();
+  await expect(page.getByTestId('checkout-sheet')).toBeVisible();
+  await page.getByTestId('send-order-btn').click();
+  await expect(page.getByTestId('checkout-sheet')).not.toBeVisible();
+}
+
+async function openKitchenTicket(page: Page) {
+  await page.goto('/kitchen');
+  await disableAnimations(page);
+
+  await expect(page.getByTestId('kitchen-page')).toBeVisible();
+  const ticket = page.getByTestId(/kitchen-order-card-/).first();
+  await expect(ticket).toBeVisible({ timeout: 15000 });
+  await expect(ticket).toContainText('Table 1');
+
+  return ticket;
+}
+
 test.describe('Multi-client Synchronization', () => {
   test('@smoke order flow from diner to kitchen and status sync back', async ({ context }) => {
-    // We use two pages in the same context to share localStorage
     const dinerPage = await context.newPage();
     const kitchenPage = await context.newPage();
 
-    // 1. Diner: Onboarding
-    await dinerPage.goto('/table/1');
-    await disableAnimations(dinerPage);
-    await dinerPage.getByTestId('identity-name-input').fill('Alice');
-    await dinerPage.getByTestId('identity-start-btn').click();
+    await sendOrderFromDiner(dinerPage);
+    const ticket = await openKitchenTicket(kitchenPage);
 
-    // Verify the menu shell is visible after onboarding + prefetch.
-    await expect(dinerPage.getByTestId('diner-menu-page')).toBeVisible({ timeout: 15000 });
-
-    // 2. Diner: Add item to cart
-    await dinerPage.getByTestId('add-item-item-7').click();
-
-    // 3. Diner: Review & Send Order
-    await dinerPage.getByTestId('cart-trigger-btn').click();
-    await expect(dinerPage.getByTestId('checkout-sheet')).toBeVisible();
-    await dinerPage.getByTestId('send-order-btn').click();
-    await expect(dinerPage.getByTestId('checkout-sheet')).not.toBeVisible();
-
-    // 4. Kitchen: Verify order received
-    await kitchenPage.goto('/kitchen');
-    await disableAnimations(kitchenPage);
-
-    await expect(kitchenPage.getByTestId('kitchen-page')).toBeVisible();
-    const ticket = kitchenPage.getByTestId(/kitchen-order-card-/).first();
-    await expect(ticket).toBeVisible({ timeout: 15000 });
-    await expect(ticket).toContainText('Table 1');
     await expect(ticket.getByText('ordered', { exact: false })).toBeVisible();
 
-    // 5. Kitchen: Update status to Cooking
     await ticket.getByRole('button', { name: 'Start Cooking' }).click();
     await expect(ticket.getByText('cooking', { exact: false })).toBeVisible();
 
-    // 6. Diner: Verify status sync
     await dinerPage.getByTestId('cart-trigger-btn').click();
     await expect(dinerPage.getByTestId('checkout-sheet')).toBeVisible();
-
-    // UI shows "Preparing" for 'cooking' status
     await expect(dinerPage.getByTestId('checkout-sheet')).toContainText(/Preparing/i);
 
-    // 7. Kitchen: Update status to Ready
     await ticket.getByRole('button', { name: 'Mark Ready' }).click();
     await expect(ticket.getByText('ready', { exact: false })).toBeVisible();
+    await expect(dinerPage.getByTestId('checkout-sheet')).toContainText(/Ready to Serve/i, {
+      timeout: 10000,
+    });
+  });
 
-    // 8. Diner: Verify status is Ready
-    // UI shows "Ready to Serve" for 'ready' status
-    await expect(dinerPage.getByTestId('checkout-sheet')).toContainText(/Ready to Serve/i, { timeout: 10000 });
+  test('@smoke keyboard control updates focused kitchen ticket', async ({ context }) => {
+    const dinerPage = await context.newPage();
+    const kitchenPage = await context.newPage();
+
+    await sendOrderFromDiner(dinerPage);
+    const ticket = await openKitchenTicket(kitchenPage);
+
+    await expect(ticket.getByText('ordered', { exact: false })).toBeVisible();
+
+    await kitchenPage.keyboard.press('Enter');
+    await expect(ticket.getByText('cooking', { exact: false })).toBeVisible();
+
+    await dinerPage.getByTestId('cart-trigger-btn').click();
+    await expect(dinerPage.getByTestId('checkout-sheet')).toContainText(/Preparing/i);
   });
 });

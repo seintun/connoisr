@@ -2,7 +2,6 @@ import { groupCartItems } from '@/features/cart/domain/grouping';
 import {
   getKitchenNote,
   getModifierTokens,
-  hasItemModifiers,
   type KDSModifierToken,
 } from '@/features/kitchen/domain/kdsModifiers';
 import {
@@ -38,6 +37,12 @@ export interface KDSOrderViewModel {
   priorityRank: number;
 }
 
+export interface KDSOrderStaticViewModel {
+  order: Order;
+  groupedItems: KDSGroupedItemViewModel[];
+  isModified: boolean;
+}
+
 function isActiveOrder(order: Order): boolean {
   return order.status !== 'paid' && order.status !== 'served';
 }
@@ -46,15 +51,17 @@ export function buildKDSGroupedItems(items: CartItem[]): KDSGroupedItemViewModel
   return groupCartItems(items)
     .map((group) => {
       const modifierTokens = getModifierTokens(group.item);
+      const kitchenNote = getKitchenNote(group.item);
       return {
         key: group.key,
         count: group.count,
         name: group.item.name,
         orderedByName: group.item.orderedByName,
         item: group.item,
-        isModified: hasItemModifiers(group.item),
+        isModified:
+          group.item.isCustomized === true || modifierTokens.length > 0 || kitchenNote !== null,
         modifierTokens,
-        kitchenNote: getKitchenNote(group.item),
+        kitchenNote,
       };
     })
     .sort((a, b) => {
@@ -65,19 +72,32 @@ export function buildKDSGroupedItems(items: CartItem[]): KDSGroupedItemViewModel
     });
 }
 
-export function buildKDSOrderViewModels(orders: Order[], now: number): KDSOrderViewModel[] {
-  return orders
-    .filter(isActiveOrder)
-    .map((order) => {
-      const groupedItems = buildKDSGroupedItems(order.items);
-      const isModified = groupedItems.some((group) => group.isModified);
-      const timing = getOrderTiming(order.createdAt, order.status, now);
-      const priorityBucket = getPriorityBucket(order, isModified, timing);
+export function buildKDSOrderStaticViewModels(orders: Order[]): KDSOrderStaticViewModel[] {
+  return orders.filter(isActiveOrder).map((order) => {
+    const groupedItems = buildKDSGroupedItems(order.items);
+    const isModified = groupedItems.some((group) => group.isModified);
+
+    return {
+      order,
+      groupedItems,
+      isModified,
+    };
+  });
+}
+
+export function projectKDSOrderViewModels(
+  staticViewModels: KDSOrderStaticViewModel[],
+  now: number,
+): KDSOrderViewModel[] {
+  return staticViewModels
+    .map((viewModel) => {
+      const timing = getOrderTiming(viewModel.order.createdAt, viewModel.order.status, now);
+      const priorityBucket = getPriorityBucket(viewModel.order, viewModel.isModified, timing);
 
       return {
-        order,
-        groupedItems,
-        isModified,
+        order: viewModel.order,
+        groupedItems: viewModel.groupedItems,
+        isModified: viewModel.isModified,
         elapsedSeconds: timing.elapsedSeconds,
         elapsedMinutes: timing.elapsedMinutes,
         isNew: timing.isNew,
@@ -88,4 +108,8 @@ export function buildKDSOrderViewModels(orders: Order[], now: number): KDSOrderV
       };
     })
     .sort(compareKDSOrders);
+}
+
+export function buildKDSOrderViewModels(orders: Order[], now: number): KDSOrderViewModel[] {
+  return projectKDSOrderViewModels(buildKDSOrderStaticViewModels(orders), now);
 }

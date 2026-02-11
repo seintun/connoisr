@@ -4,7 +4,10 @@ import { KDSHeader } from '@/components/domain/kitchen/KDSHeader';
 import { KDSInputHintBar } from '@/components/domain/kitchen/KDSInputHintBar';
 import { KDSKeyboardHelp } from '@/components/domain/kitchen/KDSKeyboardHelp';
 import { KDSOrderCard } from '@/components/domain/kitchen/KDSOrderCard';
-import { buildKDSOrderViewModels } from '@/features/kitchen/domain/kdsSelectors';
+import {
+  buildKDSOrderStaticViewModels,
+  projectKDSOrderViewModels,
+} from '@/features/kitchen/domain/kdsSelectors';
 import { useKDSInputController } from '@/hooks/useKDSInputController';
 import { useKitchenOrders } from '@/hooks/useKitchenOrders';
 import { Clock } from 'lucide-react';
@@ -50,6 +53,7 @@ export default function KitchenPage() {
   const [now, setNow] = useState<number | null>(null);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const previousOrderIdsRef = useRef<Set<string>>(new Set());
+  const hasInitializedOrderIdsRef = useRef(false);
   const lastOverdueChimeAtRef = useRef<number>(0);
 
   useEffect(() => {
@@ -64,9 +68,10 @@ export default function KitchenPage() {
   }, []);
 
   const effectiveNow = now ?? 0;
+  const staticOrderViewModels = useMemo(() => buildKDSOrderStaticViewModels(orders), [orders]);
   const orderViewModels = useMemo(
-    () => buildKDSOrderViewModels(orders, effectiveNow),
-    [orders, effectiveNow],
+    () => projectKDSOrderViewModels(staticOrderViewModels, effectiveNow),
+    [staticOrderViewModels, effectiveNow],
   );
 
   const inputController = useKDSInputController({
@@ -124,6 +129,12 @@ export default function KitchenPage() {
 
   useEffect(() => {
     const currentOrderIds = new Set(orderViewModels.map((entry) => entry.order.id));
+    if (!hasInitializedOrderIdsRef.current) {
+      previousOrderIdsRef.current = currentOrderIds;
+      hasInitializedOrderIdsRef.current = true;
+      return;
+    }
+
     const hasNewOrder = Array.from(currentOrderIds).some(
       (id) => !previousOrderIdsRef.current.has(id),
     );

@@ -1,16 +1,15 @@
 'use client';
 
 import { useTableSession } from '@/components/providers/TableSessionProvider';
+import { CheckoutFooter } from '@/components/domain/checkout/CheckoutFooter';
 import {
   type GroupedCartItem,
   groupCartItems,
   groupItemsByUser,
 } from '@/features/cart/domain/grouping';
 import {
-  computeGrandTotal,
   computeOrdersSubtotal,
   computeSubtotal,
-  computeTax,
   formatCurrency,
 } from '@/features/cart/domain/money';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
@@ -21,13 +20,11 @@ import {
   CheckCircle2,
   ChefHat,
   Clock,
-  CreditCard,
   Minus,
   Plus,
   SlidersHorizontal,
   Trash2,
   User,
-  WifiOff,
   X,
 } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -43,6 +40,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
   const isOnline = useOnlineStatus();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const cartItems = useMemo(() => session?.cart ?? [], [session?.cart]);
   const orders = useMemo(() => session?.orders ?? [], [session?.orders]);
 
@@ -60,6 +58,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
   const handleSendToKitchen = async () => {
     setIsProcessing(true);
     setError(null);
+    setSuccess(null);
     try {
       await new Promise((resolve) => setTimeout(resolve, 800)); // Simulate network
       sendOrder();
@@ -76,14 +75,13 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
   const handlePayment = async () => {
     setIsProcessing(true);
     setError(null);
+    setSuccess(null);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      // In a real app, we'd mark orders as paid in the backend
+      await new Promise((resolve) => setTimeout(resolve, 1200));
       clearCart();
-      location.reload(); // Simple reset for prototype
-      alert('Payment successful! (Simulated)');
+      setSuccess('Payment successful. (Simulated)');
+      onClose();
     } catch (err) {
       setError('Payment failed. Please try again.');
       console.error('Payment Error:', err);
@@ -508,142 +506,20 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
             </div>
             {/* Added testid to footer container, but actually let's add it to the main motion div */}
 
-            {/* Footer */}
-            <div
-              className={cn(
-                'px-3 pt-2 pb-3 border-t border-border/40 bg-card/95 shrink-0 transition-transform duration-200',
-                !isOnline && '-translate-y-6',
-              )}
-            >
-              <div className="flex justify-between items-end">
-                {/* Left Side: Breakdown */}
-                <div className="flex flex-col text-[10px] text-muted-foreground leading-tight space-y-0.5 w-1/2">
-                  <div className="flex justify-between gap-2">
-                    <span>Subtotal</span>
-                    <span>${formatCurrency(ordersTotal)}</span>
-                  </div>
-                  <div className="flex justify-between gap-2">
-                    <span>Tax (8%)</span>
-                    <span>${formatCurrency(computeTax(ordersTotal))}</span>
-                  </div>
-                </div>
-
-                {/* Right Side: Total */}
-                <div className="flex flex-col items-end leading-none">
-                  <span className="text-[10px] text-muted-foreground font-medium mb-0.5">
-                    Total Due
-                  </span>
-                  <span className="font-bold text-red-500 text-sm">
-                    ${formatCurrency(computeGrandTotal(ordersTotal))}
-                  </span>
-                </div>
-              </div>
-
-              {hasCartItems && (
-                <div className="mt-2 pt-2 border-t border-dashed border-border/40 flex justify-between items-center text-[10px]">
-                  <span className="text-muted-foreground font-medium">
-                    + {cartItems.length} pending ($
-                    {formatCurrency(cartSubtotal)})
-                  </span>
-                  <div className="flex gap-1 items-baseline">
-                    <span className="font-medium text-muted-foreground">Grand Total:</span>
-                    <span className="font-bold text-foreground text-xs">
-                      ${formatCurrency(computeGrandTotal(grandSubtotal))}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              <div className="mt-2 flex gap-2">
-                {/* Pay Bill Button - Always visible if there are orders, distinct style */}
-                {hasOrders && (
-                  <button
-                    onClick={handlePayment}
-                    disabled={isProcessing || !isOnline}
-                    data-testid="pay-bill-btn"
-                    className={cn(
-                      'flex-1 h-10 border border-border/50 bg-secondary/50 text-foreground font-semibold rounded-xl text-xs',
-                      'active:scale-[0.98] transition-all duration-200 hover:bg-secondary/80',
-                      'flex items-center justify-center gap-1.5 whitespace-nowrap px-3',
-                      'disabled:pointer-events-none disabled:cursor-not-allowed',
-                      (isProcessing || !isOnline) && 'opacity-60 cursor-not-allowed',
-                    )}
-                  >
-                    <CreditCard className="w-3.5 h-3.5 shrink-0" />
-                    <span>
-                      {!isOnline
-                        ? 'Pay (Offline)'
-                        : `Pay $${formatCurrency(computeGrandTotal(ordersTotal))}`}
-                    </span>
-                  </button>
-                )}
-
-                {/* Send to Kitchen Button - Only if cart has items */}
-                {hasCartItems ? (
-                  <button
-                    onClick={handleSendToKitchen}
-                    disabled={isProcessing || !isOnline}
-                    data-testid="send-order-btn"
-                    className={cn(
-                      'flex-[2] h-10 bg-foreground text-background font-semibold rounded-xl text-sm',
-                      'shadow-md hover:shadow-lg',
-                      'active:scale-[0.98] transition-all duration-200',
-                      'flex items-center justify-center gap-2',
-                      'disabled:pointer-events-none disabled:cursor-not-allowed',
-                      (isProcessing || !isOnline) && 'opacity-60 cursor-not-allowed',
-                    )}
-                  >
-                    {isProcessing ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-3.5 h-3.5 border-2 border-background/30 border-t-background rounded-full animate-spin" />
-                        <span>Sending...</span>
-                      </div>
-                    ) : (
-                      <>
-                        {!isOnline ? (
-                          <>
-                            <WifiOff className="w-4 h-4 opacity-70" />
-                            <span>Send Disabled</span>
-                          </>
-                        ) : (
-                          <>
-                            <ChefHat className="w-4 h-4 opacity-70" />
-                            <span>Send Order</span>
-                          </>
-                        )}
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  // If no cart items but has orders, the Pay button should probably take full width or be consistent
-                  !hasCartItems &&
-                  hasOrders && (
-                    <div className="hidden" /> // Pay button takes clear precedence via flex-1 above
-                  )
-                )}
-              </div>
-
-              {!isOnline && (
-                <p className="text-[10px] text-amber-600 dark:text-amber-400 font-medium text-center mt-1">
-                  Send and Pay are unavailable offline.
-                </p>
-              )}
-
-              {/* If no cart items, make Pay full width */}
-              {!hasCartItems && hasOrders && (
-                <style
-                  dangerouslySetInnerHTML={{
-                    __html: `button:has(.lucide-credit-card) { flex: 1 1 100% !important; background: #000; color: #fff; border: none; }`,
-                  }}
-                />
-              )}
-
-              {error && (
-                <p className="text-red-500 font-medium text-xs text-center mt-2 animate-in fade-in slide-in-from-bottom-2">
-                  {error}
-                </p>
-              )}
-            </div>
+            <CheckoutFooter
+              isOnline={isOnline}
+              hasCartItems={hasCartItems}
+              hasOrders={hasOrders}
+              isProcessing={isProcessing}
+              pendingItemCount={cartItems.length}
+              ordersTotal={ordersTotal}
+              cartSubtotal={cartSubtotal}
+              grandSubtotal={grandSubtotal}
+              onPay={handlePayment}
+              onSend={handleSendToKitchen}
+              error={error}
+              success={success}
+            />
           </motion.div>
         </>
       )}

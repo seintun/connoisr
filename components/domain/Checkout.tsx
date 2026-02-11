@@ -2,7 +2,6 @@
 
 import { useTableSession } from '@/components/providers/TableSessionProvider';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
-import { MENU_ITEMS, TAG_EMOJIS } from '@/lib/menu';
 import { cn } from '@/lib/utils';
 import { CartItem } from '@/types';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -19,7 +18,7 @@ import {
   WifiOff,
   X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 interface CheckoutProps {
   isOpen: boolean;
@@ -32,24 +31,26 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
   const isOnline = useOnlineStatus();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const cartItems = useMemo(() => session?.cart ?? [], [session?.cart]);
+  const orders = useMemo(() => session?.orders ?? [], [session?.orders]);
 
-  if (!session) return null;
-
-  const cartSubtotal = session.cart.reduce(
-    (acc, item) => acc + item.price, // Quantity is always 1 per instance
-    0,
+  const cartSubtotal = useMemo(
+    () =>
+      cartItems.reduce(
+        (acc, item) => acc + item.price, // Quantity is always 1 per instance
+        0,
+      ),
+    [cartItems],
   );
-
-  const ordersTotal = (session.orders || []).reduce((acc, order) => acc + order.total, 0);
+  const ordersTotal = useMemo(() => orders.reduce((acc, order) => acc + order.total, 0), [orders]);
   const grandSubtotal = cartSubtotal + ordersTotal;
 
-  const hasCartItems = session.cart.length > 0;
-  const hasOrders = (session.orders || []).length > 0;
-  const sortedOrders = [...(session.orders || [])].sort((a, b) => b.createdAt - a.createdAt);
-
-  if (!hasCartItems && !hasOrders) {
-    return null;
-  }
+  const hasCartItems = cartItems.length > 0;
+  const hasOrders = orders.length > 0;
+  const sortedOrders = useMemo(
+    () => [...orders].sort((a, b) => b.createdAt - a.createdAt),
+    [orders],
+  );
 
   const handleSendToKitchen = async () => {
     setIsProcessing(true);
@@ -91,13 +92,8 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
   const formatCurrency = (value: number) =>
     value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-  const getItemTags = (item: CartItem) => {
-    const menuDef = MENU_ITEMS.find((menuItem) => menuItem.id === item.menuItemId);
-    return menuDef?.tags || item.tags || [];
-  };
-
   // Group instances by display identity
-  const groupInstances = (items: CartItem[]): GroupedItem[] => {
+  const groupInstances = useCallback((items: CartItem[]): GroupedItem[] => {
     const groups: Record<string, GroupedItem> = {};
 
     items.forEach((item) => {
@@ -113,24 +109,18 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
     });
 
     return Object.values(groups);
-  };
+  }, []);
 
-  const groupedCartItems = groupInstances(session.cart);
+  const groupedCartItems = useMemo(() => groupInstances(cartItems), [cartItems, groupInstances]);
 
-  // Group by Category for display headers
-  const getCategoryGroups = (groupedItems: GroupedItem[]) => {
-    const catGroups: Record<string, typeof groupedItems> = {};
+  const groupedKitchenOrders = useMemo(
+    () => sortedOrders.map((order) => ({ order, groups: groupInstances(order.items) })),
+    [sortedOrders, groupInstances],
+  );
 
-    groupedItems.forEach((group) => {
-      const category = group.item.category;
-      if (!catGroups[category]) catGroups[category] = [];
-      catGroups[category].push(group);
-    });
-
-    return Object.entries(catGroups);
-  };
-
-  const categoryGroups = getCategoryGroups(groupedCartItems);
+  if (!hasCartItems && !hasOrders) {
+    return null;
+  }
 
   const handleIncrement = (group: { item: CartItem; count: number; instances: CartItem[] }) => {
     // To increment, we just add a duplicate of one of the instances
@@ -207,7 +197,7 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                   </div>
 
                   <div className="space-y-4">
-                    {sortedOrders.map((order) => (
+                    {groupedKitchenOrders.map(({ order, groups }) => (
                       <div key={order.id} className="opacity-80 grayscale-[0.3]">
                         <div className="flex items-center gap-2 mb-2 px-1">
                           <CheckCircle2
@@ -238,10 +228,17 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                           </span>
                         </div>
                         <div className="space-y-1 pl-2 border-l-2 border-border/50">
-                          {groupInstances(order.items).map((group) => {
+                          {groups.map((group) => {
                             const item = group.item;
-                            const tags = getItemTags(item);
                             const displayNote = item.notes || item.options?.note;
+                            const intensityText = item.options?.spiciness
+                              ? `Spiciness: ${item.options.spiciness}`
+                              : item.options?.sweetness
+                                ? `Sweetness: ${item.options.sweetness}`
+                                : null;
+                            const intensityClass = item.options?.sweetness
+                              ? 'text-[10px] text-pink-600 font-medium truncate'
+                              : 'text-[10px] text-orange-600 font-medium truncate';
                             return (
                               <div key={group.key} className="py-1 pr-2">
                                 <div className="flex justify-between items-start gap-2">
@@ -262,17 +259,11 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                                     </div>
 
                                     <div className="flex items-center justify-between gap-2">
-                                      <div className="flex flex-wrap gap-1">
-                                        {tags.map((tag) => (
-                                          <span
-                                            key={tag}
-                                            className="text-[9px] px-1.5 py-0.5 rounded border border-border/50 bg-muted/50 text-muted-foreground font-medium leading-none"
-                                          >
-                                            {TAG_EMOJIS[tag] ? `${TAG_EMOJIS[tag]} ` : ''}
-                                            {tag}
-                                          </span>
-                                        ))}
-                                      </div>
+                                      {intensityText ? (
+                                        <span className={intensityClass}>{intensityText}</span>
+                                      ) : (
+                                        <span />
+                                      )}
                                       <span className="text-[10px] text-muted-foreground/70 tabular-nums shrink-0">
                                         ${formatCurrency(item.price)} ea
                                       </span>
@@ -285,18 +276,6 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
 
                                 {(item.isCustomized || item.options || displayNote) && (
                                   <div className="pl-6 pt-1 space-y-1">
-                                    {item.options?.spiciness && (
-                                      <div className="text-[10px] text-orange-600 flex items-center gap-1">
-                                        <span className="font-semibold">Spiciness:</span>{' '}
-                                        {item.options.spiciness}
-                                      </div>
-                                    )}
-                                    {item.options?.sweetness && (
-                                      <div className="text-[10px] text-pink-600 flex items-center gap-1">
-                                        <span className="font-semibold">Sweetness:</span>{' '}
-                                        {item.options.sweetness}
-                                      </div>
-                                    )}
                                     {item.options?.removals && (
                                       <div className="text-[10px] text-red-500/80 flex items-start gap-1">
                                         <span className="font-semibold shrink-0">No:</span>
@@ -362,212 +341,154 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
                       </div>
                     </div>
 
-                    {categoryGroups.map(([category, groups]) => (
-                      <div key={category} className="space-y-1">
-                        <h4 className="font-medium text-[10px] text-muted-foreground/50 uppercase tracking-[0.15em] px-0.5 mt-2">
-                          {category}
-                        </h4>
-                        <div className="space-y-1">
-                          {groups.map((group) => {
-                            const item = group.item;
-                            const displayNote = item.notes || item.options?.note;
-                            const tags = getItemTags(item);
-                            return (
-                              <div
-                                key={group.key}
-                                data-testid={`cart-group-${item.name}`}
-                                className="p-2 rounded-xl bg-card border border-amber-200/50 dark:border-amber-500/20 shadow-sm relative overflow-hidden group"
-                              >
-                                {/* Background dash pattern for "draft" feel */}
-                                <div className="absolute inset-0 border-2 border-dashed border-amber-300/40 dark:border-amber-500/20 rounded-xl pointer-events-none" />
+                    <div className="space-y-1">
+                      {groupedCartItems.map((group) => {
+                        const item = group.item;
+                        const displayNote = item.notes || item.options?.note;
+                        const intensityText = item.options?.spiciness
+                          ? `Spiciness: ${item.options.spiciness}`
+                          : item.options?.sweetness
+                            ? `Sweetness: ${item.options.sweetness}`
+                            : null;
+                        const intensityClass = item.options?.sweetness
+                          ? 'text-[10px] text-pink-600 dark:text-pink-400 font-medium truncate'
+                          : 'text-[10px] text-orange-600 dark:text-orange-400 font-medium truncate';
+                        return (
+                          <div
+                            key={group.key}
+                            data-testid={`cart-group-${item.name}`}
+                            className="p-2 rounded-xl bg-card border border-amber-200/50 dark:border-amber-500/20 shadow-sm relative overflow-hidden group"
+                          >
+                            {/* Background dash pattern for "draft" feel */}
+                            <div className="absolute inset-0 border-2 border-dashed border-amber-300/40 dark:border-amber-500/20 rounded-xl pointer-events-none" />
 
-                                <div className="relative">
-                                  {/* Row 1: Name & Total Price & Edit Button */}
-                                  <div className="flex justify-between items-start mb-1 gap-2">
-                                    <div className="flex flex-col gap-0.5 min-w-0">
-                                      <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 break-all">
-                                          {item.name}
-                                        </span>
-                                        {onEditItem && (
-                                          <button
-                                            onClick={() => onEditItem(group.instances[0])}
-                                            data-testid="modify-item-btn"
-                                            className="h-5 px-1.5 flex items-center justify-center rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors active:scale-95 flex-shrink-0 gap-1"
-                                            title={
-                                              group.count > 1
-                                                ? 'Modify one of these items'
-                                                : 'Edit item details'
-                                            }
-                                          >
-                                            <SlidersHorizontal className="w-3 h-3" />
-                                            <span className="text-[9px] font-medium leading-none pb-px">
-                                              {group.count > 1 ? 'Modify one' : 'Modify'}
-                                            </span>
-                                          </button>
-                                        )}
-                                      </div>
-                                    </div>
-                                    <span className="font-bold text-[13px] text-foreground tabular-nums shrink-0">
-                                      ${formatCurrency(item.price * group.count)}
+                            <div className="relative">
+                              {/* Row 1: Name & Total Price & Edit Button */}
+                              <div className="flex justify-between items-start mb-1 gap-2">
+                                <div className="flex flex-col gap-0.5 min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <span className="font-semibold text-[13px] text-foreground leading-tight line-clamp-1 break-all">
+                                      {item.name}
                                     </span>
-                                  </div>
-
-                                  {/* Row 2: Tags & Unit Price */}
-                                  <div className="flex justify-between items-center mb-1.5 min-h-[16px]">
-                                    <div className="flex flex-wrap gap-1">
-                                      {tags.map((tag) => {
-                                        let colorClass =
-                                          'bg-secondary text-secondary-foreground border-border/50';
-                                        if (['Spicy'].includes(tag))
-                                          colorClass =
-                                            'bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/10 dark:text-orange-400 dark:border-orange-500/20';
-                                        else if (['Vegetarian', 'Vegan'].includes(tag))
-                                          colorClass =
-                                            'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20';
-                                        else if (['GF', 'Gluten Free'].includes(tag))
-                                          colorClass =
-                                            'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20';
-                                        else if (['Seafood', 'Shellfish'].includes(tag))
-                                          colorClass =
-                                            'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20';
-                                        else if (['Sweet'].includes(tag))
-                                          colorClass =
-                                            'bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-500/10 dark:text-pink-400 dark:border-pink-500/20';
-                                        else if (['Alcohol'].includes(tag))
-                                          colorClass =
-                                            'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-500/10 dark:text-purple-400 dark:border-purple-500/20';
-                                        else if (['Nuts', 'Nut Free'].includes(tag))
-                                          colorClass =
-                                            'bg-stone-100 text-stone-700 border-stone-200 dark:bg-stone-500/10 dark:text-stone-400 dark:border-stone-500/20';
-
-                                        const emoji = TAG_EMOJIS[tag];
-
-                                        return (
-                                          <span
-                                            key={tag}
-                                            className={cn(
-                                              'text-[9px] px-1.5 py-0.5 rounded border flex items-center gap-0.5 font-medium leading-none',
-                                              colorClass,
-                                            )}
-                                          >
-                                            {emoji && (
-                                              <span className="opacity-80 scale-75">{emoji}</span>
-                                            )}
-                                            <span>{tag}</span>
-                                          </span>
-                                        );
-                                      })}
-                                    </div>
-
-                                    <span className="text-[10px] text-muted-foreground/70 font-medium tabular-nums">
-                                      ${formatCurrency(item.price)} ea
-                                    </span>
-                                  </div>
-
-                                  {/* Customization Options Display */}
-                                  {(item.options && Object.keys(item.options).length > 0) ||
-                                  displayNote ? (
-                                    <div className="mb-1.5 space-y-0.5 bg-muted/40 p-2 rounded-lg border border-border/50 text-[10px]">
-                                      {item.options?.spiciness && (
-                                        <div className="text-orange-600 dark:text-orange-400">
-                                          <span className="font-semibold text-foreground/70">
-                                            Spiciness:
-                                          </span>{' '}
-                                          {item.options.spiciness}
-                                        </div>
-                                      )}
-                                      {item.options?.sweetness && (
-                                        <div className="text-pink-600 dark:text-pink-400">
-                                          <span className="font-semibold text-foreground/70">
-                                            Sweetness:
-                                          </span>{' '}
-                                          {item.options.sweetness}
-                                        </div>
-                                      )}
-                                      {item.options?.removals && (
-                                        <div className="text-red-600 dark:text-red-400">
-                                          <span className="font-semibold text-foreground/70">
-                                            No:
-                                          </span>{' '}
-                                          {item.options.removals}
-                                        </div>
-                                      )}
-                                      {item.options?.allergens && (
-                                        <div className="text-emerald-600 dark:text-emerald-400">
-                                          <span className="font-semibold text-foreground/70">
-                                            Dietary:
-                                          </span>{' '}
-                                          {item.options.allergens}
-                                        </div>
-                                      )}
-                                      {displayNote && (
-                                        <div className="text-indigo-600 dark:text-indigo-400 italic">
-                                          &quot;{displayNote}&quot;
-                                        </div>
-                                      )}
-                                    </div>
-                                  ) : null}
-
-                                  {/* Row 3: User Badge, Custom Badge & Controls */}
-                                  <div className="flex justify-between items-end">
-                                    <div className="flex items-center gap-1.5 pb-0.5">
-                                      {item.orderedByName && (
-                                        <span className="text-[10px] font-medium text-amber-900/40 dark:text-amber-100/40 bg-amber-100/50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-md flex items-center gap-1">
-                                          <User className="w-3 h-3 opacity-70" />
-                                          {item.orderedByName}
-                                        </span>
-                                      )}
-
-                                      {item.isCustomized ? (
-                                        <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-md border border-amber-200/60 w-fit">
-                                          🍽️ Custom
-                                        </span>
-                                      ) : null}
-                                    </div>
-
-                                    {/* Controls */}
-                                    <div className="flex items-center gap-0.5 bg-muted/60 rounded-lg p-0.5 ml-auto">
+                                    {onEditItem && (
                                       <button
-                                        onClick={() => handleDecrement(group)}
-                                        data-testid={`checkout-item-decrement-${item.menuItemId}`}
-                                        className={cn(
-                                          'w-7 h-7 rounded-md flex items-center justify-center transition-all active:scale-95 shadow-sm',
-                                          group.count === 1
-                                            ? 'bg-white dark:bg-zinc-800 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20'
-                                            : 'bg-white dark:bg-zinc-800 text-muted-foreground hover:text-foreground',
-                                        )}
+                                        onClick={() => onEditItem(group.instances[0])}
+                                        data-testid="modify-item-btn"
+                                        className="h-5 px-1.5 flex items-center justify-center rounded-md bg-primary/10 text-primary hover:bg-primary/20 transition-colors active:scale-95 flex-shrink-0 gap-1"
+                                        title={
+                                          group.count > 1
+                                            ? 'Modify one of these items'
+                                            : 'Edit item details'
+                                        }
                                       >
-                                        {group.count === 1 ? (
-                                          <Trash2 className="w-3.5 h-3.5" />
-                                        ) : (
-                                          <Minus className="w-3.5 h-3.5" />
-                                        )}
+                                        <SlidersHorizontal className="w-3 h-3" />
+                                        <span className="text-[9px] font-medium leading-none pb-px">
+                                          {group.count > 1 ? 'Modify one' : 'Modify'}
+                                        </span>
                                       </button>
-
-                                      <span
-                                        className="font-mono font-bold text-xs w-6 text-center text-foreground tabular-nums"
-                                        data-testid="item-quantity"
-                                      >
-                                        {group.count}
-                                      </span>
-
-                                      <button
-                                        onClick={() => handleIncrement(group)}
-                                        data-testid={`checkout-item-increment-${item.menuItemId}`}
-                                        className="w-7 h-7 rounded-md bg-foreground text-background flex items-center justify-center hover:opacity-90 transition-all active:scale-95 shadow-sm"
-                                      >
-                                        <Plus className="w-3.5 h-3.5" />
-                                      </button>
-                                    </div>
+                                    )}
                                   </div>
                                 </div>
+                                <span className="font-bold text-[13px] text-foreground tabular-nums shrink-0">
+                                  ${formatCurrency(item.price * group.count)}
+                                </span>
                               </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
+
+                              {/* Row 2: Unit Price */}
+                              <div className="flex justify-between items-center mb-1.5 min-h-[16px] gap-2">
+                                {intensityText ? (
+                                  <span className={intensityClass}>{intensityText}</span>
+                                ) : (
+                                  <span />
+                                )}
+                                <span className="text-[10px] text-muted-foreground/70 font-medium tabular-nums">
+                                  ${formatCurrency(item.price)} ea
+                                </span>
+                              </div>
+
+                              {/* Customization Options Display */}
+                              {(item.options && Object.keys(item.options).length > 0) ||
+                              displayNote ? (
+                                <div className="mb-1.5 space-y-0.5 bg-muted/40 p-2 rounded-lg border border-border/50 text-[10px]">
+                                  {item.options?.removals && (
+                                    <div className="text-red-600 dark:text-red-400">
+                                      <span className="font-semibold text-foreground/70">No:</span>{' '}
+                                      {item.options.removals}
+                                    </div>
+                                  )}
+                                  {item.options?.allergens && (
+                                    <div className="text-emerald-600 dark:text-emerald-400">
+                                      <span className="font-semibold text-foreground/70">
+                                        Dietary:
+                                      </span>{' '}
+                                      {item.options.allergens}
+                                    </div>
+                                  )}
+                                  {displayNote && (
+                                    <div className="text-indigo-600 dark:text-indigo-400 italic">
+                                      &quot;{displayNote}&quot;
+                                    </div>
+                                  )}
+                                </div>
+                              ) : null}
+
+                              {/* Row 3: User Badge, Custom Badge & Controls */}
+                              <div className="flex justify-between items-end">
+                                <div className="flex items-center gap-1.5 pb-0.5">
+                                  {item.orderedByName && (
+                                    <span className="text-[10px] font-medium text-amber-900/40 dark:text-amber-100/40 bg-amber-100/50 dark:bg-amber-900/20 px-1.5 py-0.5 rounded-md flex items-center gap-1">
+                                      <User className="w-3 h-3 opacity-70" />
+                                      {item.orderedByName}
+                                    </span>
+                                  )}
+
+                                  {item.isCustomized ? (
+                                    <span className="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-md border border-amber-200/60 w-fit">
+                                      🍽️ Custom
+                                    </span>
+                                  ) : null}
+                                </div>
+
+                                {/* Controls */}
+                                <div className="flex items-center gap-0.5 bg-muted/60 rounded-lg p-0.5 ml-auto">
+                                  <button
+                                    onClick={() => handleDecrement(group)}
+                                    data-testid={`checkout-item-decrement-${item.menuItemId}`}
+                                    className={cn(
+                                      'w-7 h-7 rounded-md flex items-center justify-center transition-all active:scale-95 shadow-sm',
+                                      group.count === 1
+                                        ? 'bg-white dark:bg-zinc-800 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20'
+                                        : 'bg-white dark:bg-zinc-800 text-muted-foreground hover:text-foreground',
+                                    )}
+                                  >
+                                    {group.count === 1 ? (
+                                      <Trash2 className="w-3.5 h-3.5" />
+                                    ) : (
+                                      <Minus className="w-3.5 h-3.5" />
+                                    )}
+                                  </button>
+
+                                  <span
+                                    className="font-mono font-bold text-xs w-6 text-center text-foreground tabular-nums"
+                                    data-testid="item-quantity"
+                                  >
+                                    {group.count}
+                                  </span>
+
+                                  <button
+                                    onClick={() => handleIncrement(group)}
+                                    data-testid={`checkout-item-increment-${item.menuItemId}`}
+                                    className="w-7 h-7 rounded-md bg-foreground text-background flex items-center justify-center hover:opacity-90 transition-all active:scale-95 shadow-sm"
+                                  >
+                                    <Plus className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>{' '}
                   {/* close amber wrapper */}
                 </div>
@@ -625,8 +546,8 @@ export function Checkout({ isOpen, onClose, onEditItem }: CheckoutProps) {
               {hasCartItems && (
                 <div className="mt-2 pt-2 border-t border-dashed border-border/40 flex justify-between items-center text-[10px]">
                   <span className="text-muted-foreground font-medium">
-                    + {session.cart.length} pending ($
-                    {session.cart
+                    + {cartItems.length} pending ($
+                    {cartItems
                       .reduce((a, b) => a + b.price, 0)
                       .toLocaleString('en-US', {
                         minimumFractionDigits: 2,

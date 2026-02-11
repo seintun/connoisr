@@ -264,4 +264,34 @@ describe('Checkout', () => {
       newItem.compareDocumentPosition(oldItem) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });
+
+  it('shows intensity once with unit price and avoids duplicate intensity line', () => {
+    mockSession.orders = [
+      {
+        id: 'o1',
+        tableId: '1',
+        status: 'ordered',
+        createdAt: Date.now(),
+        total: 10,
+        items: [
+          {
+            instanceId: 'i1',
+            name: 'Charred Broccolini',
+            price: 10,
+            quantity: 1,
+            menuItemId: 'm-charred',
+            category: 'Mains',
+            status: 'SENT',
+            options: { spiciness: 'Max', note: 'love' },
+          },
+        ],
+      },
+    ];
+
+    render(<Checkout isOpen={true} onClose={() => {}} />);
+
+    expect(screen.getAllByText('Spiciness: Max')).toHaveLength(1);
+    expect(screen.getByText('$10.00 ea')).toBeInTheDocument();
+    expect(screen.getByText('"love"')).toBeInTheDocument();
+  });
 });

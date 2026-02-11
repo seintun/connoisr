@@ -11,6 +11,7 @@ Use this file as the primary map for repository documentation.
 - Architecture change history: `docs/engineering/ARCHITECTURE_CHANGELOG.md`
 - CI and QA pipeline: `docs/qa/CI_TESTING_PIPELINE.md`
 - Branch protection setup: `docs/qa/BRANCH_PROTECTION_CHECKLIST.md`
+- Lighthouse performance improvement log: `docs/qa/LIGHTHOUSE_PERFORMANCE_IMPROVEMENT.md`
 
 ## Architecture and Refactor Records
 

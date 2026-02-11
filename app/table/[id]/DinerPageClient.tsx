@@ -16,7 +16,6 @@ import {
 import { useMenuPrefetch } from '@/hooks/useMenuPrefetch';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { CartItem } from '@/types';
-import { AnimatePresence, motion } from 'framer-motion';
 import dynamic from 'next/dynamic';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -50,6 +49,10 @@ export default function DinerPageClient() {
   // Memoize categories to avoid recomputing on every render
   const categories = useMemo(
     () => Array.from(new Set(MENU_ITEMS.map((item) => item.category))),
+    [],
+  );
+  const lcpPriorityItemIds = useMemo(
+    () => new Set(MENU_ITEMS.slice(0, 4).map((item) => item.id)),
     [],
   );
 
@@ -211,25 +214,12 @@ export default function DinerPageClient() {
 
   return (
     <>
-      <AnimatePresence mode="wait">
-        {isHydrated && !userName && (
-          <IdentityModal
-            key="identity-modal"
-            tableId={session?.tableId || '1'}
-            prefetchProgress={isReady}
-          />
-        )}
-      </AnimatePresence>
+      {isHydrated && !userName && (
+        <IdentityModal tableId={session?.tableId || '1'} prefetchProgress={isReady} />
+      )}
 
       {showMenu && (
-        <motion.div
-          key="menu-grid"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.35, ease: 'easeOut' }}
-          data-testid="diner-menu-page"
-          className="min-h-screen bg-background pb-32"
-        >
+        <div data-testid="diner-menu-page" className="min-h-screen bg-background pb-32">
           <MenuHeader
             categories={categories}
             tableId={session?.tableId?.toString()}
@@ -255,14 +245,14 @@ export default function DinerPageClient() {
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch">
-                  {MENU_ITEMS.filter((item) => item.category === category).map((item, index) => (
+                  {MENU_ITEMS.filter((item) => item.category === category).map((item) => (
                     <DinerMenuItem
                       key={item.id}
                       {...item}
                       quantity={getItemQuantity(item.id)}
                       onUpdateQuantity={(qty) => handleUpdateQuantity(item.id, qty)}
                       onAdd={() => handleAddItem(item)}
-                      priority={index < 4}
+                      priority={lcpPriorityItemIds.has(item.id)}
                     />
                   ))}
                 </div>
@@ -304,7 +294,7 @@ export default function DinerPageClient() {
             maxQuantity={editingMaxQuantity}
             onAddToCart={handleAddToCartFromDrawer}
           />
-        </motion.div>
+        </div>
       )}
     </>
   );

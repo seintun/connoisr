@@ -4,8 +4,20 @@ import type { ComponentPropsWithoutRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('next/image', () => ({
-  default: ({ alt }: ComponentPropsWithoutRef<'img'>) => (
-    <div aria-label={alt ?? ''} />
+  default: ({
+    alt,
+    fetchPriority,
+    loading,
+  }: ComponentPropsWithoutRef<'img'> & {
+    fetchPriority?: 'high' | 'low' | 'auto';
+    loading?: 'eager' | 'lazy';
+  }) => (
+    <div
+      role="img"
+      aria-label={alt ?? ''}
+      data-fetchpriority={fetchPriority ?? ''}
+      data-loading={loading ?? ''}
+    />
   ),
 }));
 
@@ -13,14 +25,14 @@ vi.mock('next/dynamic', () => ({
   default: () => {
     const MockComponent = () => <div>MockLightbox</div>;
     return MockComponent;
-  }
+  },
 }));
 
 describe('DinerMenuItem', () => {
   const defaultProps = {
     id: '1',
     name: 'Test Burger',
-    price: 15.50,
+    price: 15.5,
     description: 'A delicious test burger',
     onAdd: vi.fn(),
     onUpdateQuantity: vi.fn(),
@@ -28,7 +40,7 @@ describe('DinerMenuItem', () => {
 
   it('renders item details correctly', () => {
     render(<DinerMenuItem {...defaultProps} />);
-    
+
     expect(screen.getByText('Test Burger')).toBeInTheDocument();
     expect(screen.getByText('$15.5')).toBeInTheDocument();
     expect(screen.getByText('A delicious test burger')).toBeInTheDocument();
@@ -36,24 +48,32 @@ describe('DinerMenuItem', () => {
 
   it('shows Add button when quantity is 0', () => {
     render(<DinerMenuItem {...defaultProps} quantity={0} />);
-    
+
     const addButton = screen.getByText('Add');
     expect(addButton).toBeInTheDocument();
-    
+
     fireEvent.click(addButton);
     expect(defaultProps.onAdd).toHaveBeenCalled();
   });
 
   it('shows quantity controls when quantity > 0', () => {
     render(<DinerMenuItem {...defaultProps} quantity={2} />);
-    
+
     expect(screen.queryByText('Add')).not.toBeInTheDocument();
     expect(screen.getByText('2')).toBeInTheDocument();
   });
 
   it('renders tags correctly', () => {
-     render(<DinerMenuItem {...defaultProps} tags={['Spicy', 'Vegan']} />);
-     expect(screen.getByText('Spicy')).toBeInTheDocument();
-     expect(screen.getByText('Vegan')).toBeInTheDocument();
+    render(<DinerMenuItem {...defaultProps} tags={['Spicy', 'Vegan']} />);
+    expect(screen.getByText('Spicy')).toBeInTheDocument();
+    expect(screen.getByText('Vegan')).toBeInTheDocument();
+  });
+
+  it('applies high fetch priority to prioritized images', () => {
+    render(<DinerMenuItem {...defaultProps} priority />);
+
+    const image = screen.getByRole('img', { name: 'Test Burger' });
+    expect(image).toHaveAttribute('data-fetchpriority', 'high');
+    expect(image).toHaveAttribute('data-loading', 'eager');
   });
 });

@@ -3,11 +3,15 @@
 import { TAG_EMOJIS } from '@/lib/menu';
 import { optimizeUnsplashUrl } from '@/lib/image';
 import { cn } from '@/lib/utils';
-import { ImageLightbox } from '@/components/domain/ImageLightbox';
-import { AnimatePresence, motion } from 'framer-motion';
 import { Minus, Plus, Trash2 } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import React, { useEffect, useMemo, useState } from 'react';
+
+const ImageLightbox = dynamic(
+  () => import('@/components/domain/ImageLightbox').then((mod) => ({ default: mod.ImageLightbox })),
+  { ssr: false },
+);
 
 interface DinerMenuItemProps {
   id: string;
@@ -44,9 +48,7 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
   );
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+    <div
       data-testid={`menu-item-card-${id}`}
       className={cn(
         'group relative overflow-hidden rounded-2xl bg-card transition-all duration-300 h-full',
@@ -134,7 +136,7 @@ export const DinerMenuItem = React.memo(function DinerMenuItem({
           id={id}
         />
       </div>
-    </motion.div>
+    </div>
   );
 });
 
@@ -182,7 +184,9 @@ const MenuItemImage = React.memo(function MenuItemImage({
           fill
           quality={58}
           priority={priority}
-          sizes="(max-width: 640px) 40vw, (max-width: 1024px) 33vw, 25vw"
+          fetchPriority={priority ? 'high' : undefined}
+          loading={priority ? 'eager' : 'lazy'}
+          sizes="(max-width: 767px) 33vw, (max-width: 1023px) 46vw, (max-width: 1279px) 30vw, 22vw"
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
           onLoad={(event) => {
             const img = event.currentTarget as HTMLImageElement;
@@ -193,27 +197,21 @@ const MenuItemImage = React.memo(function MenuItemImage({
         />
 
         {quantity > 0 && (
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            className="absolute top-2 left-2 md:top-2.5 md:left-2.5 bg-white/95 backdrop-blur-sm text-foreground font-bold px-2 py-1 rounded-lg text-[9px] md:text-xs z-20 flex items-center gap-1 shadow-md border border-black/10"
-          >
+          <div className="absolute top-2 left-2 md:top-2.5 md:left-2.5 bg-white/95 backdrop-blur-sm text-foreground font-bold px-2 py-1 rounded-lg text-[9px] md:text-xs z-20 flex items-center gap-1 shadow-md border border-black/10">
             <span className="text-primary font-bold">{quantity}×</span>
-          </motion.div>
+          </div>
         )}
       </div>
 
-      <AnimatePresence>
-        {isImageOpen && (
-          <ImageLightbox
-            imageUrl={imageUrl}
-            cachedImageUrl={resolvedImageSrc ?? undefined}
-            name={name}
-            description={description}
-            onClose={() => setIsImageOpen(false)}
-          />
-        )}
-      </AnimatePresence>
+      {isImageOpen && (
+        <ImageLightbox
+          imageUrl={imageUrl}
+          cachedImageUrl={resolvedImageSrc ?? undefined}
+          name={name}
+          description={description}
+          onClose={() => setIsImageOpen(false)}
+        />
+      )}
     </>
   );
 });
@@ -234,14 +232,12 @@ const MenuItemControls = React.memo(function MenuItemControls({
       {/* Add OR Quantity Stepper */}
       {quantity > 0 && onUpdateQuantity ? (
         <div className="flex-1 flex items-center gap-1 p-1 rounded-lg md:rounded-lg bg-muted/50 border border-border/40">
-          <motion.button
+          <button
             onClick={(e) => {
               e.stopPropagation();
               onUpdateQuantity(quantity - 1);
             }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.9 }}
-            className="w-6 h-6 md:w-8 md:h-8 rounded-md flex items-center justify-center transition-colors bg-background text-destructive hover:bg-destructive/10 cursor-pointer"
+            className="w-6 h-6 md:w-8 md:h-8 rounded-md flex items-center justify-center transition-colors bg-background text-destructive hover:bg-destructive/10 active:scale-95 cursor-pointer"
             data-testid={`decrement-item-${id}`}
           >
             {quantity === 1 ? (
@@ -249,45 +245,37 @@ const MenuItemControls = React.memo(function MenuItemControls({
             ) : (
               <Minus className="w-3 h-3 md:w-3.5 md:h-3.5" />
             )}
-          </motion.button>
+          </button>
 
           <div className="flex-1 flex items-center justify-center">
-            <motion.span
-              key={quantity}
-              initial={{ y: 10, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -10, opacity: 0 }}
+            <span
               className="font-bold text-sm md:text-base text-foreground tabular-nums"
               data-testid={`item-quantity-${id}`}
             >
               {quantity}
-            </motion.span>
+            </span>
           </div>
 
-          <motion.button
+          <button
             onClick={(e) => {
               e.stopPropagation();
               onUpdateQuantity(quantity + 1);
             }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.9 }}
             data-testid={`increment-item-${id}`}
-            className="w-6 h-6 md:w-8 md:h-8 rounded-md flex items-center justify-center transition-colors bg-background text-success hover:bg-success/10 cursor-pointer"
+            className="w-6 h-6 md:w-8 md:h-8 rounded-md flex items-center justify-center transition-colors bg-background text-success hover:bg-success/10 active:scale-95 cursor-pointer"
           >
             <Plus className="w-3 h-3 md:w-3.5 md:h-3.5" />
-          </motion.button>
+          </button>
         </div>
       ) : (
-        <motion.button
+        <button
           onClick={onAdd}
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
           data-testid={`add-item-${id}`}
-          className="flex-1 py-2 md:py-2.5 bg-primary text-primary-foreground font-semibold rounded-lg md:rounded-lg flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-all duration-300 text-xs md:text-sm group/btn shadow-sm hover:shadow-md cursor-pointer"
+          className="flex-1 py-2 md:py-2.5 bg-primary text-primary-foreground font-semibold rounded-lg md:rounded-lg flex items-center justify-center gap-1.5 hover:bg-primary/90 transition-all duration-300 text-xs md:text-sm group/btn shadow-sm hover:shadow-md active:scale-[0.99] cursor-pointer"
         >
           <Plus className="w-3.5 h-3.5 md:w-4 md:h-4 transition-transform group-hover/btn:rotate-90" />
           <span>Add</span>
-        </motion.button>
+        </button>
       )}
     </div>
   );

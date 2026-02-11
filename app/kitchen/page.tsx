@@ -156,7 +156,6 @@ export default function KitchenPage() {
     () => ({
       total: orderViewModels.length,
       overdue: orderViewModels.filter((entry) => entry.isOverdue).length,
-      modified: orderViewModels.filter((entry) => entry.isModified).length,
       ordered: orderViewModels.filter((entry) => entry.order.status === 'ordered').length,
       cooking: orderViewModels.filter((entry) => entry.order.status === 'cooking').length,
       ready: orderViewModels.filter((entry) => entry.order.status === 'ready').length,

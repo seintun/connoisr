@@ -85,3 +85,12 @@ Keep entries concise and always include affected files.
     - `components/domain/kitchen/KDSHeader.tsx`
     - `docs/engineering/KDS_HYBRID_INPUT_DESIGN.md`
     - `docs/engineering/ARCHITECTURE_CHANGELOG.md`
+- Summary: Reordered KDS header status metrics by urgency and removed mobile horizontal overflow in the KPI rail.
+  - Why: Kitchen staff need an urgency-first, no-scroll summary in portrait mode and clearer `Active` visibility.
+  - Impact: KDS header now surfaces `Active` beside the title and renders metrics as `Overdue`, `Ready`, `Cooking`, `Ordered` without the `Modified` summary chip.
+  - Affected files:
+    - `components/domain/kitchen/KDSHeader.tsx`
+    - `app/kitchen/page.tsx`
+    - `__tests__/components/KDSHeader.test.tsx`
+    - `docs/engineering/KDS_HYBRID_INPUT_DESIGN.md`
+    - `docs/engineering/ARCHITECTURE_CHANGELOG.md`

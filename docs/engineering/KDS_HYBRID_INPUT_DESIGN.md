@@ -89,7 +89,9 @@ Default shortcuts:
 - Header remains sticky at top while scrolling ticket cards.
 - Mobile portrait target: header occupies at most ~25% of viewport height.
 - Time, input mode, and sound controls use consistent height and contrast for quick scan.
-- KPI chips collapse into a single horizontal row on mobile (no two-row metric stack).
+- KPI chips stay in-device-width with no horizontal scrolling.
+- KPI priority order: `Overdue` -> `Ready` -> `Cooking` -> `Ordered`.
+- `Active` count is promoted beside the `Connoisr KDS` title on mobile.
 
 ### 8. Focus visibility guarantees
 

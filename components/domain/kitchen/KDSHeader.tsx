@@ -6,7 +6,6 @@ import { Clock3, ChefHat, Keyboard, Volume2, VolumeX } from 'lucide-react';
 interface KDSHeaderMetrics {
   total: number;
   overdue: number;
-  modified: number;
   ordered: number;
   cooking: number;
   ready: number;
@@ -23,24 +22,21 @@ interface KDSHeaderProps {
 function StatChip({
   label,
   value,
-  compact = false,
+  tone = 'default',
 }: {
   label: string;
   value: number;
-  compact?: boolean;
+  tone?: 'default' | 'alert';
 }) {
+  const toneClass =
+    tone === 'alert' ? 'border-orange-400/75 bg-orange-500/15' : 'border-neutral-600 bg-black/35';
+
   return (
-    <div
-      className={`rounded-md border border-neutral-600 bg-black/35 text-center ${compact ? 'min-w-[74px] px-2 py-0.5' : 'px-2 py-1.5'}`}
-    >
-      <p
-        className={`font-bold uppercase tracking-wide text-neutral-400 ${compact ? 'text-[8px]' : 'text-[10px]'}`}
-      >
+    <div className={`rounded-md border px-1.5 py-0.5 text-center sm:px-2 sm:py-1 ${toneClass}`}>
+      <p className="text-[8px] font-bold uppercase tracking-wide text-neutral-400 sm:text-[9px]">
         {label}
       </p>
-      <p className={`font-black leading-none text-white ${compact ? 'text-lg' : 'text-2xl'}`}>
-        {value}
-      </p>
+      <p className="text-lg font-black leading-none text-white sm:text-xl">{value}</p>
     </div>
   );
 }
@@ -73,9 +69,20 @@ export function KDSHeader({
         <div className="flex items-center gap-2">
           <ChefHat className="h-5 w-5 text-orange-300 sm:h-7 sm:w-7" aria-hidden="true" />
           <div>
-            <h1 className="text-[2rem] font-black leading-none tracking-tight text-white sm:text-[2.1rem]">
-              {APP_NAME} KDS
-            </h1>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <h1 className="text-[2rem] font-black leading-none tracking-tight text-white sm:text-[2.1rem]">
+                {APP_NAME} KDS
+              </h1>
+              <span
+                className="inline-flex h-7 items-center gap-1 rounded-md border border-cyan-300/70 bg-cyan-500/10 px-2 text-[10px] font-extrabold uppercase tracking-wide text-cyan-100"
+                data-testid="kds-active-chip"
+              >
+                <span className="text-cyan-200/85">Active</span>
+                <span className="text-base font-black leading-none text-white">
+                  {metrics.total}
+                </span>
+              </span>
+            </div>
             <p className="text-[9px] font-semibold uppercase tracking-wide text-neutral-300 sm:text-xs">
               Hybrid Touch + Keyboard
             </p>
@@ -113,22 +120,18 @@ export function KDSHeader({
         </div>
       </div>
 
-      <div data-testid="kds-header-metrics">
-        <div className="flex gap-1 overflow-x-auto pb-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden md:hidden">
-          <StatChip label="Active" value={metrics.total} compact />
-          <StatChip label="Ordered" value={metrics.ordered} compact />
-          <StatChip label="Cooking" value={metrics.cooking} compact />
-          <StatChip label="Ready" value={metrics.ready} compact />
-          <StatChip label="Modified" value={metrics.modified} compact />
-          <StatChip label="Overdue" value={metrics.overdue} compact />
+      <div className="grid grid-cols-4 gap-1" data-testid="kds-header-metrics">
+        <div data-testid="kds-metric-overdue">
+          <StatChip label="Overdue" value={metrics.overdue} tone="alert" />
         </div>
-        <div className="hidden grid-cols-3 gap-1.5 md:grid md:grid-cols-6">
-          <StatChip label="Active" value={metrics.total} />
-          <StatChip label="Ordered" value={metrics.ordered} />
-          <StatChip label="Cooking" value={metrics.cooking} />
+        <div data-testid="kds-metric-ready">
           <StatChip label="Ready" value={metrics.ready} />
-          <StatChip label="Modified" value={metrics.modified} />
-          <StatChip label="Overdue" value={metrics.overdue} />
+        </div>
+        <div data-testid="kds-metric-cooking">
+          <StatChip label="Cooking" value={metrics.cooking} />
+        </div>
+        <div data-testid="kds-metric-ordered">
+          <StatChip label="Ordered" value={metrics.ordered} />
         </div>
       </div>
     </header>

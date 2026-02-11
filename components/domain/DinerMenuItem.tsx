@@ -154,6 +154,7 @@ const MenuItemImage = React.memo(function MenuItemImage({
   priority?: boolean;
 }) {
   const [isImageOpen, setIsImageOpen] = useState(false);
+  const [resolvedImageSrc, setResolvedImageSrc] = useState<string | null>(null);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -182,6 +183,12 @@ const MenuItemImage = React.memo(function MenuItemImage({
           priority={priority}
           sizes="(max-width: 640px) 40vw, (max-width: 1024px) 33vw, 25vw"
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+          onLoad={(event) => {
+            const img = event.currentTarget as HTMLImageElement;
+            if (img.currentSrc) {
+              setResolvedImageSrc(img.currentSrc);
+            }
+          }}
         />
 
         {quantity > 0 && (
@@ -199,6 +206,7 @@ const MenuItemImage = React.memo(function MenuItemImage({
         {isImageOpen && (
           <ImageLightbox
             imageUrl={imageUrl}
+            cachedImageUrl={resolvedImageSrc ?? undefined}
             name={name}
             description={description}
             onClose={() => setIsImageOpen(false)}

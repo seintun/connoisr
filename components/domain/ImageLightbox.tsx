@@ -4,20 +4,35 @@ import { optimizeUnsplashUrl } from '@/lib/image';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import Image from 'next/image';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 interface ImageLightboxProps {
   imageUrl: string;
+  cachedImageUrl?: string;
   name: string;
   description: string;
   onClose: () => void;
 }
 
-export function ImageLightbox({ imageUrl, name, description, onClose }: ImageLightboxProps) {
+export function ImageLightbox({
+  imageUrl,
+  cachedImageUrl,
+  name,
+  description,
+  onClose,
+}: ImageLightboxProps) {
   const zoomImageUrl = useMemo(
     () => optimizeUnsplashUrl(imageUrl, { width: 1280, quality: 68 }),
     [imageUrl],
   );
+  const imageSources = useMemo(
+    () =>
+      [zoomImageUrl, cachedImageUrl, imageUrl].filter(
+        (src, index, all): src is string => Boolean(src) && all.indexOf(src) === index,
+      ),
+    [zoomImageUrl, cachedImageUrl, imageUrl],
+  );
+  const [sourceIndex, setSourceIndex] = useState(0);
 
   return (
     <motion.div
@@ -48,13 +63,14 @@ export function ImageLightbox({ imageUrl, name, description, onClose }: ImageLig
         </motion.button>
 
         <Image
-          src={zoomImageUrl}
+          src={imageSources[sourceIndex]}
           alt={name}
           fill
-          quality={68}
-          sizes="(max-width: 768px) 100vw, 80vw"
+          unoptimized
           className="object-contain rounded-xl shadow-2xl"
-          priority
+          onError={() => {
+            setSourceIndex((prev) => (prev < imageSources.length - 1 ? prev + 1 : prev));
+          }}
         />
 
         <div className="absolute bottom-4 left-0 right-0 text-center text-white/90 p-4">

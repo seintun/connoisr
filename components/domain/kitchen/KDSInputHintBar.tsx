@@ -15,7 +15,7 @@ const SHORTCUT_LEGEND = [
   { key: 'Enter', label: 'Advance' },
   { key: 'M', label: 'Modified' },
   { key: 'O', label: 'Overdue' },
-  { key: 'N', label: 'Newest' },
+  { key: 'N', label: 'New' },
   { key: 'U', label: 'Undo' },
 ];
 

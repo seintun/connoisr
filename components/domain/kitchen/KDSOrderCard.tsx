@@ -167,11 +167,11 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
     >
       <header className="border-b border-neutral-700 bg-black/30 px-2.5 py-2 sm:px-4 sm:py-2.5">
         <div className="flex flex-col gap-1.5">
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-2 md:gap-2.5">
             <h2 className="truncate text-[1.8rem] font-black leading-none tracking-tight text-white sm:text-[30px]">
               Table {order.tableId}
             </h2>
-            <div className="flex items-center gap-1 whitespace-nowrap">
+            <div className="flex items-center gap-1 whitespace-nowrap md:gap-1.5">
               {viewModel.isOverdue && (
                 <span
                   className="inline-flex h-6 items-center gap-1 rounded-md border border-orange-300/80 bg-orange-500/20 px-2 text-[9px] font-black uppercase tracking-wide text-orange-100 sm:h-7 sm:text-[10px]"
@@ -199,7 +199,7 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
             </div>
           </div>
 
-          <div className="flex items-center gap-1 overflow-x-auto whitespace-nowrap pb-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex items-center gap-1 overflow-x-auto whitespace-nowrap pb-0.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden md:gap-1.5 md:overflow-visible md:pb-0">
             <span
               className={cn(
                 'inline-flex h-6 items-center rounded-md border px-2 text-[10px] font-extrabold uppercase tracking-wider sm:h-7 sm:text-[11px]',

@@ -29,6 +29,7 @@ These are useful context, but not source of truth for current implementation:
 - `docs/plan/performance-enhancements-v1.md`
 - `docs/plan/performance-enhancements-v1-walkthrough.md`
 - `docs/plan/turbo-onboarding.md`
+- `docs/engineering/KDS_HYBRID_INPUT_DESIGN.md`
 - `docs/userstories/initial_stories.md`
 
 When guidance conflicts, prefer documents in "Source of Truth (Current)".

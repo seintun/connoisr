@@ -19,6 +19,7 @@ This document describes the current architecture and module boundaries of the re
 ### UI components
 
 - `components/domain/` contains feature-facing UI components.
+  - `components/domain/kitchen/` contains KDS-specific board/card/input components.
 - `components/ui/` contains smaller reusable UI controls.
 - `components/onboarding/` contains entry and identity flow UI.
 
@@ -29,6 +30,8 @@ This document describes the current architecture and module boundaries of the re
   - money/totals helpers
 - `features/session/domain/`:
   - session reducer + core state transitions
+- `features/kitchen/domain/`:
+  - KDS prioritization, modifier extraction, and view-model selectors
 
 ### Services and repositories
 
@@ -41,7 +44,7 @@ This document describes the current architecture and module boundaries of the re
 
 ### Shared utilities
 
-- `hooks/`: cross-component behavior hooks (`useKitchenOrders`, `useMenuPrefetch`, etc.)
+- `hooks/`: cross-component behavior hooks (`useKitchenOrders`, `useKDSInputController`, `useMenuPrefetch`, etc.)
 - `lib/`: constants and helper utilities
 - `types/`: app-level type contracts
 
@@ -57,6 +60,7 @@ This document describes the current architecture and module boundaries of the re
 2. Keep reducers pure and side effects in services/repositories.
 3. Keep UI components focused on presentation and interaction handling.
 4. Prefer shared selectors/helpers over duplicated logic.
+5. Keep KDS input orchestration (touch + keyboard) in hooks and domain helpers, not route JSX.
 
 ## Guardrails
 

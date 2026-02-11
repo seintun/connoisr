@@ -18,6 +18,28 @@ Keep entries concise and always include affected files.
 
 ## 2026-02-11
 
+- Summary: Rebuilt kitchen board architecture for hybrid touch + keyboard operation with a dedicated kitchen domain/view-model layer and modular KDS components.
+  - Why: Support both iPad touch stations and monitor + keyboard stations while preserving one product surface and consistent status behavior.
+  - Impact: Kitchen route now composes domain selectors and dedicated KDS components; keyboard command flow is centralized and testable.
+  - Affected files:
+    - `app/kitchen/page.tsx`
+    - `hooks/useKDSInputController.ts`
+    - `features/kitchen/domain/kdsPrioritization.ts`
+    - `features/kitchen/domain/kdsModifiers.ts`
+    - `features/kitchen/domain/kdsSelectors.ts`
+    - `features/kitchen/domain/kdsCommands.ts`
+    - `components/domain/kitchen/KDSHeader.tsx`
+    - `components/domain/kitchen/KDSOrderCard.tsx`
+    - `components/domain/kitchen/KDSModifierBlock.tsx`
+    - `components/domain/kitchen/KDSStatusAction.tsx`
+    - `components/domain/kitchen/KDSKeyboardHelp.tsx`
+    - `components/domain/kitchen/KDSInputHintBar.tsx`
+    - `tests/e2e/sync.spec.ts`
+    - `docs/engineering/KDS_HYBRID_INPUT_DESIGN.md`
+    - `docs/engineering/REPO_ARCHITECTURE.md`
+    - `docs/engineering/ARCHITECTURE_CHANGELOG.md`
+    - `docs/qa/CI_TESTING_PIPELINE.md`
+    - `docs/README.md`
 - Summary: Added architecture governance docs and agent requirements for mandatory architecture documentation updates.
   - Why: Ensure AI and contributors can infer current structure reliably and keep documentation synchronized with code changes.
   - Impact: Agents now have explicit rules for architecture references and update cadence.

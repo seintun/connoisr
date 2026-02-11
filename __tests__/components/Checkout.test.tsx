@@ -19,6 +19,7 @@ const mockUpdateItemQuantity = vi.fn();
 const mockRemoveItem = vi.fn();
 const mockClearCart = vi.fn();
 const mockSendOrder = vi.fn();
+let mockIsOnline = true;
 
 vi.mock('@/components/providers/TableSessionProvider', async () => {
   const actual = await vi.importActual('@/components/providers/TableSessionProvider');
@@ -34,10 +35,15 @@ vi.mock('@/components/providers/TableSessionProvider', async () => {
   };
 });
 
+vi.mock('@/hooks/useOnlineStatus', () => ({
+  useOnlineStatus: () => mockIsOnline,
+}));
+
 describe('Checkout', () => {
   beforeEach(() => {
     mockSession.cart = [];
     mockSession.orders = [];
+    mockIsOnline = true;
   });
 
   it('renders nothing if cart and orders are empty', () => {
@@ -122,5 +128,140 @@ describe('Checkout', () => {
     expect(screen.getAllByText(/No:/)).toHaveLength(2);
     expect(screen.getByText('onion')).toBeInTheDocument();
     expect(screen.getByText('tomato')).toBeInTheDocument();
+  });
+
+  it('disables pay and send actions while offline', () => {
+    mockIsOnline = false;
+    mockSession.cart = [
+      {
+        instanceId: 'c1',
+        name: 'Burger',
+        price: 10,
+        quantity: 1,
+        menuItemId: 'm1',
+        category: 'Main',
+        status: 'PENDING',
+      },
+    ];
+    mockSession.orders = [
+      {
+        id: 'o1',
+        tableId: '1',
+        status: 'ordered',
+        createdAt: Date.now(),
+        total: 10,
+        items: [
+          {
+            instanceId: 'i1',
+            name: 'Burger',
+            price: 10,
+            quantity: 1,
+            menuItemId: 'm1',
+            category: 'Main',
+            status: 'SENT',
+          },
+        ],
+      },
+    ];
+
+    render(<Checkout isOpen={true} onClose={() => {}} />);
+
+    expect(screen.getByTestId('pay-bill-btn')).toBeDisabled();
+    expect(screen.getByTestId('send-order-btn')).toBeDisabled();
+    expect(screen.getByText('Pay (Offline)')).toBeInTheDocument();
+    expect(screen.getByText('Send Disabled')).toBeInTheDocument();
+    expect(screen.getByText('Send and Pay are unavailable offline.')).toBeInTheDocument();
+  });
+
+  it('shows normal action labels and hides offline helper when online', () => {
+    mockIsOnline = true;
+    mockSession.cart = [
+      {
+        instanceId: 'c1',
+        name: 'Burger',
+        price: 10,
+        quantity: 1,
+        menuItemId: 'm1',
+        category: 'Main',
+        status: 'PENDING',
+      },
+    ];
+    mockSession.orders = [
+      {
+        id: 'o1',
+        tableId: '1',
+        status: 'ordered',
+        createdAt: Date.now(),
+        total: 10,
+        items: [
+          {
+            instanceId: 'i1',
+            name: 'Burger',
+            price: 10,
+            quantity: 1,
+            menuItemId: 'm1',
+            category: 'Main',
+            status: 'SENT',
+          },
+        ],
+      },
+    ];
+
+    render(<Checkout isOpen={true} onClose={() => {}} />);
+
+    expect(screen.getByTestId('pay-bill-btn')).toBeEnabled();
+    expect(screen.getByTestId('send-order-btn')).toBeEnabled();
+    expect(screen.getByText(/^Pay \$10\.80$/)).toBeInTheDocument();
+    expect(screen.getByText('Send Order')).toBeInTheDocument();
+    expect(screen.queryByText('Send and Pay are unavailable offline.')).not.toBeInTheDocument();
+  });
+
+  it('renders kitchen orders from newest to oldest', () => {
+    mockSession.orders = [
+      {
+        id: 'old',
+        tableId: '1',
+        status: 'ordered',
+        createdAt: 1000,
+        total: 12,
+        items: [
+          {
+            instanceId: 'i-old',
+            name: 'Old Item',
+            price: 12,
+            quantity: 1,
+            menuItemId: 'm-old',
+            category: 'Main',
+            status: 'SENT',
+          },
+        ],
+      },
+      {
+        id: 'new',
+        tableId: '1',
+        status: 'ordered',
+        createdAt: 2000,
+        total: 14,
+        items: [
+          {
+            instanceId: 'i-new',
+            name: 'New Item',
+            price: 14,
+            quantity: 1,
+            menuItemId: 'm-new',
+            category: 'Main',
+            status: 'SENT',
+          },
+        ],
+      },
+    ];
+
+    render(<Checkout isOpen={true} onClose={() => {}} />);
+
+    const newItem = screen.getByText('New Item');
+    const oldItem = screen.getByText('Old Item');
+    expect(
+      newItem.compareDocumentPosition(oldItem) & Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 });

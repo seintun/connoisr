@@ -32,11 +32,9 @@ export function KDSOrderCard({ viewModel, isFocused, onFocus, onStatusUpdate }: 
   const visibleItems = isFocused ? groupedItems : groupedItems.slice(0, collapsedPreviewCount);
   const hiddenItemsCount = Math.max(groupedItems.length - visibleItems.length, 0);
   const focusedColumnsClass = isFocused
-    ? groupedItems.length >= 16
+    ? groupedItems.length >= 18
       ? 'grid grid-cols-3 gap-2 content-start'
-      : groupedItems.length >= 9
-        ? 'grid grid-cols-2 gap-2 content-start'
-        : 'space-y-2'
+      : 'grid grid-cols-2 gap-2 content-start'
     : 'space-y-3';
   const compactFocusedItems = isFocused && groupedItems.length >= 7;
   const modifiedItemCount = groupedItems.reduce(

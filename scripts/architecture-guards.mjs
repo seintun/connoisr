@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-import { execSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { relative } from 'node:path';
 
 const ROOT = process.cwd();
@@ -13,20 +12,25 @@ const FORBIDDEN = [
 ];
 
 function getCandidateFiles() {
-  const pattern = TARGET_DIRS.map((dir) => `${dir}/**/*.{ts,tsx}`).join(' ');
-  try {
-    const output = execSync(`rg --files ${pattern}`, {
-      cwd: ROOT,
-      encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'ignore'],
-    });
-    return output
-      .split('\n')
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .map((file) => `${ROOT}/${file}`);
-  } catch {
-    return [];
+  const files = [];
+  for (const dir of TARGET_DIRS) {
+    walkTsFiles(`${ROOT}/${dir}`, files);
+  }
+  return files;
+}
+
+function walkTsFiles(dir, files) {
+  const entries = readdirSync(dir);
+  for (const entry of entries) {
+    const fullPath = `${dir}/${entry}`;
+    const stats = statSync(fullPath);
+    if (stats.isDirectory()) {
+      walkTsFiles(fullPath, files);
+      continue;
+    }
+    if (entry.endsWith('.ts') || entry.endsWith('.tsx')) {
+      files.push(fullPath);
+    }
   }
 }
 

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-import { execSync } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ROOT = process.cwd();
@@ -21,14 +20,28 @@ const FORBIDDEN_PATTERNS = [
 ];
 
 function getMarkdownFiles() {
-  const output = execSync("rg --files -g '*.md'", {
-    cwd: ROOT,
-    encoding: 'utf8',
-  });
-  return output
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean);
+  const files = [];
+  walkMarkdown(ROOT, files);
+  return files;
+}
+
+function walkMarkdown(dir, files) {
+  const entries = readdirSync(dir);
+  for (const entry of entries) {
+    const fullPath = join(dir, entry);
+    const stats = statSync(fullPath);
+    if (stats.isDirectory()) {
+      if (entry === 'node_modules' || entry === '.git' || entry === '.next') {
+        continue;
+      }
+      walkMarkdown(fullPath, files);
+      continue;
+    }
+    if (!entry.endsWith('.md')) {
+      continue;
+    }
+    files.push(fullPath.replace(`${ROOT}/`, ''));
+  }
 }
 
 const failures = [];

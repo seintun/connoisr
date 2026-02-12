@@ -1,284 +1,233 @@
 'use client';
 
-import { groupCartItems } from '@/features/cart/domain/grouping';
+import { KDSHeader } from '@/components/domain/kitchen/KDSHeader';
+import { KDSInputHintBar } from '@/components/domain/kitchen/KDSInputHintBar';
+import { KDSKeyboardHelp } from '@/components/domain/kitchen/KDSKeyboardHelp';
+import { KDSOrderCard } from '@/components/domain/kitchen/KDSOrderCard';
+import {
+  buildKDSOrderStaticViewModels,
+  projectKDSOrderViewModels,
+} from '@/features/kitchen/domain/kdsSelectors';
+import { useKDSInputController } from '@/hooks/useKDSInputController';
 import { useKitchenOrders } from '@/hooks/useKitchenOrders';
-import { APP_NAME } from '@/lib/constants';
-import { cn } from '@/lib/utils';
-import { Order } from '@/types';
-import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle, CheckCircle2, ChefHat, Clock, Flame, Timer } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Clock } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
-const INITIAL_NOW = Date.now();
+const NOW_REFRESH_MS = 1_000;
+const OVERDUE_CHIME_INTERVAL_MS = 120_000;
+const FOCUS_SCROLL_TOP_GAP_PX = 12;
+const FOCUS_SCROLL_BOTTOM_GAP_PX = 20;
+
+function playKDSChime(frequency = 880, durationMs = 120) {
+  if (typeof window === 'undefined' || typeof window.AudioContext === 'undefined') {
+    return;
+  }
+
+  let context: AudioContext;
+
+  try {
+    context = new window.AudioContext();
+  } catch {
+    return;
+  }
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+
+  oscillator.type = 'triangle';
+  oscillator.frequency.value = frequency;
+  gain.gain.value = 0.02;
+
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+
+  oscillator.start();
+  oscillator.stop(context.currentTime + durationMs / 1000);
+
+  oscillator.onended = () => {
+    void context.close();
+  };
+}
 
 export default function KitchenPage() {
   const { orders, updateOrderStatus } = useKitchenOrders();
-  const [now, setNow] = useState(INITIAL_NOW);
+  const [now, setNow] = useState<number | null>(null);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const previousOrderIdsRef = useRef<Set<string>>(new Set());
+  const hasInitializedOrderIdsRef = useRef(false);
+  const lastOverdueChimeAtRef = useRef<number>(0);
 
   useEffect(() => {
-    const interval = setInterval(() => setNow(Date.now()), 10000); // 10s for time display
-    return () => clearInterval(interval);
+    const tick = () => setNow(Date.now());
+    const frame = window.requestAnimationFrame(tick);
+    const interval = setInterval(tick, NOW_REFRESH_MS);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      clearInterval(interval);
+    };
   }, []);
 
-  const activeOrders = orders
-    .filter((order) => order.status !== 'paid' && order.status !== 'served')
-    .sort((a, b) => a.createdAt - b.createdAt);
+  const effectiveNow = now ?? 0;
+  const staticOrderViewModels = useMemo(() => buildKDSOrderStaticViewModels(orders), [orders]);
+  const orderViewModels = useMemo(
+    () => projectKDSOrderViewModels(staticOrderViewModels, effectiveNow),
+    [staticOrderViewModels, effectiveNow],
+  );
 
-  const OVERDUE_THRESHOLD_MIN = 10;
+  const inputController = useKDSInputController({
+    orders: orderViewModels,
+    updateOrderStatus,
+  });
 
-  const getStatusColor = (status: Order['status'], timeDiff?: number) => {
-    // Overdue orders get burnt sienna regardless of status
-    if (timeDiff !== undefined && timeDiff >= OVERDUE_THRESHOLD_MIN && status !== 'ready') {
-      return 'bg-orange-700/20 text-orange-300 border-orange-700/30';
+  useEffect(() => {
+    if (inputController.inputMode !== 'keyboard') {
+      return;
     }
-    switch (status) {
-      case 'ordered':
-        return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-      case 'cooking':
-        return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
-      case 'ready':
-        return 'bg-sky-500/20 text-sky-400 border-sky-500/30';
-      default:
-        return 'bg-neutral-800 text-neutral-400';
+
+    const focusedId = inputController.focusedOrderId;
+    if (!focusedId) {
+      return;
     }
-  };
+
+    const focusedCard = document.querySelector<HTMLElement>(
+      `[data-testid="kitchen-order-card-${focusedId}"]`,
+    );
+    if (!focusedCard) {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      const header = document.querySelector<HTMLElement>('[data-testid="kitchen-header"]');
+      const hintBar = document.querySelector<HTMLElement>('[data-testid="kds-input-hint-bar"]');
+      const headerHeight = header?.getBoundingClientRect().height ?? 0;
+      const hintBarHeight = hintBar?.getBoundingClientRect().height ?? 0;
+      const topSafeOffset = headerHeight + FOCUS_SCROLL_TOP_GAP_PX;
+      const bottomSafeOffset = hintBarHeight + FOCUS_SCROLL_BOTTOM_GAP_PX;
+      const rect = focusedCard.getBoundingClientRect();
+      const viewportBottom = window.innerHeight - bottomSafeOffset;
+      const visibleBandHeight = viewportBottom - topSafeOffset;
+      let scrollTopDelta = 0;
+
+      if (rect.height > visibleBandHeight) {
+        scrollTopDelta = rect.top - topSafeOffset;
+      } else if (rect.top < topSafeOffset) {
+        scrollTopDelta = rect.top - topSafeOffset;
+      } else if (rect.bottom > viewportBottom) {
+        scrollTopDelta = rect.bottom - viewportBottom;
+      }
+
+      if (Math.abs(scrollTopDelta) > 1) {
+        window.scrollBy({
+          top: scrollTopDelta,
+          behavior: 'auto',
+        });
+      }
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [inputController.focusedOrderId, inputController.inputMode]);
+
+  useEffect(() => {
+    const currentOrderIds = new Set(orderViewModels.map((entry) => entry.order.id));
+    if (!hasInitializedOrderIdsRef.current) {
+      previousOrderIdsRef.current = currentOrderIds;
+      hasInitializedOrderIdsRef.current = true;
+      return;
+    }
+
+    const hasNewOrder = Array.from(currentOrderIds).some(
+      (id) => !previousOrderIdsRef.current.has(id),
+    );
+
+    if (hasNewOrder && soundEnabled) {
+      playKDSChime(988, 120);
+    }
+
+    previousOrderIdsRef.current = currentOrderIds;
+  }, [orderViewModels, soundEnabled]);
+
+  useEffect(() => {
+    if (!soundEnabled) {
+      return;
+    }
+
+    const hasOverdue = orderViewModels.some((entry) => entry.isOverdue);
+    if (!hasOverdue) {
+      return;
+    }
+
+    const nowMs = Date.now();
+    if (nowMs - lastOverdueChimeAtRef.current >= OVERDUE_CHIME_INTERVAL_MS) {
+      playKDSChime(660, 160);
+      lastOverdueChimeAtRef.current = nowMs;
+    }
+  }, [orderViewModels, soundEnabled]);
+
+  const metrics = useMemo(
+    () => ({
+      total: orderViewModels.length,
+      overdue: orderViewModels.filter((entry) => entry.isOverdue).length,
+      ordered: orderViewModels.filter((entry) => entry.order.status === 'ordered').length,
+      cooking: orderViewModels.filter((entry) => entry.order.status === 'cooking').length,
+      ready: orderViewModels.filter((entry) => entry.order.status === 'ready').length,
+    }),
+    [orderViewModels],
+  );
 
   return (
-    <div className="p-6" data-testid="kitchen-page">
-      <header className="flex items-center justify-between mb-8" data-testid="kitchen-header">
-        <div className="flex items-center gap-3">
-          <ChefHat className="w-8 h-8 text-primary" />
-          <h1 className="text-2xl font-bold tracking-tight">{APP_NAME} KDS</h1>
-        </div>
-        <div className="flex items-center gap-4 text-sm text-neutral-400 font-mono">
-          <span>Active Orders: {activeOrders.length}</span>
-          <span>{new Date(now).toLocaleTimeString()}</span>
-        </div>
-      </header>
+    <div
+      className="min-h-screen bg-[#0a0c0f] p-3 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:p-4 md:p-6 md:pb-28"
+      data-testid="kitchen-page"
+    >
+      <KDSHeader
+        metrics={metrics}
+        now={now}
+        soundEnabled={soundEnabled}
+        onToggleSound={() => setSoundEnabled((prev) => !prev)}
+        inputMode={inputController.inputMode}
+      />
 
-      <div
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+      <main
+        className="grid grid-cols-1 items-start gap-4 md:grid-cols-2"
         data-testid="kitchen-orders-grid"
       >
-        <AnimatePresence mode="popLayout">
-          {activeOrders.map((order) => {
-            const timeDiff = Math.floor((now - order.createdAt) / 60000);
-            const isOverdue = timeDiff >= OVERDUE_THRESHOLD_MIN && order.status !== 'ready';
-            const statusColors = getStatusColor(order.status, timeDiff);
-            const groupedItems = groupCartItems(order.items);
+        {orderViewModels.map((entry) => (
+          <KDSOrderCard
+            key={entry.order.id}
+            viewModel={entry}
+            isFocused={inputController.focusedOrderId === entry.order.id}
+            onFocus={inputController.setFocusedFromTouch}
+            onStatusUpdate={(orderId, status) => {
+              inputController.setFocusedFromTouch(orderId);
+              inputController.commitStatusUpdate(orderId, status);
+            }}
+          />
+        ))}
+      </main>
 
-            return (
-              <motion.div
-                key={order.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                data-testid={`kitchen-order-card-${order.id}`}
-                className={cn(
-                  'rounded-2xl border bg-neutral-900/50 backdrop-blur-sm overflow-hidden flex flex-col shadow-xl',
-                  statusColors.split(' ')[2],
-                  isOverdue && 'animate-pulse',
-                )}
-              >
-                {/* Order Header */}
-                <div
-                  className={cn(
-                    'px-4 py-3 flex justify-between items-center border-b',
-                    statusColors,
-                  )}
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-lg">Table {order.tableId}</span>
-                    <span className="text-xs uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-black/20">
-                      {order.status}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-mono font-medium">
-                    {isOverdue && (
-                      <AlertTriangle className="w-3.5 h-3.5 text-orange-400 animate-pulse" />
-                    )}
-                    <Timer className="w-3.5 h-3.5" />
-                    <span className={cn(isOverdue && 'text-orange-300 font-bold')}>
-                      {timeDiff}m
-                    </span>
-                  </div>
-                </div>
+      {orderViewModels.length === 0 && (
+        <div
+          className="mt-12 flex flex-col items-center justify-center rounded-2xl border border-neutral-700 bg-black/20 py-20 text-neutral-400"
+          data-testid="kitchen-empty-state"
+        >
+          <Clock className="mb-3 h-16 w-16 opacity-50" />
+          <h2 className="text-2xl font-semibold text-neutral-200">No active orders</h2>
+          <p>Waiting for new orders...</p>
+        </div>
+      )}
 
-                {/* Order Items */}
-                <div className="p-4 space-y-4 flex-1">
-                  {groupedItems.map((group, idx) => {
-                    const item = group.item;
-                    const hasOptions = item.options && Object.keys(item.options).length > 0;
-                    const hasNotes = !!item.notes;
-                    const isCustom = item.isCustomized || hasOptions || hasNotes;
+      <KDSInputHintBar
+        inputMode={inputController.inputMode}
+        actionHint={inputController.actionHint}
+        undoAvailable={inputController.undoAvailable}
+        onUndo={inputController.undoLastAction}
+        onShowShortcuts={inputController.openShortcuts}
+      />
 
-                    // Functional Color Theory
-                    // Standard: Emerald (Calm, Standard)
-                    // Custom: Amber (Caution, Attention)
-                    const itemContainerClass = isCustom
-                      ? 'bg-amber-500/10 border border-amber-500/30' // Amber for custom
-                      : 'bg-emerald-500/5 border border-emerald-500/10'; // Emerald for standard
-
-                    const quantityBadgeClass = isCustom
-                      ? 'bg-amber-500 text-amber-950'
-                      : 'bg-emerald-500/20 text-emerald-400';
-
-                    const itemNameClass = isCustom ? 'text-amber-200' : 'text-neutral-200';
-
-                    // Helper for Spiciness Color
-                    const getSpicinessColor = (level: string) => {
-                      switch (level) {
-                        case 'Extra Hot':
-                          return 'bg-red-500/20 text-red-300 border-red-500/30';
-                        case 'Hot':
-                          return 'bg-orange-500/20 text-orange-300 border-orange-500/30';
-                        case 'Medium':
-                          return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
-                        case 'Mild':
-                          return 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
-                        default:
-                          return 'bg-neutral-800 text-neutral-400';
-                      }
-                    };
-
-                    return (
-                      <div
-                        key={idx}
-                        className={cn(
-                          'flex flex-col gap-3 p-3 rounded-xl transition-colors',
-                          itemContainerClass,
-                        )}
-                      >
-                        {/* Main Item Row */}
-                        <div className="flex items-start gap-4">
-                          <span
-                            className={cn(
-                              'shrink-0 flex items-center justify-center w-10 h-10 rounded-lg font-bold font-mono text-xl shadow-sm',
-                              quantityBadgeClass,
-                            )}
-                          >
-                            {group.count}
-                          </span>
-                          <div className="flex-1 min-w-0 pt-1">
-                            <div className="flex items-baseline justify-between gap-2">
-                              <span
-                                className={cn('font-bold text-lg leading-tight', itemNameClass)}
-                              >
-                                {item.name}
-                              </span>
-                              {item.orderedByName && (
-                                <span className="text-xs text-neutral-500 font-medium">
-                                  — {item.orderedByName}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Customizations Block */}
-                        {(hasOptions || hasNotes) && (
-                          <div className="ml-14 space-y-2">
-                            {/* Spiciness */}
-                            {item.options?.spiciness && (
-                              <div
-                                className={cn(
-                                  'flex items-center gap-2 px-3 py-1.5 rounded-lg border w-fit',
-                                  getSpicinessColor(item.options.spiciness),
-                                )}
-                              >
-                                <Flame className="w-4 h-4 fill-current opacity-50" />
-                                <span className="text-xs font-bold uppercase tracking-wider">
-                                  {item.options.spiciness}
-                                </span>
-                              </div>
-                            )}
-
-                            {/* Removals */}
-                            {item.options?.removals && (
-                              <div className="flex items-start gap-2 text-red-400 font-medium bg-red-950/20 px-3 py-2 rounded-lg border border-red-500/20">
-                                <div className="mt-0.5 relative shrink-0">
-                                  <span className="w-4 h-4 flex items-center justify-center border border-red-400 rounded-full text-[10px] font-bold">
-                                    ✕
-                                  </span>
-                                </div>
-                                <span className="text-sm">NO {item.options.removals}</span>
-                              </div>
-                            )}
-
-                            {/* Dietary */}
-                            {item.options?.allergens && (
-                              <div className="flex items-center gap-2 text-emerald-400 font-medium bg-emerald-950/20 px-3 py-2 rounded-lg border border-emerald-500/20">
-                                <span className="text-lg leading-none">🥬</span>
-                                <span className="text-sm">{item.options.allergens}</span>
-                              </div>
-                            )}
-
-                            {/* Notes - High Visibility Sticky Note Style */}
-                            {(item.options?.note || item.notes) && (
-                              <div className="flex flex-col gap-1 bg-yellow-300/10 border border-yellow-300/40 p-3 rounded-tr-xl rounded-bl-xl rounded-br-sm rounded-tl-sm relative mt-1">
-                                <div className="flex items-center gap-2 text-yellow-500 font-bold text-xs uppercase tracking-wider mb-1">
-                                  <ChefHat className="w-3 h-3" />
-                                  Kitchen Note
-                                </div>
-                                <p className="text-yellow-100 font-medium italic text-base leading-snug">
-                                  &quot;{item.options?.note || item.notes}&quot;
-                                </p>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-
-                {/* Actions */}
-                <div className="p-3 border-t border-white/10 bg-white/5 flex gap-2">
-                  {order.status === 'ordered' && (
-                    <button
-                      onClick={() => updateOrderStatus(order.id, 'cooking')}
-                      data-testid={`kitchen-start-cooking-${order.id}`}
-                      className="w-full py-3 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold transition-colors flex items-center justify-center gap-2"
-                    >
-                      <ChefHat className="w-5 h-5" /> Start Cooking
-                    </button>
-                  )}
-                  {order.status === 'cooking' && (
-                    <button
-                      onClick={() => updateOrderStatus(order.id, 'ready')}
-                      data-testid={`kitchen-mark-ready-${order.id}`}
-                      className="w-full py-3 rounded-xl bg-green-600 hover:bg-green-500 text-white font-bold transition-colors flex items-center justify-center gap-2"
-                    >
-                      <CheckCircle2 className="w-5 h-5" /> Mark Ready
-                    </button>
-                  )}
-                  {order.status === 'ready' && (
-                    <button
-                      onClick={() => updateOrderStatus(order.id, 'served')}
-                      data-testid={`kitchen-mark-served-${order.id}`}
-                      className="w-full py-3 rounded-xl bg-neutral-700 hover:bg-neutral-600 text-white font-bold transition-colors flex items-center justify-center gap-2"
-                    >
-                      Mark Served
-                    </button>
-                  )}
-                </div>
-              </motion.div>
-            );
-          })}
-        </AnimatePresence>
-
-        {activeOrders.length === 0 && (
-          <div
-            className="col-span-full flex flex-col items-center justify-center py-20 text-neutral-600"
-            data-testid="kitchen-empty-state"
-          >
-            <Clock className="w-16 h-16 mb-4 opacity-20" />
-            <h2 className="text-xl font-medium">No active orders</h2>
-            <p>Waiting for new orders...</p>
-          </div>
-        )}
-      </div>
+      <KDSKeyboardHelp
+        open={inputController.showShortcuts}
+        onClose={inputController.closeShortcuts}
+      />
     </div>
   );
 }

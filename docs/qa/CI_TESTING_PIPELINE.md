@@ -78,6 +78,9 @@ Current smoke-covered flows:
 
 - Diner -> checkout send -> kitchen status sync.
 - Modify flow split/merge behavior with quantity + note + level preservation.
+- Kitchen touch action path (`Start Cooking`, `Mark Ready`) remains synchronized back to diner checkout status labels.
+- Kitchen keyboard action path (`Enter` on focused ticket) advances status and syncs back to diner.
+- KDS modifier/urgency semantics stay visible via deterministic card signals (`MOD`, `OVERDUE`, note block).
 
 ## Vercel Integration Notes
 

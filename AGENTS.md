@@ -44,3 +44,5 @@ These rules apply to all changes under:
 - `context/`
 - `hooks/`
 - `features/`
+- `lib/`
+- `types/`

@@ -1,6 +1,8 @@
 # CLAUDE.md — Connoisr Engineering Guide
 
-Single source of truth for coding conventions, architecture, and workflow.
+Single source of truth for coding conventions, architecture, and workflow, together with the shared agent rules in AGENTS.md (also read by Codex and opencode), imported here:
+
+@AGENTS.md
 
 ## 1. Identity & Role
 
